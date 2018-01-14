@@ -20,9 +20,7 @@ float fkal;
 #define    ETX          0x03
 #define    ledPin       13
 int joyX, joyY, joyXbefore, joyYbefore, joyXdiff, joyYdiff, GyroTrim;
-//float gtrim = -1.7; // LolaBot
-//float gtrim = -1.2; // KayaBot
-float gtrim = 0.12; // T-Bot
+float gtrim = 2.3; // T-Bot
 float backoff;
 float joyXf, joyYf;
 
@@ -41,13 +39,12 @@ float spinval;
 float filterFrequency = 1;  
 FilterOnePole lowpassFilterX( LOWPASS, filterFrequency );  
 float gyrosetpointatstart;
-float g = 9.81, pi = 3.1416, h = 0.07;
+float g = 9.81, pi = 3.1416, h = 0.08;
 float dh, th, phi, v, vxy, vx, vy, vz, norm, vxs, vys, angout;
 float accX, accY, accZ;
 float speedpidsampletime = 2;
 float gyropidsampletime = 2;
 int kp, ki, kd; // for inread function
-//PID Variables
 int starttime;
 
 ////////////////// Gyro PID tuning   //////////////////////
@@ -63,14 +60,12 @@ PID gyroyPID(&gyroyInput, &gyroyOutput, &gyroySetpoint, gyroKp, gyroKi, gyroKd, 
 
 /////////// Setup Motors /////////
 const int m1stby = 6, m1ain1 = 8, m1ain2 = 7, m1pwmpin = 10, mpsfactor = 257;
-Motor m2 = Motor(m1ain1, m1ain2, m1stby, m1pwmpin, mpsfactor/0.9);
+Motor m2 = Motor(m1ain1, m1ain2, m1stby, m1pwmpin, mpsfactor*0.82);
 
 const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9;
 Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, mpsfactor);
 
 ///////// Setup gyro with Kalman filter ///////
-
-#define RESTRICT_PITCH // Comment out to restrict roll to ±90deg instead - please read: http://www.freescale.com/files/sensors/doc/app_note/AN3461.pdf
 
 Kalman kalmanX; // Create the Kalman instances
 Kalman kalmanY;
@@ -81,7 +76,6 @@ double gyroX, gyroY, gyroZ;
 int16_t tempRaw;
 
 double gyroXangle, gyroYangle; // Angle calculate using the gyro only
-double compAngleX, compAngleY; // Calculated angle using a complementary filter
 double kalAngleX, kalAngleY; // Calculated angle using a Kalman filter
 double pitch,roll;
 uint32_t timer;
@@ -98,15 +92,14 @@ double count = 0.0;
 float anow, atimeChange;
 
 Task tKalmanRead(2,TASK_FOREVER, &kalmanReadCallBack);
-Task tGyroCalibrate(2, 400, &gyroCalibrateCallBack);
+Task tGyroCalibrate(2, 10, &gyroCalibrateCallBack);
 Task tGyroPID(4, TASK_FOREVER, &gyroPIDCallBack);
 Task tspeedPID(4, TASK_FOREVER, &speedPIDCallBack);
 Task bluetooth(20,TASK_FOREVER,&bluetoothCallBack);
 Task uSound(60, TASK_FOREVER, &uSoundCallBack);
 Scheduler runner;
 
-void uSoundCallBack(){
-        
+void uSoundCallBack(){    
    pingval = sonar.ping_cm();
    if (pingval == pingval){
    USound.addValue(pingval);
@@ -160,9 +153,9 @@ void bluetoothCallBack(){
 }
 void kalmanReadCallBack(){
     gyroread();
+//       Serial.print(kalAngleY); Serial.print("\t");
+//   Serial.print("\n"); 
 }
-
-
 
 void gyroCalibrateCallBack() {
    gyroAV.addValue(kalAngleY);
@@ -184,7 +177,13 @@ void gyroCalibrateCallBack() {
 }
 
 void speedPIDCallBack() {
-  speedSetpoint = 1.4*((joyYf+backoff)/mpsfactor); 
+  if (abs(joyXf)>60){ // Compensation to prevent robot falling over when spinning
+
+        speedSetpoint = 1.0*((abs(joyYf)+90+backoff)/mpsfactor);
+  }
+  else{
+        speedSetpoint = 1.7*((joyYf+backoff)/mpsfactor);
+  }
   if (vxy != vxy){
     speedInput = 0;
   }
@@ -194,20 +193,20 @@ void speedPIDCallBack() {
     speedPID.Compute();
     v2ang(h, speedOutput);
     gyroySetpoint = angout;
-  
 }
 
 void gyroPIDCallBack() {
     gyroyInput = kalAngleY-(gtrim+GyroTrim*0.1);// sign on GyroTrim to make +ve correspont to forward.
     gyroyPID.Compute();
+    
     spinval = -0.8*joyXf/mpsfactor;
     velxy(h,gyroyOutput); // output vxs, vys
-    if (abs(kalAngleY)>60){
+    if (abs(kalAngleY)>40){
        m1.speed(spinval);
        m2.speed(spinval); 
     }
     else{
-    m1.speed((-vxy+spinval));
+    m1.speed((vxy-spinval));
     m2.speed((vxy+spinval));
     }
 }
@@ -228,7 +227,7 @@ void setup () {
   i2cData[3] = 0x00; // Set Accelerometer Full Scale Range to ±2g
   while (i2cWrite(0x19, i2cData, 4, false)); // Write to all four registers at once
   while (i2cWrite(0x6B, 0x01, true)); // PLL with X axis gyroscope reference and disable sleep mode
-
+  
   while (i2cRead(0x75, i2cData, 1));
   if (i2cData[0] != 0x68) { // Read "WHO_AM_I" register
     Serial.print(F("Error reading sensor"));
