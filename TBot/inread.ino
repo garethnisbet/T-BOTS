@@ -16,11 +16,9 @@ void inread() {
     inString += (char)inChar; 
   }
 
-  // if you get a comma, convert to a number,
-  // set the appropriate color, and increment
-  // the color counter:
+  // if you get a comma, convert to a number and increment the counter:
   if (inChar == ',') {
-    // do something different for each value of currentColor:
+
     switch (currentVector) {
     case 0:    // 0 = y
       kp = inString.toInt();
@@ -35,14 +33,13 @@ void inread() {
     }
     currentVector++;
   }
-  // if you get a newline, you know you've got
-  // the last color, i.e. blue:
+
   if (inChar == '\n') {
     kd = inString.toInt();
 
     // clear the string for new input:
     inString = ""; 
-    // reset the color counter:
+    // reset the  counter:
     currentVector = 0;
   }
 

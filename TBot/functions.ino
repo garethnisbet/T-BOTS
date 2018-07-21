@@ -1,11 +1,8 @@
-// functions for omnidrive
+// functions for T-Bot
 
 void velxy(double h, double th){
 	      dh=h-(h*cos(th*pi/180));
 	      vxy=sqrt(2*g*dh)*th/abs(th);
-	     // vxy=v*cos(acos((h-dh)/h))*th/abs(th);
-       // vxy = v*th/abs(th);
-        //a2vnorm = sqrt((sin(th*pi/180.0)*sin(th*pi/180.0)) +(sin(phi*pi/180)*sin(phi*pi/180.0)));
 }
 
 void v2ang(double h, double v){
@@ -33,13 +30,21 @@ void gyroread(){
   //gyroZ = (i2cData[12] << 8) | i2cData[13];
 
   
-  double dt = (double)(micros() - timer) / 1000000; // Calculate delta time
+  float dt = (double)(micros() - timer) / 1000000; // Calculate delta time
   timer = micros();
   pitch = atan2(-accZ, sqrt(accY * accY + accX * accX)) * RAD_TO_DEG;
  // double pitch = atan2(-accZ, -accX) * RAD_TO_DEG;
-  double gyroYrate = gyroY / 131.0; // Convert to deg/s
+  gyroYrate = gyroY / 131.0; // Convert to deg/s
   if (pitch == pitch){ // only update Kalman filter with real values
-  kalAngleY = kalmanY.getAngle(pitch, gyroYrate, dt); // Calculate the angle using a Kalman filter
+  CFilteredlAngleY = CFilterY.getAngle(pitch, gyroYrate, dt); // Calculate the angle using a Kalman filter
+  CFilterY.setWeighting(filter_weighting);
+  
+ // Serial.print(dt); Serial.print("\t");
+ // Serial.print(pitch); Serial.print("\t");
+ // Serial.print(gyroYrate); Serial.print("\t");
+ // Serial.print(kalAngleY); Serial.print("\t");
+ // Serial.print("\n");
+  
   }
   gyroYangle += gyroYrate * dt; // Calculate gyro angle without any filter
 
@@ -88,21 +93,21 @@ void getButtonState(int bStatus)  {
 // -----------------  BUTTON #3  -----------------------
     case 'E':
       buttonStatus |= B000100;        
-      rtrim += 0.02;
+      KP += 0.02;
       break;
     case 'F':
       buttonStatus &= B111011;      
-      rtrim += 0.02;
+      KP += 0.02;
       break;
 
 // -----------------  BUTTON #4  -----------------------
     case 'G':
       buttonStatus |= B001000;      
-      rtrim -= 0.02;
+      KP -= 0.02;
     break;
     case 'H':
       buttonStatus &= B110111;    
-      rtrim -= 0.02;
+      KP -= 0.02;
     break;
 
 // -----------------  BUTTON #5  -----------------------
@@ -126,5 +131,4 @@ void getButtonState(int bStatus)  {
 }
 }
 
-// giles added a comment
 
