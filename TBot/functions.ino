@@ -42,14 +42,14 @@ void gyroread(){
   gyroYangle += gyroYrate * dt; // Calculate gyro angle without any filter
   
   }
-  
+  /*
   Serial.print(dt); Serial.print("\t");
   Serial.print(pitch); Serial.print("\t");
   Serial.print(gyroYrate); Serial.print("\t");
   Serial.print(CFilteredlAngleY); Serial.print("\t");
   Serial.print(gyroYangle); Serial.print("\t");
   Serial.print("\n");
-  
+  */
 
 } // end of gyro function
 
