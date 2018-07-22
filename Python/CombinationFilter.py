@@ -74,7 +74,8 @@ def getAngleCFilter(pitch, gyro_rate, dt):
 ##########################################################
 
 angleCF = np.array([getAngleCFilter(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
-gyroangle = np.cumsum(v1[:,2]*v1[:,0])
+v1[0,2] = v1[0,4]
+gyroangle = np.cumsum(v1[:,2]*v1[:,0]*3)
 
 angle = 0
 angleKF = np.array([getAngle(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
