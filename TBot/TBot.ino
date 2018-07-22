@@ -88,7 +88,7 @@ double gyroX, gyroY, gyroZ;
 int16_t tempRaw;
 double  gyroYangle; // Angle calculate using the gyro only
 double CFilteredlAngleY; // Calculated angle using a CFilter
-double pitch,roll,gyroYrate;
+double pitch,roll,gyroYrate, gyroangle, dt;
 uint32_t timer;
 uint8_t i2cData[14]; // Buffer for I2C data
 double gyroxoffset, gyroyoffset;
