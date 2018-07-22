@@ -166,14 +166,11 @@ void bluetoothCallBack(){
    BTSerial.print((char)ETX);
 
    
- 
-   
 }
 void CFilterReadCallBack(){
     gyroread();
 
 }
-
 
 void speedPIDCallBack() {
   if (abs(joyXf)>60){ // Compensation to prevent robot falling over when spinning
@@ -207,9 +204,7 @@ void gyroPIDCallBack() {
     else{
     m1.speed((vxy-spinval+rtrim));
     m2.speed((vxy+spinval-rtrim));
-    }
-
-    
+    }  
 }
 
 void setup () {

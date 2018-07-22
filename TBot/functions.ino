@@ -35,7 +35,8 @@ void gyroread(){
   pitch = atan2(-accZ, sqrt(accY * accY + accX * accX)) * RAD_TO_DEG;
  // double pitch = atan2(-accZ, -accX) * RAD_TO_DEG;
   gyroYrate = gyroY / 131.0; // Convert to deg/s
-  if (pitch == pitch){ // only update Kalman filter with real values
+  
+  if (pitch == pitch){ // only update Cfilter with real values
   CFilteredlAngleY = CFilterY.getAngle(pitch, gyroYrate, dt); // Calculate the angle using a Kalman filter
   CFilterY.setWeighting(filter_weighting);
   gyroYangle += gyroYrate * dt; // Calculate gyro angle without any filter
