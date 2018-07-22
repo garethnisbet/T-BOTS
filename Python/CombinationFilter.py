@@ -52,7 +52,7 @@ def getAngle(pitch, gyrorate, dt):
 ################      Simple Filter       ################
 
 angle = 0
-filter_weighting = 1    # Note the integral of the gyro here differs from T-Bot because of latency;
+filter_weighting = 0.3  # Note the integral of the gyro here differs from T-Bot because of latency;
 		       	# possibly because the serial print interferes with the timing. 
 			# This code serves as a guide to show how the filters work. 
 			# Typically, the filter_weighting will be a factor of 10 smaller on 
