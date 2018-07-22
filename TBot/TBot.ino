@@ -52,6 +52,7 @@ float accX, accY, accZ;
 
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
+
 float gtrim = 0.5;   // Compensated for drift in forward or reverse direction.
 float rtrim = -0.02; // Compensated for rotational drift.
 
@@ -88,7 +89,7 @@ double gyroX, gyroY, gyroZ;
 int16_t tempRaw;
 double  gyroYangle; // Angle calculate using the gyro only
 double CFilteredlAngleY; // Calculated angle using a CFilter
-double pitch,roll,gyroYrate, gyroangle, dt;
+double pitch,roll,gyroYrate, gyroangle;
 uint32_t timer;
 uint8_t i2cData[14]; // Buffer for I2C data
 double gyroxoffset, gyroyoffset;
@@ -252,7 +253,7 @@ void setup () {
   // digitalWrite(15, LOW); //Some modules reqire this to be set to HIGH 
   // Others require these lines to be commented out.
 
-  Serial.begin(9600);
+  Serial.begin(115200);
   BTSerial.begin(38400);
   while(BTSerial.available())  BTSerial.read();
 

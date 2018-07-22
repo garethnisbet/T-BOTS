@@ -26,9 +26,9 @@ import numpy as np
 ##################################################################
 
 try:
-    ser = serial.Serial('/dev/ttyUSB0', 9600)
+    ser = serial.Serial('/dev/ttyUSB0', 115200)
 except:
-    ser = serial.Serial('/dev/ttyUSB1', 9600)
+    ser = serial.Serial('/dev/ttyUSB1', 115200)
 ii=1
 sleep(2)
 t=0
