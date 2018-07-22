@@ -52,12 +52,13 @@ def getAngle(pitch, gyrorate, dt):
 ################      Simple Filter       ################
 
 angle = 0
-filter_weighting = 0.3  # Note the integral of the gyro here differs from T-Bot because of latency;
+filter_weighting = 1    # Note the integral of the gyro here differs from T-Bot because of latency;
 		       	# possibly because the serial print interferes with the timing. 
 			# This code serves as a guide to show how the filters work. 
 			# Typically, the filter_weighting will be a factor of 10 smaller on 
-			# the T-Bot.
-			# You can use serial_GetData.py to collect the data from the T-BOT
+			# the T-Bot. A filter_weighting of 0 zero will be equivalent to using
+			# the gyro only. A value of 1 will be equivalent to using the accelerometer  
+			# only. You can use serial_GetData.py to collect the data from the T-BOT
 			# to see how effective your filter is.
 
 
@@ -73,9 +74,8 @@ def getAngleCFilter(pitch, gyro_rate, dt):
 angleCF = np.array([getAngleCFilter(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
 
 angleKF = np.array([getAngle(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
-dtconst = np.ones(v1.shape[0])*0.02
-unfiltered_gyroangle = np.cumsum(v1[:,2]*v1[:,0]*1.1)
 
+unfiltered_gyroangle = np.cumsum(v1[:,2]*v1[:,0]*1.1)
 
 t = np.cumsum(v1[:,0])
 
