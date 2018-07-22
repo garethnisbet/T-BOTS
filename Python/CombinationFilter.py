@@ -69,13 +69,18 @@ def getAngleCFilter(pitch, gyro_rate, dt):
     angle += filter_weighting * y
     return angle
 
+def gyroAngle(gyro_rate, dt):
+    global angle
+    angle += gyro_rate * dt
+    return angle
+
 ##########################################################
 
 angleCF = np.array([getAngleCFilter(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
-
+angle = 0
+gyroangle = np.array([gyroAngle(v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
+angle = 0
 angleKF = np.array([getAngle(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
-
-unfiltered_gyroangle = np.cumsum(v1[:,2]*v1[:,0]*1.1)
 
 t = np.cumsum(v1[:,0])
 
@@ -89,7 +94,7 @@ ax.plot(t, angleCF, 'r:',label = 'Combination Filter')
 ax.plot(t, angleKF, 'b',label = 'Kalman Filter')
 ax.plot(t, v1[:,3], 'r',label = 'Filtered by T-Bot')
 
-ax.plot(t, unfiltered_gyroangle, 'm',label = 'Unfiltered Gyro Angle')
+ax.plot(t, gyroangle, 'm',label = 'Unfiltered Gyro Angle')
 ax.plot(t, v1[:,4], 'c--',label = 'Unfiltered Gyro Angle from T-Bot')
 
 ax.legend(loc = 'best',prop={ 'size': 8})
