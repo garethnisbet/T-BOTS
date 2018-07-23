@@ -22,7 +22,7 @@ to see how effective your filter is.
 '''
 
 angle = 0
-filter_weighting = 0.13
+filter_weighting = 0.03
 
 def getAngleCFilter(pitch, gyro_rate, dt):
     global angle
@@ -99,10 +99,10 @@ plt.title('Combination Filter')
 ax = plt.subplot(111)
 ax.plot(t, v1[:,1], 'g',label = 'Accelerometer Angle')
 ax.plot(t, v1[:,4], 'c--',label = 'Gyro Angle')
-#ax.plot(t, angleCF, 'm',label = 'Combination Filter')
-#ax.plot(t, angleKF, 'b',label = 'Kalman Filter')
-ax.plot(t, v1[:,3], 'r',label = 'Combination Filter')
-#ax.plot(t, gyroangle, 'k',label = 'Unfiltered Gyro Angle')
+ax.plot(t, angleCF, 'm',label = 'Combination Filter')
+ax.plot(t, angleKF, 'b',label = 'Kalman Filter')
+ax.plot(t, v1[:,3], 'r',label = 'Combination Filter T-BOT')
+ax.plot(t, gyroangle, 'k',label = 'Gyro Angle (latency)')
 
 ax.legend(loc = 'best',prop={ 'size': 8})
 plt.xlabel('t (s)')
