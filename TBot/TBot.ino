@@ -5,11 +5,10 @@
 #include <PID_v1.h>
 #include <Filters.h>
 #include <NewPing.h>
-#include "SoftwareSerial.h"
+#include <SoftwareSerial.h>
 #include <RunningAverage.h> // Running average filter
 #include <Wire.h>
 #include "Combination_Filter.h" 
-#define buzzer 2
 
 /////////////////////////////     Setup Ultrasound    ///////////////////////////
 
@@ -53,16 +52,20 @@ float accX, accY, accZ;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-float gtrim = 0.5;   // Compensated for drift in forward or reverse direction.
-float rtrim = -0.02; // Compensated for rotational drift.
+//float gtrim = 0.65;   // Compensated for drift in forward or reverse direction.
 
-float filter_weighting = 0.03; // See Combination_Filter.h
+float gtrim = -1.2;   // Compensated for drift in forward or reverse direction.
+float rtrim = -0.0; // Compensated for rotational drift.
+
+//float filter_weighting = 0.03; // See Combination_Filter.h
+float filter_weighting = 0.02; // See Combination_Filter.h
+
 
 float speedpidsampletime = 2;
 float gyropidsampletime = 2;
 
-double speedKp=0.10, speedKi=0, speedKd=0.0, KPS = 0.10, KP = 4.0, KI = 85, KPS_last, KP_last, KI_last;
-double gyroKp=4.0, gyroKi=85, gyroKd=0.0;
+double speedKp=0.10, speedKi=0, speedKd=0.0, KPS = 0.10, KP = 4.2, KI = 85, KPS_last, KP_last, KI_last;
+double gyroKp=4.2, gyroKi=85, gyroKd=0.0;
 
 double speedSetpoint, speedInput, speedOutput;
 PID speedPID(&speedInput, &speedOutput, &speedSetpoint, speedKp, speedKi, speedKd, DIRECT);
@@ -73,7 +76,8 @@ PID gyroyPID(&gyroyInput, &gyroyOutput, &gyroySetpoint, gyroKp, gyroKi, gyroKd, 
 
 /////////////////////          Setup Motors             /////////////////////////
 
-const int m1ndb = 23 , m1pdb = 28, m2ndb = 33 , m2pdb = 20; 
+//const int m1ndb = 23 , m1pdb = 28, m2ndb = 33 , m2pdb = 20;
+const int m1ndb = 23 , m1pdb = 23, m2ndb = 23 , m2pdb = 19; // T-Bot-LC 
 const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 257;
 
 Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, m1ndb, m1pdb, mpsfactor);
@@ -94,7 +98,7 @@ uint32_t timer;
 uint8_t i2cData[14]; // Buffer for I2C data
 double gyroxoffset, gyroyoffset;
 
-///////////////////          Setup Scheduled Tasks         /////////////////////
+///////////////////         Setup Scheduled Tasks         /////////////////////
 
 void CFilterReadCallBack();             // Filtered Angle Readback
 void speedPIDCallBack();                // Speed PID Control Loop
@@ -246,8 +250,7 @@ void setup () {
   gyroyPID.SetMode(AUTOMATIC);
   gyroyPID.SetSampleTime(gyropidsampletime);
 
-  
-  ///////////   Setup Serial and Bluetooth communication   ////////////////////
+    ///////////   Setup Serial and Bluetooth communication   ////////////////////
 
   // pinMode(15, OUTPUT);  // this pin will pull the HC-05 pin 34 (key pin) HIGH to switch module to AT mode
   // digitalWrite(15, LOW); //Some modules reqire this to be set to HIGH 
