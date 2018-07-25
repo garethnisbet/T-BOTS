@@ -52,14 +52,11 @@ float accX, accY, accZ;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-//float gtrim = 0.65;   // Compensated for drift in forward or reverse direction.
+// giles bot trim settings
+float gtrim = -4.1;   // Compensated for drift in forward or reverse direction.
+float rtrim = -0.002; // Compensated for rotational drift.
 
-float gtrim = -1.2;   // Compensated for drift in forward or reverse direction.
-float rtrim = -0.0; // Compensated for rotational drift.
-
-//float filter_weighting = 0.03; // See Combination_Filter.h
 float filter_weighting = 0.02; // See Combination_Filter.h
-
 
 float speedpidsampletime = 2;
 float gyropidsampletime = 2;
@@ -76,14 +73,13 @@ PID gyroyPID(&gyroyInput, &gyroyOutput, &gyroySetpoint, gyroKp, gyroKi, gyroKd, 
 
 /////////////////////          Setup Motors             /////////////////////////
 
-//const int m1ndb = 23 , m1pdb = 28, m2ndb = 33 , m2pdb = 20;
-const int m1ndb = 23 , m1pdb = 23, m2ndb = 23 , m2pdb = 19; // T-Bot-LC 
-const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 257;
-
+// giles bot motor settings
+const int m1ndb = 19 , m1pdb = 22, m2ndb = 21 , m2pdb = 22; 
+const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 218;
 Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, m1ndb, m1pdb, mpsfactor);
 
-const int m1stby = 6, m1ain1 = 8, m1ain2 = 7,  m1pwmpin = 10;
-Motor m2 = Motor(m1ain1, m1ain2, m1stby, m1pwmpin, m2ndb, m2pdb, mpsfactor);
+const int m1stby = 6, m1ain1 = 8, m1ain2 = 7,  m1pwmpin = 10, mpsfactor2=230;
+Motor m2 = Motor(m1ain1, m1ain2, m1stby, m1pwmpin, m2ndb, m2pdb, mpsfactor2);
 
 ///////////////////   Setup Gyro with Combination Filter   /////////////////////
 
