@@ -5,6 +5,8 @@ interactive(True)
 
 
 v1 = np.loadtxt('T-Bot_FilteredData.dat')
+v1=v1[np.where(v1[:,0]>0.001),:][0]
+
 
 ################   Simple Combination Filter    ################
 '''
@@ -19,7 +21,7 @@ to see how effective your filter is.
 '''
 
 angle = 0
-filter_weighting = 0.15
+filter_weighting = 0.3
 
 def getAngleCFilter(pitch, gyro_rate, dt):
     global angle
@@ -43,7 +45,7 @@ bias = 0
 R_measure = 0.15 # measurement noise
 Q_angle = 1 # process noise 
 Q_bias = 0.03 # 
-R_measure = 1 # measurement noise
+R_measure = 0.1 # measurement noise
 P = np.zeros((2,2))
 K = np.zeros(2)
 
@@ -95,9 +97,9 @@ plt.figure(figsize=(8, 8))
 
 ax = plt.subplot(211)
 plt.title('On-board Processing')
-ax.plot(t, v1[:,1], 'g',label = 'Measured Pitch')
-ax.plot(t, v1[:,4], 'c--',label = 'Unfiltered Gyro Angle from T-Bot')
-ax.plot(t, v1[:,3], 'r',label = 'Filtered by T-Bot')
+ax.plot(t, v1[:,1], c=(91/255.,111/255.,189/255.),label = 'Measured Pitch')
+ax.plot(t, v1[:,4], c=(56/255.,192/255.,255/255.),label = 'Unfiltered Gyro Angle from T-Bot')
+ax.plot(t, v1[:,3], c=(255/255.,0/255.,0/255.),label = 'Filtered Angle by T-Bot')
 ax.legend(loc = 'best',prop={ 'size': 8})
 plt.xlabel('t (s)')
 plt.ylabel('angle')
