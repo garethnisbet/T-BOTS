@@ -39,7 +39,7 @@ void gyroread(){
   if (pitch == pitch){ // only update Cfilter with real values
   CFilteredlAngleY = CFilterY.getAngle(pitch, gyroYrate, dt); // Calculate the angle using a Kalman filter
   CFilterY.setWeighting(filter_weighting);
-  gyroYangle += gyroYrate * dt; // Calculate gyro angle without any filter
+ // gyroYangle += gyroYrate * dt; // Calculate gyro angle without any filter
   
   }
   /*
@@ -47,7 +47,7 @@ void gyroread(){
   Serial.print(pitch); Serial.print("\t");
   Serial.print(gyroYrate); Serial.print("\t");
   Serial.print(CFilteredlAngleY); Serial.print("\t");
-  Serial.print(gyroYangle); Serial.print("\t");
+  //Serial.print(gyroYangle); Serial.print("\t");
   Serial.print("\n");
   */
 

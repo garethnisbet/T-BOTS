@@ -79,6 +79,7 @@ PID gyroyPID(&gyroyInput, &gyroyOutput, &gyroySetpoint, gyroKp, gyroKi, gyroKd, 
 //const int m1ndb = 23 , m1pdb = 28, m2ndb = 33 , m2pdb = 20;
 const int m1ndb = 23 , m1pdb = 23, m2ndb = 23 , m2pdb = 19; // T-Bot-LC 
 const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 257;
+//const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 240;
 
 Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, m1ndb, m1pdb, mpsfactor);
 

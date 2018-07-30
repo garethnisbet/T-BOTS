@@ -32,10 +32,7 @@ public:
         double getAngle(double pitch, double gyrorate, double dt) {
 
         angle += dt * gyrorate;
-
-        y = pitch - angle;
-
-        angle += combination_weighting * y;
+        angle += combination_weighting * (pitch - angle);
 
         return angle;
     };

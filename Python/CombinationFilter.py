@@ -67,9 +67,9 @@ filter_weighting = 0.3
 def getAngleCFilter(pitch, gyro_rate, dt):
     global angle
     angle += gyro_rate * dt
-    y = pitch - angle
-    angle += filter_weighting * y
+    angle += filter_weighting * (pitch - angle)
     return angle
+
 
 ##########################################################
 
