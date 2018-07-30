@@ -8,8 +8,6 @@ v1 = np.loadtxt('T-Bot_FilteredData.dat')
 
 
 #################  Kalman filter variables ###############
-Q_angle = 0.15 # process noise 
-Q_bias = 0.03 #
 bias = 0
 R_measure = 0.15 # measurement noise
 Q_angle = 1 # process noise 
@@ -62,7 +60,7 @@ to see how effective your filter is.
 '''
 
 angle = 0
-filter_weighting = 0.3
+filter_weighting = 0.15
 
 def getAngleCFilter(pitch, gyro_rate, dt):
     global angle
@@ -84,14 +82,21 @@ t = np.cumsum(v1[:,0])
 
 ###############   Plot the data  ########################
 
-plt.figure()
-ax = plt.subplot(111)
+plt.figure(figsize=(8, 8))
+
+ax = plt.subplot(211)
+plt.title('On-board Processing')
 ax.plot(t, v1[:,1], 'g',label = 'Measured Pitch')
-ax.plot(t, angleCF, 'm',label = 'Combination Filter')
-ax.plot(t, angleKF, 'b',label = 'Kalman Filter')
-ax.plot(t, v1[:,3], 'r',label = 'Filtered by T-Bot')
-ax.plot(t, gyroangle, 'k',label = 'Unfiltered Gyro Angle')
 ax.plot(t, v1[:,4], 'c--',label = 'Unfiltered Gyro Angle from T-Bot')
+ax.plot(t, v1[:,3], 'r',label = 'Filtered by T-Bot')
+ax.legend(loc = 'best',prop={ 'size': 8})
+ax = plt.subplot(212)
+plt.title('From Python Code')
+ax.plot(t, v1[:,1], 'g',label = 'Measured Pitch')
+ax.plot(t, gyroangle, 'k',label = 'Unfiltered Gyro Angle')
+ax.plot(t, angleKF, 'b',label = 'Kalman Filter')
+ax.plot(t, angleCF, 'm',label = 'Combination Filter')
+
 ax.legend(loc = 'best',prop={ 'size': 8})
 plt.xlabel('t (s)')
 plt.ylabel('angle')
