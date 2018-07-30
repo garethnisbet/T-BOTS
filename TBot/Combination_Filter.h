@@ -42,7 +42,7 @@ private:
     /* Combination Filter Variables */
     double combination_weighting; // Sets the relative weighting of the accelerometer and gyroscope contribution
     double angle; // The angle calculated by the CFilter 
-    double y; // Angle difference
+
 };
 
 
