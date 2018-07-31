@@ -103,6 +103,7 @@ ax.plot(t, v1[:,3], c=(255/255.,0/255.,0/255.),label = 'Filtered Angle by T-Bot'
 ax.legend(loc = 'best',prop={ 'size': 8})
 plt.xlabel('t (s)')
 plt.ylabel('angle')
+plt.axis('tight')
 ax = plt.subplot(212)
 plt.title('From Python Code')
 ax.plot(t, v1[:,1], 'g',label = 'Measured Pitch')
