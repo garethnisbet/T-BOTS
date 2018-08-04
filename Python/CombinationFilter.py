@@ -5,24 +5,21 @@ interactive(True)
 
 
 v1 = np.loadtxt('T-Bot_FilteredData.dat')
-v1[np.where(v1[:,0]<0.001),0]=0.01
+v1[np.where(v1[:,0]<0.001),0]=0.013
 
 
 
 ################   Simple Combination Filter    ################
 '''
-Note the integral of the gyro here differs from T-Bot because of latency;
-possibly because the serial print interferes with the timing. 
 This code serves as a guide to show how the filters work. 
-Typically, the filter_weighting will be a factor of 3 smaller on 
-the T-Bot. A filter_weighting of 0 zero will be equivalent to using
+A filter_weighting of 0 zero will be equivalent to using
 the gyro only. A value of 1 will be equivalent to using the accelerometer  
 only. You can use serial_GetData.py to collect the data from the T-BOT
 to see how effective your filter is.
 '''
 
 angle = 0
-filter_weighting = 0.07
+filter_weighting = 0.04
 
 def getAngleCFilter(pitch, gyro_rate, dt):
     global angle
@@ -44,7 +41,7 @@ Based on Arduino code written by Kristian Lauszus 2012
 
 bias = 0
 R_measure = 0.15 # measurement noise
-Q_angle = 0.2 # process noise 
+Q_angle = 0.1 # process noise 
 Q_bias = 0.3 # 
 R_measure = 1 # measurement noise
 P = np.zeros((2,2))
