@@ -5,7 +5,8 @@ interactive(True)
 
 
 v1 = np.loadtxt('T-Bot_FilteredData.dat')
-v1=v1[np.where(v1[:,0]>0.001),:][0]
+v1[np.where(v1[:,0]<0.001),0]=0.01
+
 
 
 ################   Simple Combination Filter    ################
@@ -13,7 +14,7 @@ v1=v1[np.where(v1[:,0]>0.001),:][0]
 Note the integral of the gyro here differs from T-Bot because of latency;
 possibly because the serial print interferes with the timing. 
 This code serves as a guide to show how the filters work. 
-Typically, the filter_weighting will be a factor of 10 smaller on 
+Typically, the filter_weighting will be a factor of 3 smaller on 
 the T-Bot. A filter_weighting of 0 zero will be equivalent to using
 the gyro only. A value of 1 will be equivalent to using the accelerometer  
 only. You can use serial_GetData.py to collect the data from the T-BOT
@@ -21,7 +22,7 @@ to see how effective your filter is.
 '''
 
 angle = 0
-filter_weighting = 0.3
+filter_weighting = 0.07
 
 def getAngleCFilter(pitch, gyro_rate, dt):
     global angle
@@ -43,9 +44,9 @@ Based on Arduino code written by Kristian Lauszus 2012
 
 bias = 0
 R_measure = 0.15 # measurement noise
-Q_angle = 1 # process noise 
-Q_bias = 0.03 # 
-R_measure = 0.1 # measurement noise
+Q_angle = 0.2 # process noise 
+Q_bias = 0.3 # 
+R_measure = 1 # measurement noise
 P = np.zeros((2,2))
 K = np.zeros(2)
 
@@ -83,8 +84,8 @@ def getAngle(pitch, gyrorate, dt):
 ################################################################
 
 angleCF = np.array([getAngleCFilter(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
-v1[0,2] = v1[0,4]
-gyroangle = np.cumsum(v1[:,2]*v1[:,0]*3)
+
+gyroangle = np.cumsum(v1[:,2]*v1[:,0])
 
 angle = 0
 angleKF = np.array([getAngle(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
@@ -103,6 +104,7 @@ ax.plot(t, v1[:,3], c=(255/255.,0/255.,0/255.),label = 'Filtered Angle by T-Bot'
 ax.legend(loc = 'best',prop={ 'size': 8})
 plt.xlabel('t (s)')
 plt.ylabel('angle')
+plt.axis('tight')
 ax = plt.subplot(212)
 plt.title('From Python Code')
 ax.plot(t, v1[:,1], 'g',label = 'Measured Pitch')

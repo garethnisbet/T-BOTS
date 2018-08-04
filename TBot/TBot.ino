@@ -52,13 +52,11 @@ float accX, accY, accZ;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-//float gtrim = 0.65;   // Compensated for drift in forward or reverse direction.
-
 float gtrim = -1.2;   // Compensated for drift in forward or reverse direction.
 float rtrim = -0.0; // Compensated for rotational drift.
 
-//float filter_weighting = 0.03; // See Combination_Filter.h
-float filter_weighting = 0.02; // See Combination_Filter.h
+
+float filter_weighting = 0.015; // See Combination_Filter.h
 
 
 float speedpidsampletime = 2;
