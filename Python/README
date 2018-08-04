@@ -1,0 +1,10 @@
+Run with:
+
+ipython -i --matplotlib tk CombinationFilter.py
+
+If this doesn't work, comment out:
+
+plt.ion()
+
+
+

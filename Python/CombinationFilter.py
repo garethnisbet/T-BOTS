@@ -1,8 +1,8 @@
+## If you have a problem with interactive mode, start ipython with ####
+#########          ipython -i --matplotlib tk  ########################
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import interactive
-interactive(True)
-
+plt.ion()
 
 v1 = np.loadtxt('T-Bot_FilteredData.dat')
 v1[np.where(v1[:,0]<0.001),0]=0.013
@@ -114,5 +114,6 @@ plt.xlabel('t (s)')
 plt.ylabel('angle')
 plt.axis('tight')
 plt.subplots_adjust(hspace=0.3)
+plt.show()
 
 
