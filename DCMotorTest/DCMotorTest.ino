@@ -3,8 +3,8 @@
 //const int m1ndb = 46 , m1pdb = 34, m2ndb = 24 , m2pdb = 21; // Foxy
 //const int m1ndb = 30 , m1pdb = 37, m2ndb = 28 , m2pdb = 28; // Keir
 
-const int m1ndb = 23 , m1pdb = 27, m2ndb = -37 , m2pdb = 37; // Cinnamon
-
+//const int m1ndb = 23 , m1pdb = 27, m2ndb = -37 , m2pdb = 37; // Cinnamon
+const int m1ndb = 24 , m1pdb = 24, m2ndb = 24 , m2pdb = 24; // Cinnamon
 //const int m1ndb = 36 , m1pdb = 40, m2ndb = 20 , m2pdb = 28; // T-Bot
 //const int m1ndb = 34 , m1pdb = 34, m2ndb = 34 , m2pdb = 34; // T-Bot-O
 const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 1;
@@ -27,8 +27,8 @@ void loop() {
 //  m2.speed(-0.3);
 //  delay(2000);
   
-  m1.speed(-23); // Right Motor
-  m2.speed(-37);  // Left Motor
+  m1.speed(-60); // Right Motor
+  m2.speed(-60);  // Left Motor
  // delay(2000);
   // put your main code here, to run repeatedly:
 
