@@ -1,13 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import interactive
-interactive(True)
-
+plt.ion()
 
 v1 = np.loadtxt('T-Bot_FilteredData.dat')
 v1[np.where(v1[:,0]<0.001),0]=0.013
-
-
 
 ################   Simple Combination Filter    ################
 '''
@@ -26,10 +22,6 @@ def getAngleCFilter(pitch, gyro_rate, dt):
     angle += gyro_rate * dt
     angle += filter_weighting * (pitch - angle)
     return angle
-
-
-################################################################
-
 
 
 
@@ -114,5 +106,5 @@ plt.xlabel('t (s)')
 plt.ylabel('angle (deg)')
 plt.axis('tight')
 plt.subplots_adjust(hspace=0.3)
-
+plt.show()
 

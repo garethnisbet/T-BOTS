@@ -1,13 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import interactive
-interactive(True)
-
+plt.ion()
 
 v1 = np.loadtxt('T-Bot_FilteredData.dat')
 v1[np.where(v1[:,0]<0.001),0]=0.013
-
-
 
 ################   Simple Combination Filter    ################
 '''
@@ -21,15 +17,11 @@ to see how effective your filter is.
 angle = 0
 filter_weighting = 0.04
 
-def getAngleCFilter(pitch, gyro_rate, dt, filter_weighting):
+def getAngleCFilter(pitch, gyro_rate, dt):
     global angle
     angle += gyro_rate * dt
     angle += filter_weighting * (pitch - angle)
     return angle
-
-
-################################################################
-
 
 
 
@@ -80,29 +72,30 @@ def getAngle(pitch, gyrorate, dt):
 
 ################################################################
 
+angleCF = np.array([getAngleCFilter(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
 
 gyroangle = np.cumsum(v1[:,2]*v1[:,0])
 
 angle = 0
+angleKF = np.array([getAngle(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
 
 t = np.cumsum(v1[:,0])
 
 ###############   Plot the data  ########################
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(10, 4))
 
-plt.title('Filter Weightings')
-plt.plot(t, v1[:,1], '.', c=(91/255.,111/255.,18/255.),label = 'Measured Pitch')
-plt.plot(t, gyroangle, '.' ,c=(56/255.,19/255.,255/255.),label = 'Unfiltered Gyro Angle')
-for filter_weighting in np.arange(1,0-0.1,-0.1):
-    angle = 0
-    angleCF = np.array([getAngleCFilter(v1[x,1],v1[x,2],v1[x,0],filter_weighting**3) for x in range(v1.shape[0])])
-    plt.plot(t, angleCF,label = 'fw = '+'{:.4f}'.format(filter_weighting**3),linewidth=1)
+plt.title('Kalman Filter vs Simple Combination Filter')
+plt.plot(t, v1[:,1],  c=(91/255.,111/255.,189/255.),label = 'Measured Pitch')
+plt.plot(t, gyroangle, c=(56/255.,192/255.,255/255.),label = 'Unfiltered Gyro Angle')
+plt.plot(t, angleKF, 'g',label = 'Kalman Filter',linewidth=2)
+plt.plot(t, angleCF, 'r--',label = 'Combination Filter',linewidth=2)
 
 plt.legend(loc = 'best',prop={ 'size': 8})
 plt.xlabel('t (s)')
 plt.ylabel('angle (deg)')
 plt.axis('tight')
-plt.subplots_adjust(hspace=0.3)
-
+plt.subplots_adjust(bottom=0.15)
+plt.show()
+plt.savefig('Filter.svg')
 

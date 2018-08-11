@@ -32,8 +32,8 @@ void gyroread(){
   
   float dt = (double)(micros() - timer) / 1000000; // Calculate delta time
   timer = micros();
-  pitch = atan2(-accZ, sqrt(accY * accY + accX * accX)) * RAD_TO_DEG;
- // double pitch = atan2(-accZ, -accX) * RAD_TO_DEG;
+ // pitch = atan2(-accZ, sqrt(accY * accY + accX * accX)) * RAD_TO_DEG;
+  double pitch = atan2(-accZ, -accX) * RAD_TO_DEG;
   gyroYrate = gyroY / 131.0; // Convert to deg/s
   
   if (pitch == pitch){ // only update Cfilter with real values
