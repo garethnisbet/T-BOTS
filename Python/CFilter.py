@@ -87,7 +87,15 @@ plt.figure(figsize=(10, 4))
 
 plt.title('Kalman Filter vs Simple Combination Filter')
 plt.plot(t, v1[:,1],  c=(91/255.,111/255.,189/255.),label = 'Measured Pitch')
+
+label_datapoint = 248
+plt.annotate('Noisy accelerometer\nsignal',xy=(t[label_datapoint],v1[label_datapoint,1]),xytext = (t[label_datapoint]+0.7,v1[label_datapoint,1]-20),ha='center', arrowprops = dict(facecolor=(91/255.,111/255.,189/255.),width=1,headwidth=10,shrink=0.01),)
+
 plt.plot(t, gyroangle, c=(56/255.,192/255.,255/255.),label = 'Unfiltered Gyro Angle')
+plt.annotate('Gyro integral drift',xy=(t[700],gyroangle[700]),xytext = (t[700]-3,gyroangle[700]+7), arrowprops = dict(facecolor=(56/255.,192/255.,255/255.),width=1,headwidth=7,shrink=0.01),)
+
+
+
 plt.plot(t, angleKF, 'g',label = 'Kalman Filter',linewidth=2)
 plt.plot(t, angleCF, 'r--',label = 'Combination Filter',linewidth=2)
 

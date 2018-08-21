@@ -15,9 +15,9 @@
 float fping, pingval;
 #define TRIGGER_PIN  12  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN     11  // Arduino pin tied to echo pin on the ultrasonic sensor.
-#define MAX_DISTANCE 250 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+#define MAX_DISTANCE 400 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
-RunningAverage USound(5);
+RunningAverage USound(2);
 
 ///////////////////////////// Setup Bluetooth Control   ///////////////////////////
 
@@ -25,7 +25,7 @@ RunningAverage USound(5);
 #define    ETX          0x03
 
 int joyX, joyY, joyXbefore, joyYbefore, joyXdiff, joyYdiff, GyroTrim;
-float controller_sensitivity = 1.4;
+float controller_sensitivity = 1.5;
 float joyXf, joyYf;
 float backoff;
 
@@ -120,16 +120,23 @@ Scheduler runner;
 
 void uSoundCallBack(){    
    pingval = sonar.ping_cm();
-   if (pingval == pingval){
+   if (pingval == pingval){ //check pingval is not NAN
+    if (pingval > 0){
    USound.addValue(pingval);
    fping = USound.getAverage();
    }
   if (fping > 0.1 && fping < 5){
-   backoff = -50;
+   backoff = -70;
    }
   else{
     backoff = 0;
    }
+  /*
+  Serial.print(pingval); Serial.print("\t");
+  Serial.print(fping); Serial.print("\t");
+  Serial.print("\n");
+ */
+}
 }
 
 void bluetoothCallBack(){
@@ -200,7 +207,7 @@ void gyroPIDCallBack() {
     gyroyPID.Compute();
     
     spinval = -spinfactor*joyXf/mpsfactor;
-    velxy(h,gyroyOutput); // output vxs, vys
+    vel(h,gyroyOutput); // output vxs, vys
     if (abs(CFilteredlAngleY)>40){
        m1.speed(spinval);
        m2.speed(spinval); 
@@ -208,6 +215,12 @@ void gyroPIDCallBack() {
     else{
     m1.speed((vxy-spinval+rtrim));
     m2.speed((vxy+spinval-rtrim));
+    /*
+    Serial.print(vxy-spinval+rtrim); Serial.print("\t");
+    Serial.print(vxy+spinval-rtrim); Serial.print("\t");
+    Serial.print("\n");
+    */
+  
     }  
 }
 

@@ -1,6 +1,6 @@
 // functions for T-Bot
 
-void velxy(double h, double th){
+void vel(double h, double th){
 	      dh=h-(h*cos(th*pi/180));
 	      vxy=sqrt(2*g*dh)*th/abs(th);
 }

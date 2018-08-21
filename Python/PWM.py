@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 plt.ion()
 
 
-t = np.linspace(0, 1, 2000)
-
+t = np.linspace(0, 1, 2000) 
 sig = np.sin(2 * np.pi * t)
 pwm = signal.square(2 * np.pi * 30 * t, duty=(sig + 1)/2)
 pwm15 = signal.square(2 * np.pi * 30 * t, 0.15)
