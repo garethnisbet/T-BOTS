@@ -25,7 +25,7 @@ RunningAverage USound(2);
 #define    ETX          0x03
 
 int joyX, joyY, joyXbefore, joyYbefore, joyXdiff, joyYdiff, GyroTrim;
-float controller_sensitivity = 1.4;
+float controller_sensitivity = 1.5;
 float joyXf, joyYf;
 float backoff;
 
@@ -52,13 +52,12 @@ float accX, accY, accZ;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-//float gtrim = -1.2;   // Compensated for drift in forward or reverse direction.
-float gtrim = -2.5;   // Compensated for drift in forward or reverse direction.
+float gtrim = -1.2;   // Compensated for drift in forward or reverse direction.
 
 float rtrim = -0.0; // Compensated for rotational drift.
 
 
-float filter_weighting = 0.02; // See Combination_Filter.h
+float filter_weighting = 0.015; // See Combination_Filter.h
 
 
 float speedpidsampletime = 2;
