@@ -20,7 +20,7 @@ def fallingtime(l,g,theta,theta2,dt):
 		omega += alpha*dt               # integrate angular acceleration to get angular velocity
 		theta += omega*dt               # integrate angular velocity to get angle
 		t += dt                         # integrate dt to get time
-	return(alpha,omega,l*omega,t)       # angular acceleration, angular velocity, velocity, time
+	return(alpha,omega,l*omega,t)        # angular acceleration, angular velocity, velocity, time
 
 def v(l,g,theta):
     if theta != 0:
@@ -46,7 +46,6 @@ def falling(l,g,theta,theta2,dt):
 		alpha_omega_v = np.vstack((alpha_omega_v,[alpha, omega, omega*l,theta*180/np.pi,t]))                     
 	return(alpha_omega_v)       # angular acceleration, angular velocity, velocity, time
 
-
 def v(l,g,theta):
     if theta != 0:
         return np.sqrt(2*g*(l-l*np.cos(theta*np.pi/180)))*theta/np.abs(theta)
@@ -63,7 +62,7 @@ ydata_moon = [fallingtime(0.08, g_moon,np.arcsin(x/8e-2)*180/np.pi, 90, 0.001)[3
 
 plt.figure(figsize=(10, 4))
 
-plt.title('Inverted Pendulum')
+plt.title('Falling Times for T-Bot')
 plt.plot(xdata, ydata_moon, c=(50/255.,50/255.,250/255.),linewidth = 2, label = 'Moon g = '+str(g_moon)+' ms^2')
 plt.plot(xdata, ydata_earth,  c=(255/255.,10/255.,10/255.),linewidth = 2, label = 'Earth g = '+str(g_earth)+' ms^2')
 

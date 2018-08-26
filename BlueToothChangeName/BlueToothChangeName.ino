@@ -12,7 +12,7 @@ void setup()
   Serial.println(" ");
   Serial.println("Type AT+NAME:NewName to change your T-BOTS name.");
   Serial.println(" ");
-  Serial.println("Type AT+UART=38400,0,0 to change baud rate");
+  Serial.println("Type AT+UART=57600,0,0 to change baud rate");
   Serial.println("Enter AT commands:");
   BTSerial.begin(38400);  // HC-05 default speed in AT command more
   //BTSerial.begin(9600);
