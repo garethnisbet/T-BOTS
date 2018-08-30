@@ -47,7 +47,7 @@ void gyroread(){
   Serial.print(pitch); Serial.print("\t");
   Serial.print(gyroYrate); Serial.print("\t");
   Serial.print(CFilteredlAngleY); Serial.print("\t");
-  //Serial.print(gyroYangle); Serial.print("\t");
+  Serial.print(gyroYangle); Serial.print("\t");
   Serial.print("\n");
   */
 

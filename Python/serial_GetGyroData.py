@@ -21,9 +21,9 @@ import serial
 ##################################################################
 
 try:
-    ser = serial.Serial('/dev/ttyUSB0', 115200)
+    ser = serial.Serial('/dev/ttyUSB0', 57600)
 except:
-    ser = serial.Serial('/dev/ttyUSB1', 115200)
+    ser = serial.Serial('/dev/ttyUSB1', 57600)
 ii=1
 sleep(2)
 t=0

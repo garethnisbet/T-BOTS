@@ -29,11 +29,11 @@ public:
         /* The angle should be in degrees and the rate should be in degrees per second and dt      
            in should be in seconds.*/
      
-        double getAngle(double pitch, double gyrorate, double dt) {
-
+        double getAngle(double pitch, double gyrorate, double dt) {  // check to prevent NaN
+        if ((pitch == pitch) && (gyrorate == gyrorate) && (dt == dt)){
         angle += dt * gyrorate;
         angle += combination_weighting * (pitch - angle);
-
+        }
         return angle;
     };
     void setWeighting(double new_combination_weighting) { combination_weighting = new_combination_weighting; };

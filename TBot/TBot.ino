@@ -52,7 +52,7 @@ float accX, accY, accZ;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-float gtrim = -1.2;   // Compensated for drift in forward or reverse direction.
+float gtrim = -2.2;   // Compensated for drift in forward or reverse direction.
 
 float rtrim = -0.0; // Compensated for rotational drift.
 
@@ -269,7 +269,7 @@ void setup () {
   // digitalWrite(15, LOW); //Some modules reqire this to be set to HIGH 
   // Others require these lines to be commented out.
 
-  Serial.begin(115200);
+  Serial.begin(57600);
   BTSerial.begin(57600);
   while(BTSerial.available())  BTSerial.read();
 

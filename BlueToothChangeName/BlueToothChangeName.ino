@@ -6,7 +6,7 @@ void setup()
 {
  // pinMode(15, OUTPUT);  // this pin will pull the HC-05 pin 34 (key pin) HIGH to switch module to AT mode
  // digitalWrite(15, HIGH); //some modules require these lines to be commented out
-  Serial.begin(9600);
+  Serial.begin(57600);
   Serial.println(" ");
   Serial.println("Type AT+NAME:NewName to change your T-BOTS name.");
   Serial.println(" ");
