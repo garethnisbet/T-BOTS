@@ -24,7 +24,7 @@ void gyroread(){
   accX = ((i2cData[0] << 8) | i2cData[1]);
   accY = ((i2cData[2] << 8) | i2cData[3]);
   accZ = ((i2cData[4] << 8) | i2cData[5]);
-  tempRaw = (i2cData[6] << 8) | i2cData[7];
+  //tempRaw = (i2cData[6] << 8) | i2cData[7];
   //gyroX = (i2cData[8] << 8) | i2cData[9];
   gyroY = (i2cData[10] << 8) | i2cData[11];
   //gyroZ = (i2cData[12] << 8) | i2cData[13];
@@ -36,20 +36,18 @@ void gyroread(){
   double pitch = atan2(-accZ, -accX) * RAD_TO_DEG;
   gyroYrate = gyroY / 131.0; // Convert to deg/s
   
-  if (pitch == pitch){ // only update Cfilter with real values
-  CFilteredlAngleY = CFilterY.getAngle(pitch, gyroYrate, dt); // Calculate the angle using a Kalman filter
+  CFilteredlAngleY = CFilterY.getAngle(pitch, gyroYrate, dt); // Calculate the angle using a Simple Combination filter
   CFilterY.setWeighting(filter_weighting);
  // gyroYangle += gyroYrate * dt; // Calculate gyro angle without any filter
   
-  }
-  /*
+  
   Serial.print(dt); Serial.print("\t");
   Serial.print(pitch); Serial.print("\t");
   Serial.print(gyroYrate); Serial.print("\t");
   Serial.print(CFilteredlAngleY); Serial.print("\t");
   Serial.print(gyroYangle); Serial.print("\t");
   Serial.print("\n");
-  */
+  
 
 } // end of gyro function
 
