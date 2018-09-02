@@ -9,14 +9,14 @@ void setup()
   Serial.begin(9600);
   Serial.println("Commands for HC-05");
   Serial.println("Type AT+NAME:NewName to change your T-BOTS name.");
-  Serial.println("Type AT+UART=57600,0,0 to change baud rate");
+  Serial.println("Type AT+UART=38400,0,0 to change baud rate");
   Serial.println(" ");
   Serial.println(" ");
   Serial.println("Commands for AT-09");
   Serial.println("Type AT+NAMENewName to change your T-BOTS name.");
   Serial.println("Type AT+TYPE1 to enable PIN requirement.");
   Serial.println("Type AT+PIN123456 to set pin to 123456.");
-  Serial.println("Type AT+BAUD7 to set BAUD rate to 57600.");
+  Serial.println("Type AT+BAUD6 to set BAUD rate to 38400.");
   Serial.println(" ");
   Serial.println(" ");
   Serial.println("Enter AT commands:");

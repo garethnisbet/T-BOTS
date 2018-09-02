@@ -269,8 +269,8 @@ void setup () {
   // digitalWrite(15, LOW); //Some modules reqire this to be set to HIGH 
   // Others require these lines to be commented out.
 
-  Serial.begin(57600);
-  BTSerial.begin(57600);
+  Serial.begin(38400);
+  BTSerial.begin(38400);
   while(BTSerial.available())  BTSerial.read();
 
   
