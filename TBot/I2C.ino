@@ -38,7 +38,7 @@ uint8_t i2cRead(uint8_t registerAddress, uint8_t *data, uint8_t nbytes) {
   uint32_t timeOutTimer;
   Wire.beginTransmission(IMUAddress);
   Wire.write(registerAddress);
-  uint8_t rcode = Wire.endTransmission(true); // Don't release the bus
+  uint8_t rcode = Wire.endTransmission(false); // Don't release the bus
   if (rcode) {
     Serial.print(F("i2cRead failed: "));
     Serial.println(rcode);
