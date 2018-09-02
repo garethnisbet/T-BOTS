@@ -44,27 +44,15 @@ uint8_t i2cRead(uint8_t registerAddress, uint8_t *data, uint8_t nbytes) {
     Serial.println(rcode);
     return rcode; // See: http://arduino.cc/en/Reference/WireEndTransmission
   }
-  Wire.requestFrom(IMUAddress, nbytes, (uint8_t) true); // Send a repeated start and then release the bus after reading
-  for (uint8_t i = 0; i < nbytes; i++) {
-    if (Wire.available())
+  Wire.requestFrom(IMUAddress, nbytes, (uint8_t)true); // Send a repeated start and then release the bus after reading
+  if(Wire.available() != nbytes)
+  {
+    Serial.println(F("i2cRead bus error"));
+    return 5; // This error value is not already taken by endTransmission
+  }
+  else {
+    for (uint8_t i = 0; i < nbytes; i++) {
       data[i] = Wire.read();
-    else {
-      timeOutTimer = micros();
-      while (((micros() - timeOutTimer) < I2C_TIMEOUT) && !Wire.available());
-      if (Wire.available())
-        data[i] = Wire.read();
-      else {
-        Serial.println(F("i2cRead timeout"));
-       // return 5; // This error value is not already taken by endTransmission
-        // recover
-              pinMode(19, OUTPUT);      // is connected to SCL
-              digitalWrite(19, LOW);
-              delay(50);              //maybe too long
-              pinMode(15, INPUT);       // reset pin
-
-
-       
-      }
     }
   }
   return 0; // Success
