@@ -122,15 +122,28 @@
     <filter
        inkscape:collect="always"
        style="color-interpolation-filters:sRGB"
-       id="filter4398"
-       x="-0.1764"
-       width="1.3528"
-       y="-0.1764"
-       height="1.3528">
+       id="filter4253-6"
+       x="-0.21048766"
+       width="1.4209753"
+       y="-0.24305022"
+       height="1.4861004">
       <feGaussianBlur
          inkscape:collect="always"
-         stdDeviation="2.5064419"
-         id="feGaussianBlur4400" />
+         stdDeviation="1.7417311"
+         id="feGaussianBlur4255-2" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4253-6-1"
+       x="-0.21048766"
+       width="1.4209753"
+       y="-0.24305022"
+       height="1.4861004">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.7417311"
+         id="feGaussianBlur4255-2-2" />
     </filter>
   </defs>
   <sodipodi:namedview
@@ -141,8 +154,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="387.8928"
-     inkscape:cy="834.8322"
+     inkscape:cx="396.7911"
+     inkscape:cy="874.58942"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -159,7 +172,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -287,60 +300,82 @@
            y="697.36218" />
       </g>
     </g>
-    <circle
-       style="opacity:1;fill:none;fill-opacity:0.61960784;stroke:#00b5f7;stroke-width:3.62407589;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.61960784"
-       id="path4359"
-       cx="433.4158"
-       cy="217.02643"
-       r="17.050625"
-       inkscape:export-filename="/home/gareth/TBOT_PYTHON_Controller/TBotController0.2/images/minus.png"
+    <path
+       sodipodi:type="star"
+       style="opacity:0.97;fill:none;fill-opacity:1;stroke:#00b5f7;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.61960784"
+       id="path4177"
+       sodipodi:sides="3"
+       sodipodi:cx="402.21151"
+       sodipodi:cy="171.95928"
+       sodipodi:r1="11.465818"
+       sodipodi:r2="5.7329097"
+       sodipodi:arg1="0.52359878"
+       sodipodi:arg2="1.5707963"
+       inkscape:flatsided="true"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 412.14121,177.69218 -19.85938,0 9.92969,-17.19872 z"
+       inkscape:transform-center-y="-2.8664573"
+       inkscape:transform-center-x="1.2610847e-05"
        inkscape:export-xdpi="102.941"
        inkscape:export-ydpi="102.941" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:52.45437622px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#00b5f7;fill-opacity:0.61960787;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
-       x="321.04498"
-       y="298.96826"
-       id="text4361"
-       sodipodi:linespacing="125%"
-       transform="scale(1.3113594,0.76256746)"
-       inkscape:export-filename="/home/gareth/TBOT_PYTHON_Controller/TBotController0.2/images/minus.png"
-       inkscape:export-xdpi="102.941"
-       inkscape:export-ydpi="102.941"><tspan
-         sodipodi:role="line"
-         id="tspan4363"
-         x="321.04498"
-         y="298.96826">-</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:27.51313019px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#00b5f7;fill-opacity:0.61960787;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
-       x="372.83655"
-       y="224.58063"
-       id="text4365"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/gareth/TBOT_PYTHON_Controller/TBotController0.2/images/plus.png"
-       inkscape:export-xdpi="102.941"
-       inkscape:export-ydpi="102.941"><tspan
-         sodipodi:role="line"
-         id="tspan4367"
-         x="372.83655"
-         y="224.58063">+</tspan></text>
-    <circle
-       style="opacity:1;fill:none;fill-opacity:0.61960784;stroke:#00b5f7;stroke-width:3.62407589;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.61960784"
-       id="path4359-2"
-       cx="384.36304"
-       cy="215.9559"
-       r="17.050625"
-       inkscape:export-filename="/home/gareth/TBOT_PYTHON_Controller/TBotController0.2/images/plus.png"
+    <path
+       sodipodi:type="star"
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#00b5f7;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.61960784"
+       id="path4177-5"
+       sodipodi:sides="3"
+       sodipodi:cx="402.04071"
+       sodipodi:cy="-190.10855"
+       sodipodi:r1="11.465818"
+       sodipodi:r2="5.7329097"
+       sodipodi:arg1="0.52359878"
+       sodipodi:arg2="1.5707963"
+       inkscape:flatsided="true"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 411.9704,-184.37564 -19.85938,0 9.92969,-17.19873 z"
+       inkscape:transform-center-y="2.8664589"
+       inkscape:transform-center-x="1.2610847e-05"
+       transform="scale(1,-1)"
        inkscape:export-xdpi="102.941"
        inkscape:export-ydpi="102.941" />
-    <circle
-       style="opacity:1;fill:none;fill-opacity:0.61960784;stroke:#00b5f7;stroke-width:3.62407589;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.61960784;filter:url(#filter4398)"
-       id="path4359-6"
-       cx="329.81479"
-       cy="215.19829"
-       r="17.050625"
-       inkscape:export-filename="/home/gareth/TBOT_PYTHON_Controller/TBotController0.2/images/buttonlight.png"
+    <path
+       sodipodi:type="star"
+       style="opacity:0.97000002;fill:none;fill-opacity:1;stroke:#00b5f7;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.61960784;filter:url(#filter4253-6)"
+       id="path4177-3-9"
+       sodipodi:sides="3"
+       sodipodi:cx="436.38589"
+       sodipodi:cy="138.51523"
+       sodipodi:r1="11.465818"
+       sodipodi:r2="5.7329097"
+       sodipodi:arg1="0.52359878"
+       sodipodi:arg2="1.5707963"
+       inkscape:flatsided="true"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 446.31558,144.24814 -19.85938,0 9.92969,-17.19873 z"
+       inkscape:transform-center-y="2.8664599"
+       inkscape:transform-center-x="1.2610847e-05"
+       transform="matrix(1,0,0,-1,-6.0609152,329.63386)"
+       inkscape:export-xdpi="102.941"
+       inkscape:export-ydpi="102.941" />
+    <path
+       sodipodi:type="star"
+       style="opacity:0.97000002;fill:none;fill-opacity:1;stroke:#00b5f7;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.61960784;filter:url(#filter4253-6-1)"
+       id="path4177-3-9-7"
+       sodipodi:sides="3"
+       sodipodi:cx="435.1232"
+       sodipodi:cy="147.35406"
+       sodipodi:r1="11.465818"
+       sodipodi:r2="5.7329097"
+       sodipodi:arg1="0.52359878"
+       sodipodi:arg2="1.5707963"
+       inkscape:flatsided="true"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 445.05289,153.08697 -19.85938,0 9.92969,-17.19872 z"
+       inkscape:transform-center-y="-2.8664558"
+       inkscape:transform-center-x="1.8923347e-05"
        inkscape:export-xdpi="102.941"
        inkscape:export-ydpi="102.941" />
   </g>
