@@ -25,7 +25,7 @@ def parse(data):
     else:
         return '--','--','--'
 
-search = False
+search = True
 if search == True:
     print('Searching for devices...')
     print("")
