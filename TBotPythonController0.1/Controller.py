@@ -38,8 +38,7 @@ if search == True:
 	    print(num , ": " , bt.lookup_name( i ))
 
     selection = input("> ") - 1
-    print('You have selected')
-    bt.lookup_name(nearby_devices[selection])
+    print('You have selected '+bt.lookup_name(nearby_devices[selection]))
     bd_addr = nearby_devices[selection]
 else:
     bd_addr = '98:D3:32:11:4C:CF'
