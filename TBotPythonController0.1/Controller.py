@@ -23,9 +23,9 @@ def parse(data):
             ministring = data[STX_index[-2]+1:ETX_index[-1]]
         return ministring[1:5], ministring[6:10],  ministring[11:15] # return KPS, KP, Trim
     else:
-        return str(0),str(0),str(0)
+        return '--','--','--'
 
-search = True
+search = False
 if search == True:
     print('Searching for devices...')
     print("")
@@ -92,8 +92,10 @@ while True:
     #print('x '+str(mx)+' y ' +str(my))
     if mx > 480 or mx < 20 or my > 480 or my < 20:
         mx,my = 250,250
-    jx = int(((mx-250)*0.43)+200)
-    jy = int(((250-my)*0.43)+200)
+        sendstring = chr(0X02)+str(200)+str(200)+chr(0X03)
+        sock.send(sendstring)
+    jx = int(((mx-250)*0.435)+200)
+    jy = int(((250-my)*0.435)+200)
     if mxnew != mx or mynew != my:
         sendstring = chr(0X02)+str(jx)+str(jy)+chr(0X03)
         time = clock.tick()
@@ -171,7 +173,7 @@ while True:
         screen.blit(plus,(680,360))
         screen.blit(minus,(680,390))
 
-        screen.blit(joytop,(mx-75,my-75))
+        
         if button1:
             screen.blit(pluslight,(680-3,100-3))
         if button2:
@@ -187,5 +189,7 @@ while True:
         screen.blit(kpstext,(565,110))
         screen.blit(kptext,(565,240))
         screen.blit(trimtext,(565,370))
+
+    	screen.blit(joytop,(mx-75,my-75))
     data = sock.recv(1024)
     pygame.display.flip()
