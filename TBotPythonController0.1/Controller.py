@@ -23,9 +23,9 @@ def parse(data):
             ministring = data[STX_index[-2]+1:ETX_index[-1]]
         return ministring[1:5], ministring[6:10],  ministring[11:15] # return KPS, KP, Trim
     else:
-        return '--','--','--'
+        return '0','0','0'
 
-search = True
+search = False
 if search == True:
     print('Searching for devices...')
     print("")
@@ -65,7 +65,7 @@ size = width, height = 800, 500
 screen=pygame.display.set_mode(size)
 
 ############   Load art work    #####################
-joytop = pygame.image.load('images/joytop.png')
+joytop = pygame.image.load('images/joytopglow.png')
 joybase = pygame.image.load('images/joybase.png')
 minus = pygame.image.load('images/minus.png')
 plus = pygame.image.load('images/plus.png')
@@ -81,11 +81,7 @@ mx,my = 0,0
 mxnew, mynew = 250, 250
 
 while True:
-    
     kps, kp, trim = parse(data)
-    kpstext = basicfont.render('KPS '+kps, True, textcolour)
-    kptext = basicfont.render('KP ' +kp, True, textcolour)
-    trimtext = basicfont.render('TRIM '+trim, True, textcolour)
     mx,my = pygame.mouse.get_pos()
     p2x = mx
     p2y = my
@@ -172,8 +168,7 @@ while True:
         screen.blit(minus,(680,260))
         screen.blit(plus,(680,360))
         screen.blit(minus,(680,390))
-
-        
+  
         if button1:
             screen.blit(pluslight,(680-3,100-3))
         if button2:
@@ -186,6 +181,10 @@ while True:
             screen.blit(pluslight,(680-3,360-3))
         if button6:
             screen.blit(minuslight,(680-3,390-3))
+
+        kpstext = basicfont.render('KPS '+kps, True, textcolour)
+        kptext = basicfont.render('KP ' +kp, True, textcolour)
+        trimtext = basicfont.render('TRIM '+trim, True, textcolour)
         screen.blit(kpstext,(565,110))
         screen.blit(kptext,(565,240))
         screen.blit(trimtext,(565,370))
