@@ -25,21 +25,22 @@ def parse(data):
     else:
         return '0','0','0'
 
-search = False
+search = True
 if search == True:
     print('Searching for devices...')
     print("")
     nearby_devices = bt.discover_devices()
     #Run through all the devices found and list their name
     num = 0
-    print('Select your device by entering its coresponding number...')
+    
     for i in nearby_devices:
 	    num+=1
 	    print(num , ": " , bt.lookup_name( i ))
-
+    print('Select your device by entering its coresponding number...')
     selection = input("> ") - 1
     print('You have selected '+bt.lookup_name(nearby_devices[selection]))
     bd_addr = nearby_devices[selection]
+    print('You can hard code this address and set search = False for faster connection next time.')
 else:
     bd_addr = '98:D3:32:11:4C:CF'
     print('connecting...')
