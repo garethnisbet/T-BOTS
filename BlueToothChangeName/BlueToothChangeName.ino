@@ -8,6 +8,7 @@ void setup()
  // digitalWrite(15, HIGH); //some modules require these lines to be commented out
   Serial.begin(9600);
   Serial.println("Commands for HC-05");
+  Serial.println(" ");
   Serial.println("Type AT+NAME:NewName to change your T-BOTS name.");
   Serial.println("Type AT+UART=38400,0,0 to change baud rate");
   Serial.println(" ");

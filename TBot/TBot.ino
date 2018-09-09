@@ -52,7 +52,7 @@ float accX, accY, accZ;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-float gtrim = -0.2;   // Compensated for drift in forward or reverse direction.
+float gtrim = 2.9;   // Compensated for drift in forward or reverse direction.
 
 float rtrim = -0.0; // Compensated for rotational drift.
 
@@ -201,6 +201,7 @@ void speedPIDCallBack() {
     speedPID.Compute();
     v2ang(h, speedOutput);
     gyroySetpoint = angout;
+
 }
 
 void gyroPIDCallBack() {

@@ -64,6 +64,12 @@ void getJoystickState(byte databt[8])    {
   }
   joyXbefore = joyX;
   joyYbefore = joyY;
+  /*
+  Serial.print(joyX); Serial.print("\t");
+  Serial.print(joyY); Serial.print("\t");
+  Serial.print("\n");
+  */
+  
 }
 
 
