@@ -23,24 +23,24 @@ def parse(data):
             ministring = data[STX_index[-2]+1:ETX_index[-1]]
         return ministring[1:5], ministring[6:10],  ministring[11:15] # return KPS, KP, Trim
     else:
-        return '0','0','0'
+        return str(0),str(0),str(0)
 
-search = True
+search = False
 if search == True:
     print('Searching for devices...')
     print("")
     nearby_devices = bt.discover_devices()
     #Run through all the devices found and list their name
     num = 0
-    
+    print('Select your device by entering its coresponding number...')
     for i in nearby_devices:
 	    num+=1
 	    print(num , ": " , bt.lookup_name( i ))
-    print('Select your device by entering its coresponding number...')
+
     selection = input("> ") - 1
-    print('You have selected '+bt.lookup_name(nearby_devices[selection]))
+    print('You have selected')
+    bt.lookup_name(nearby_devices[selection])
     bd_addr = nearby_devices[selection]
-    print('You can hard code this address and set search = False for faster connection next time.')
 else:
     bd_addr = '98:D3:32:11:4C:CF'
     print('connecting...')
@@ -82,17 +82,19 @@ mx,my = 0,0
 mxnew, mynew = 250, 250
 
 while True:
+    
     kps, kp, trim = parse(data)
+    kpstext = basicfont.render('KPS '+kps, True, textcolour)
+    kptext = basicfont.render('KP ' +kp, True, textcolour)
+    trimtext = basicfont.render('TRIM '+trim, True, textcolour)
     mx,my = pygame.mouse.get_pos()
     p2x = mx
     p2y = my
     #print('x '+str(mx)+' y ' +str(my))
     if mx > 480 or mx < 20 or my > 480 or my < 20:
         mx,my = 250,250
-        sendstring = chr(0X02)+str(200)+str(200)+chr(0X03)
-        sock.send(sendstring)
-    jx = int(((mx-250)*0.435)+200)
-    jy = int(((250-my)*0.435)+200)
+    jx = int(((mx-250)*0.43)+200)
+    jy = int(((250-my)*0.43)+200)
     if mxnew != mx or mynew != my:
         sendstring = chr(0X02)+str(jx)+str(jy)+chr(0X03)
         time = clock.tick()
@@ -110,9 +112,7 @@ while True:
         elif event.type == MOUSEBUTTONDOWN:
             if p2x > 0 and p2x < 500 and p2y > 0 and p2y < 500:
                 mx, my = 250,250
-                jx = int(((mx-250)*0.434)+200)
-                jy = int(((250-my)*0.434)+200)
-                sendstring = chr(0X02)+str(jx)+str(jy)+chr(0X03)
+                sendstring = chr(0X02)+str(200)+str(200)+chr(0X03)
                 sock.send(sendstring)
             if p2x > 680 and p2x < 706 and p2y > 100 and p2y < 123:
                 buttonstring = chr(0X02)+'A'+chr(0X03)
@@ -169,7 +169,8 @@ while True:
         screen.blit(minus,(680,260))
         screen.blit(plus,(680,360))
         screen.blit(minus,(680,390))
-  
+
+        screen.blit(joytop,(mx-75,my-75))
         if button1:
             screen.blit(pluslight,(680-3,100-3))
         if button2:
@@ -182,14 +183,8 @@ while True:
             screen.blit(pluslight,(680-3,360-3))
         if button6:
             screen.blit(minuslight,(680-3,390-3))
-
-        kpstext = basicfont.render('KPS '+kps, True, textcolour)
-        kptext = basicfont.render('KP ' +kp, True, textcolour)
-        trimtext = basicfont.render('TRIM '+trim, True, textcolour)
         screen.blit(kpstext,(565,110))
         screen.blit(kptext,(565,240))
         screen.blit(trimtext,(565,370))
-
-    	screen.blit(joytop,(mx-75,my-75))
     data = sock.recv(1024)
     pygame.display.flip()
