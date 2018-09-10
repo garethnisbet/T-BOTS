@@ -31,7 +31,7 @@ def parse():
     except:
         return oldkps, oldkp, oldtrim
 
-search = False
+search = True
 if search == True:
     print('Searching for devices...')
     print("")
