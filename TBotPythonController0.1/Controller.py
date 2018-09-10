@@ -189,7 +189,7 @@ while True:
             screen.blit(pluslight,(680-3,360-3))
         if button6:
             screen.blit(minuslight,(680-3,390-3))
-        screen.blit(kpstext,(560,105))
-        screen.blit(kptext,(560,235))
-        screen.blit(trimtext,(560,365))
+        screen.blit(kpstext,(560,115))
+        screen.blit(kptext,(560,245))
+        screen.blit(trimtext,(560,375))
     pygame.display.flip()
