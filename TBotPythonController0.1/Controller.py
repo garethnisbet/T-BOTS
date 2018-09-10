@@ -4,7 +4,7 @@ import bluetooth as bt
 from time import sleep
 pygame.font.init()
 #sansfont = pygame.font.Font('sans.ttf', 60)
-basicfont = pygame.font.SysFont(None, 40)
+basicfont = pygame.font.SysFont(None, 30)
 
 
 #Look for all Bluetooth devices
@@ -13,17 +13,23 @@ basicfont = pygame.font.SysFont(None, 40)
 #Create an array with all the MAC
 #addresses of the detected devices
 
-def parse(data):
-    if len(data)>60:
+
+def parse():
+    global oldkps
+    global oldkp
+    global oldtrim
+    data = sock.recv(64)
+    try:
         STX_index = [n for n in xrange(len(data)) if data.find('\x02', n) == n]
         ETX_index = [n for n in xrange(len(data)) if data.find('\x03', n) == n]
         if STX_index[-1] < ETX_index[-1]:
             ministring = data[STX_index[-1]+1:ETX_index[-1]]
         else:
             ministring = data[STX_index[-2]+1:ETX_index[-1]]
+        oldkps, oldkp, oldtrim = ministring[1:5], ministring[6:10], ministring[11:15]
         return ministring[1:5], ministring[6:10],  ministring[11:15] # return KPS, KP, Trim
-    else:
-        return str(0),str(0),str(0)
+    except:
+        return oldkps, oldkp, oldtrim
 
 search = False
 if search == True:
@@ -83,7 +89,7 @@ mxnew, mynew = 250, 250
 
 while True:
     
-    kps, kp, trim = parse(data)
+    kps, kp, trim = parse()
     kpstext = basicfont.render('KPS '+kps, True, textcolour)
     kptext = basicfont.render('KP ' +kp, True, textcolour)
     trimtext = basicfont.render('TRIM '+trim, True, textcolour)
@@ -183,8 +189,7 @@ while True:
             screen.blit(pluslight,(680-3,360-3))
         if button6:
             screen.blit(minuslight,(680-3,390-3))
-        screen.blit(kpstext,(565,110))
-        screen.blit(kptext,(565,240))
-        screen.blit(trimtext,(565,370))
-    data = sock.recv(1024)
+        screen.blit(kpstext,(560,105))
+        screen.blit(kptext,(560,235))
+        screen.blit(trimtext,(560,365))
     pygame.display.flip()
