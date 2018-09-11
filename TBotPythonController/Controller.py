@@ -38,14 +38,14 @@ if search == True:
     nearby_devices = bt.discover_devices()
     #Run through all the devices found and list their name
     num = 0
-    print('Select your device by entering its coresponding number...')
+    
     for i in nearby_devices:
 	    num+=1
 	    print(num , ": " , bt.lookup_name( i ))
-
+    print('Select your device by entering its coresponding number...')
     selection = input("> ") - 1
-    print('You have selected')
-    bt.lookup_name(nearby_devices[selection])
+    print('You have selected - '+bt.lookup_name(nearby_devices[selection]))
+
     bd_addr = nearby_devices[selection]
 else:
     bd_addr = '98:D3:32:11:4C:CF'
