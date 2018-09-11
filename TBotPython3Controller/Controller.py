@@ -2,7 +2,7 @@ import pygame, sys, pygame.mixer
 from pygame.locals import *
 import socket
 from time import sleep
-
+print('Connecting...')
 bd_addr = '98:D3:32:11:4C:CF' # put the bluetooth address of your T-Bot here. 
 port = 1
 sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
@@ -29,11 +29,6 @@ def parse():
         return ministring[1:5], ministring[6:10],  ministring[11:15] # return KPS, KP, Trim
     except:
         return oldkps, oldkp, oldtrim
-
-
-
-
-
 
 pygame.init()
 clock = pygame.time.Clock()
