@@ -7,7 +7,15 @@ bd_addr = '98:D3:32:11:4C:CF' # put the bluetooth address of your T-Bot here.
 port = 1
 sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
 sock.connect((bd_addr,port))
-
+sock.settimeout(1)
+print('Connected to T-Bot')
+def send(sendstr):
+    try:
+        sock.send(sendstr.encode(encoding='utf-8'))
+    except:
+        sock.close()
+        pygame.display.quit()
+        sys.exit()
 
 pygame.font.init()
 basicfont = pygame.font.SysFont(None, 30)
@@ -18,7 +26,7 @@ def parse():
     global oldkp
     global oldtrim
     try:
-        data = sock.recv(512).decode(encoding='utf-8')
+        data = sock.recv(4096).decode(encoding='utf-8')
         STX_index = [n for n in range(len(data)) if data.find('\x02', n) == n]
         ETX_index = [n for n in range(len(data)) if data.find('\x03', n) == n]
         if STX_index[-1] < ETX_index[-1]:
@@ -44,7 +52,6 @@ pluslight = pygame.image.load('images/pluslight.png')
 minuslight = pygame.image.load('images/minuslight.png')
 button1,button2,button3,button4,button5,button6, = 0,0,0,0,0,0
 clock.tick()
-data = []
 x,y = 0,0
 colour = (0,0,0)
 textcolour = (255,255, 255)
@@ -64,16 +71,12 @@ while True:
     if mx > 480 or mx < 20 or my > 480 or my < 20:
         mx,my = 250,250
         sendstring = chr(0X02)+str(200)+str(200)+chr(0X03)
-        sock.send(sendstring.encode(encoding='utf-8', errors='strict'))
+        send(sendstring)
     jx = int(((mx-250)*0.43)+200)
     jy = int(((250-my)*0.43)+200)
     if mxnew != mx or mynew != my:
         sendstring = chr(0X02)+str(jx)+str(jy)+chr(0X03)
-        time = clock.tick()
-        if time > 20:
-            sock.send(sendstring.encode(encoding='utf-8', errors='strict'))
-            
-
+        send(sendstring)          
         mxnew = mx
         mynew = my
     
@@ -82,35 +85,36 @@ while True:
             pygame.display.quit()
             sys.exit()
         elif event.type == MOUSEBUTTONDOWN:
+            kps, kp, trim = parse()
             if p2x > 0 and p2x < 500 and p2y > 0 and p2y < 500:
                 mx, my = 250,250
                 sendstring = chr(0X02)+str(200)+str(200)+chr(0X03)
-                sock.send(sendstring.encode(encoding='utf-8', errors='strict'))
+                send(sendstring)
             if p2x > 680 and p2x < 706 and p2y > 100 and p2y < 123:
                 buttonstring = chr(0X02)+'A'+chr(0X03)
-                sock.send(buttonstring.encode(encoding='utf-8', errors='strict'))
+                send(buttonstring)
                 button1 = 1
             if p2x > 680 and p2x < 706 and p2y > 130 and p2y < 153:
                 buttonstring = chr(0X02)+'C'+chr(0X03)
-                sock.send(buttonstring.encode(encoding='utf-8', errors='strict'))
+                send(buttonstring)
                 button2 = 1
 
             if p2x > 680 and p2x < 706 and p2y > 230 and p2y < 253:
                 buttonstring = chr(0X02)+'E'+chr(0X03)
-                sock.send(buttonstring.encode(encoding='utf-8', errors='strict'))
+                send(buttonstring)
                 button3 = 1
             if p2x > 680 and p2x < 706 and p2y > 260 and p2y < 283:
                 buttonstring = chr(0X02)+'G'+chr(0X03)
-                sock.send(buttonstring.encode(encoding='utf-8', errors='strict'))
+                send(buttonstring)
                 button4 = 1
 
             if p2x > 580 and p2x < 706 and p2y > 360 and p2y < 383:
                 buttonstring = chr(0X02)+'I'+chr(0X03)
-                sock.send(buttonstring.encode(encoding='utf-8', errors='strict'))
+                send(buttonstring)
                 button5 = 1
             if p2x > 680 and p2x < 706 and p2y > 390 and p2y < 413:
                 buttonstring = chr(0X02)+'K'+chr(0X03)
-                sock.send(buttonstring.encode(encoding='utf-8', errors='strict'))
+                send(buttonstring)
                 button6 = 1
 
         elif event.type == MOUSEBUTTONUP:
