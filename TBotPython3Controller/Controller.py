@@ -26,7 +26,7 @@ def parse():
     global oldkp
     global oldtrim
     try:
-        data = sock.recv(4096).decode(encoding='utf-8')
+        data = sock.recv(24).decode(encoding='utf-8')
         STX_index = [n for n in range(len(data)) if data.find('\x02', n) == n]
         ETX_index = [n for n in range(len(data)) if data.find('\x03', n) == n]
         if STX_index[-1] < ETX_index[-1]:
@@ -70,8 +70,7 @@ while True:
     #print('x '+str(mx)+' y ' +str(my))
     if mx > 480 or mx < 20 or my > 480 or my < 20:
         mx,my = 250,250
-        sendstring = chr(0X02)+str(200)+str(200)+chr(0X03)
-        send(sendstring)
+
     jx = int(((mx-250)*0.43)+200)
     jy = int(((250-my)*0.43)+200)
     if mxnew != mx or mynew != my:
@@ -88,33 +87,32 @@ while True:
             kps, kp, trim = parse()
             if p2x > 0 and p2x < 500 and p2y > 0 and p2y < 500:
                 mx, my = 250,250
-                sendstring = chr(0X02)+str(200)+str(200)+chr(0X03)
-                send(sendstring)
+
             if p2x > 680 and p2x < 706 and p2y > 100 and p2y < 123:
                 buttonstring = chr(0X02)+'A'+chr(0X03)
                 send(buttonstring)
                 button1 = 1
             if p2x > 680 and p2x < 706 and p2y > 130 and p2y < 153:
-                buttonstring = chr(0X02)+'C'+chr(0X03)
-                send(buttonstring)
+                buttonstring2 = chr(0X02)+'C'+chr(0X03)
+                send(buttonstring2)
                 button2 = 1
 
             if p2x > 680 and p2x < 706 and p2y > 230 and p2y < 253:
-                buttonstring = chr(0X02)+'E'+chr(0X03)
-                send(buttonstring)
+                buttonstring3 = chr(0X02)+'E'+chr(0X03)
+                send(buttonstring3)
                 button3 = 1
             if p2x > 680 and p2x < 706 and p2y > 260 and p2y < 283:
-                buttonstring = chr(0X02)+'G'+chr(0X03)
-                send(buttonstring)
+                buttonstring4 = chr(0X02)+'G'+chr(0X03)
+                send(buttonstring4)
                 button4 = 1
 
             if p2x > 580 and p2x < 706 and p2y > 360 and p2y < 383:
-                buttonstring = chr(0X02)+'I'+chr(0X03)
-                send(buttonstring)
+                buttonstring5 = chr(0X02)+'I'+chr(0X03)
+                send(buttonstring5)
                 button5 = 1
             if p2x > 680 and p2x < 706 and p2y > 390 and p2y < 413:
-                buttonstring = chr(0X02)+'K'+chr(0X03)
-                send(buttonstring)
+                buttonstring6 = chr(0X02)+'K'+chr(0X03)
+                send(buttonstring6)
                 button6 = 1
 
         elif event.type == MOUSEBUTTONUP:
@@ -146,7 +144,7 @@ while True:
         screen.blit(plus,(680,360))
         screen.blit(minus,(680,390))
 
-        screen.blit(joytop,(mx-75,my-75))
+
         if button1:
             screen.blit(pluslight,(680-3,100-3))
         if button2:
@@ -162,4 +160,5 @@ while True:
         screen.blit(kpstext,(560,115))
         screen.blit(kptext,(560,245))
         screen.blit(trimtext,(560,375))
+        screen.blit(joytop,(mx-75,my-75))
     pygame.display.flip()
