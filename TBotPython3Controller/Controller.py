@@ -63,6 +63,8 @@ while True:
     #print('x '+str(mx)+' y ' +str(my))
     if mx > 480 or mx < 20 or my > 480 or my < 20:
         mx,my = 250,250
+        sendstring = chr(0X02)+str(200)+str(200)+chr(0X03)
+        sock.send(sendstring.encode(encoding='utf-8', errors='strict'))
     jx = int(((mx-250)*0.43)+200)
     jy = int(((250-my)*0.43)+200)
     if mxnew != mx or mynew != my:
