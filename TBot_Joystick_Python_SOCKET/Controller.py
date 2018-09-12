@@ -26,7 +26,7 @@ def parse():
     global oldkp
     global oldtrim
     try:
-        data = sock.recv(24).decode(encoding='utf-8')
+        data = sock.recv(128).decode(encoding='utf-8')
         STX_index = [n for n in range(len(data)) if data.find('\x02', n) == n]
         ETX_index = [n for n in range(len(data)) if data.find('\x03', n) == n]
         if STX_index[-1] < ETX_index[-1]:
