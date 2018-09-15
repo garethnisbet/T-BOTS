@@ -2,13 +2,22 @@ import pygame, sys, pygame.mixer
 from pygame.locals import *
 import socket
 from time import sleep
-print('Connecting...')
-bd_addr = '98:D3:32:11:4C:CF' # put the bluetooth address of your T-Bot here. 
+import mac
+bd_addr, name = mac.io('MAC_Adresses')
+
+print('Connecting to '+name)
+#bd_addr = '98:D3:32:11:4C:CF' # put the bluetooth address of your T-Bot here. 
 port = 1
-sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
-sock.connect((bd_addr,port))
+try:
+    sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
+    sock.connect((bd_addr,port))
+except:
+    print('Device not found')
+    bd_addr, name = mac.io('MAC_Adresses')
+    sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
+    sock.connect((bd_addr,port))
 sock.settimeout(1)
-print('Connected to T-Bot')
+print('Connected to '+name)
 def send(sendstr):
     try:
         sock.send(sendstr.encode(encoding='utf-8'))
@@ -51,14 +60,14 @@ plus = pygame.image.load('images/plus.png')
 pluslight = pygame.image.load('images/pluslight.png')
 minuslight = pygame.image.load('images/minuslight.png')
 button1,button2,button3,button4,button5,button6, = 0,0,0,0,0,0
-clock.tick()
+# initialize variables
 x,y = 0,0
 colour = (0,0,0)
 textcolour = (255,255, 255)
 mx,my = 0,0
 mxnew, mynew = 250, 250
 
-while True:
+while True: # Continuous Pygame loop
     
     kps, kp, trim = parse()
     kpstext = basicfont.render('KPS '+kps, True, textcolour)

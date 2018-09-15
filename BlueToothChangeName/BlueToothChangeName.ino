@@ -11,15 +11,10 @@ void setup()
   Serial.println(" ");
   Serial.println("Type AT+NAME:NewName to change your T-BOTS name.");
   Serial.println("Type AT+UART=38400,0,0 to change baud rate");
+  Serial.println("Type AT+ADDR? to get the mac address (YOU WILL NEED THIS LATER)");
   Serial.println(" ");
   Serial.println(" ");
-  Serial.println("Commands for AT-09");
-  Serial.println("Type AT+NAMENewName to change your T-BOTS name.");
-  Serial.println("Type AT+TYPE1 to enable PIN requirement.");
-  Serial.println("Type AT+PIN123456 to set pin to 123456.");
-  Serial.println("Type AT+BAUD6 to set BAUD rate to 38400.");
-  Serial.println(" ");
-  Serial.println(" ");
+
   Serial.println("Enter AT commands:");
   
   // HC-05 default BAUD rate is 38400 for AT command mode
