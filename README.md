@@ -1,6 +1,6 @@
 TBot - Main code to run T-Bot
 
-DCMotorTest - Simple example to drive motors (used to calibrate motors)
+DCMotorTest - Simple example to drive motors using the TB6612FNG driver board (used to calibrate motors)
 
 BluetoothChangeName - Used to set BAUD rate, set name for T-Bot and get MAC address
 
@@ -9,6 +9,11 @@ BTListen - Read in data coming from Bluetooth controllers (useful if you want to
 Python - Python code to retrieve and analyse data from the T-Bot
 
 TBotLibraries.zip - Libraries require to run the T-Bot. These can be extracted directly into the Arduino libraries folder.
+
+Ultrasound - Simple example to interrogate the HC-SR04 ultrasound module
+
+ReadGyro - Simple example to interrogate MPU-6050 sensor
+
 
 
 TBot_Joystick_Python_PYBLUEZ - Bluetooth joystick written in python - Requires python-bluez and Bluez
