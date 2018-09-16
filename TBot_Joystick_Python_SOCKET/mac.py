@@ -25,7 +25,10 @@ def io(MAC_Adresses):
         key = list(addresses.keys())[-1]
     else:
         newkey = key
-        mac = input('Enter MAC address >')
+        if sys.version_info[0] == 2:
+            mac = raw_input('Enter MAC address >')
+        else:
+            mac = input('Enter MAC address >')
         addresses.update({newkey : mac})
         file = open('MAC_Adresses','a')
         entry = {newkey: mac}
