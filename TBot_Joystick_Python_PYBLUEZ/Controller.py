@@ -12,12 +12,12 @@ basicfont = pygame.font.SysFont(None, 30)
 
 #Create an array with all the MAC
 #addresses of the detected devices
-1
 
 def parse():
     global oldkps
     global oldkp
     global oldtrim
+    oldkps = oldkp = oldtrim = 'unknown'
     data = sock.recv(64)
     try:
         STX_index = [n for n in xrange(len(data)) if data.find('\x02', n) == n]
