@@ -12,7 +12,7 @@ basicfont = pygame.font.SysFont(None, 30)
 
 #Create an array with all the MAC
 #addresses of the detected devices
-
+1
 
 def parse():
     global oldkps
@@ -38,15 +38,16 @@ if search == True:
     nearby_devices = bt.discover_devices()
     #Run through all the devices found and list their name
     num = 0
-    
+
     for i in nearby_devices:
 	    num+=1
 	    print(num , ": " , bt.lookup_name( i ))
     print('Select your device by entering its coresponding number...')
-    selection = input("> ") - 1
+    selection = int(input("> ")) - 1
     print('You have selected - '+bt.lookup_name(nearby_devices[selection]))
 
     bd_addr = nearby_devices[selection]
+    print(bd_addr)
 else:
     bd_addr = '98:D3:32:11:4C:CF'
     print('connecting...')
@@ -88,7 +89,7 @@ mx,my = 0,0
 mxnew, mynew = 250, 250
 
 while True:
-    
+
     kps, kp, trim = parse()
     kpstext = basicfont.render('KPS '+kps, True, textcolour)
     kptext = basicfont.render('KP ' +kp, True, textcolour)
@@ -106,11 +107,11 @@ while True:
         time = clock.tick()
         if time > 20:
             sock.send(sendstring)
-            
+
 
         mxnew = mx
         mynew = my
-    
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.display.quit()
@@ -165,7 +166,7 @@ while True:
             pygame.display.quit()
             print('Your now disconnected.')
             sys.exit()
-    
+
         screen.fill(colour)
         screen.blit(joybase,(250-230,250-230))
         screen.blit(joytop,(mx-75,my-75))
