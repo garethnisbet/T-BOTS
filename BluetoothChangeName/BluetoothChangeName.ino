@@ -13,7 +13,6 @@ void setup()
   Serial.println("Type AT+UART=38400,0,0 to change baud rate");
   Serial.println("Type AT+ADDR? to get the mac address (YOU WILL NEED THIS LATER)");
   Serial.println(" ");
-  Serial.println(" ");
 
   Serial.println("Enter AT commands:");
   

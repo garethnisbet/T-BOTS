@@ -27,8 +27,13 @@ void loop() {
 //  m2.speed(-0.3);
 //  delay(2000);
   
-  m1.speed(-60); // Right Motor
-  m2.speed(-60);  // Left Motor
+  m1.speed(0); // Right Motor
+  m2.speed(-255);  // Left Motor
+  delay(5000);
+  m1.speed(0); // Right Motor
+  m2.speed(255);  // Left Motor
+  delay(3000);
+  
  // delay(2000);
   // put your main code here, to run repeatedly:
 

@@ -63,17 +63,19 @@ ydata_moon = [fallingtime(0.08, g_moon,np.arcsin(x/8e-2)*180/np.pi, 90, 0.001)[3
 plt.figure(figsize=(10, 4))
 
 plt.title('Falling Times for T-Bot')
-plt.plot(xdata, ydata_moon, c=(50/255.,50/255.,250/255.),linewidth = 2, label = 'Moon g = '+str(g_moon)+' ms^2')
-plt.plot(xdata, ydata_earth,  c=(255/255.,10/255.,10/255.),linewidth = 2, label = 'Earth g = '+str(g_earth)+' ms^2')
+plt.plot(xdata, ydata_moon, c=(50/255.,50/255.,250/255.),linewidth = 2, label = 'Moon g = '+str(g_moon)+' ms^-2')
+plt.plot(xdata, ydata_earth,  c=(255/255.,10/255.,10/255.),linewidth = 2, label = 'Earth g = '+str(g_earth)+' ms^-2')
 
 plt.fill_between(xdata, 0, ydata_earth,facecolor=(100/255.,0/255.,0/255.),edgecolor=(191/255.,211/255.,255/255.), alpha = 0.6)
 plt.fill_between(xdata, 0, ydata_moon,facecolor=(0/255.,0/255.,100/255.),edgecolor=(191/255.,211/255.,255/255.), alpha = 0.6)
 
-plt.annotate('Atomic vibrational amplitude (10 pm)\nFalling time 2.17 s',xy=(1.E-11,2.16),xytext = (1.e-5,5), arrowprops = dict(facecolor=(0/255.,255/255.,63/255.),width=1,headwidth=7,shrink=0.01),)
+plt.annotate('Atomic vibrational amplitude (10 pm)\nFalling time 2.17 s',xy=(1.E-11,2.16),xytext = (5.e-6,5), arrowprops = dict(facecolor=(0/255.,255/255.,63/255.),width=1,headwidth=7,shrink=0.01),)
 
-plt.annotate('Width of H atom (100 pm)\nFalling time 1.96 s',xy=(1.E-10,2),xytext = (1.e-5,2.5), arrowprops = dict(facecolor='white',width=1,headwidth=7,shrink=0.01),)
+plt.annotate('Width of H atom (100 pm)\nFalling time 1.96 s',xy=(1.E-10,2),xytext = (1.2e-5,3.6), arrowprops = dict(facecolor='white',width=1,headwidth=7,shrink=0.01),)
 
-plt.annotate('Average width of human hair (100 microns)\nFalling time 0.712 s',xy=(100.E-6,0.712),xytext = (60.e-6,3), arrowprops = dict(facecolor='orange',width=1,headwidth=7,shrink=0.01),)
+plt.annotate('High Resolution Phone Pixel (30 microns)\nFalling time 0.821 s',xy=(30.E-6,0.821),xytext = (1.3e-5,2.5), arrowprops = dict(facecolor='white',width=1,headwidth=7,shrink=0.01),)
+
+plt.annotate('Average width of human hair (100 microns)\nFalling time 0.712 s',xy=(100.E-6,0.712),xytext = (70.e-6,4.1), arrowprops = dict(facecolor='orange',width=1,headwidth=7,shrink=0.01),)
 
 plt.legend(loc = 'best',prop={ 'size': 8})
 plt.xlabel('Initial horizontal displacement (m)')

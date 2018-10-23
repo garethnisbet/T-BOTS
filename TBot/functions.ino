@@ -2,7 +2,13 @@
 
 void vel(double h, double th){
 	      dh=h-(h*cos(th*pi/180));
-	      vxy=sqrt(2*g*dh)*th/abs(th);
+        if (th > 0){
+	      vxy=sqrt(2*g*dh);
+        }
+        else{
+          vxy=-sqrt(2*g*dh);
+        }
+        
 }
 
 void v2ang(double h, double v){
