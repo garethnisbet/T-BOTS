@@ -13,16 +13,12 @@ basicfont = pygame.font.SysFont(None, 30)
 #Create an array with all the MAC
 #addresses of the detected devices
 
+
 def parse():
     global oldkps
     global oldkp
     global oldtrim
-<<<<<<< HEAD
     data = sock.recv(128)
-=======
-    oldkps = oldkp = oldtrim = 'unknown'
-    data = sock.recv(64)
->>>>>>> 8ee928c9fa5f61a148218e9117782b53d05db9ad
     try:
         STX_index = [n for n in xrange(len(data)) if data.find('\x02', n) == n]
         ETX_index = [n for n in xrange(len(data)) if data.find('\x03', n) == n]
@@ -42,16 +38,15 @@ if search == True:
     nearby_devices = bt.discover_devices()
     #Run through all the devices found and list their name
     num = 0
-
+    
     for i in nearby_devices:
 	    num+=1
 	    print(num , ": " , bt.lookup_name( i ))
     print('Select your device by entering its coresponding number...')
-    selection = int(input("> ")) - 1
+    selection = input("> ") - 1
     print('You have selected - '+bt.lookup_name(nearby_devices[selection]))
 
     bd_addr = nearby_devices[selection]
-    print(bd_addr)
 else:
     bd_addr = '98:D3:32:11:4C:CF'
     print('connecting...')
@@ -99,14 +94,9 @@ textcolour = (255,255, 255)
 mx,my = 0,0
 mxnew, mynew = 250, 250
 
-<<<<<<< HEAD
 
 while True: # Continuous Pygame loop
     
-=======
-while True:
-
->>>>>>> 8ee928c9fa5f61a148218e9117782b53d05db9ad
     kps, kp, trim = parse()
     kpstext = basicfont.render('KPS '+kps, True, textcolour)
     kptext = basicfont.render('KP ' +kp, True, textcolour)
@@ -122,18 +112,10 @@ while True:
     jy = int(((250-my)*0.43)+200)
     if mxnew != mx or mynew != my:
         sendstring = chr(0X02)+str(jx)+str(jy)+chr(0X03)
-<<<<<<< HEAD
         send(sendstring)          
-=======
-        time = clock.tick()
-        if time > 20:
-            sock.send(sendstring)
-
-
->>>>>>> 8ee928c9fa5f61a148218e9117782b53d05db9ad
         mxnew = mx
         mynew = my
-
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.display.quit()
@@ -188,7 +170,7 @@ while True:
             pygame.display.quit()
             print('Your now disconnected.')
             sys.exit()
-
+    
         screen.fill(colour)
         screen.blit(joybase,(250-230,250-230))
         screen.blit(joytop,(mx-75,my-75))
