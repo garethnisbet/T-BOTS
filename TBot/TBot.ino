@@ -25,7 +25,7 @@ RunningAverage USound(2);
 #define    ETX          0x03
 
 int joyX, joyY, joyXbefore, joyYbefore, joyXdiff, joyYdiff, GyroTrim;
-float controller_sensitivity = 1.5;
+float controller_sensitivity = 1.5; // Increase if you want the T-Bot to go faster. It will be more likely to fall over 
 float joyXf, joyYf;
 float backoff;
 
@@ -39,7 +39,7 @@ String displayStatus = "----";
 int starttime;
 int kp, ki, kd; // for inread function
 int gyrocounter, commandcounter;
-
+int boflag;
 float gyrocomp;
 float forward, remoteclock, ac2, accXF;
 float spinval;
@@ -52,7 +52,7 @@ float accX, accY, accZ;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-float gtrim = 0.0;   // Compensated for drift in forward or reverse direction.
+float gtrim = 4.0;   // Compensated for drift in forward or reverse direction.
 
 float rtrim = -0.0; // Compensated for rotational drift.
 
@@ -63,8 +63,8 @@ float filter_weighting = 0.015; // See Combination_Filter.h
 float speedpidsampletime = 2;
 float gyropidsampletime = 2;
 
-double speedKp=0.08, speedKi=0, speedKd=0.0, KPS = 0.08, KP = 4.2, KI = 85, KPS_last, KP_last, KI_last;
-double gyroKp=4.2, gyroKi=85, gyroKd=0.0;
+double speedKp=0.08, speedKi=0, speedKd=0.0, KPS = 0.08, KP = 4.2, KI = 65, KPS_last, KP_last, KI_last;
+double gyroKp=4.2, gyroKi=65, gyroKd=0.0;
 
 double speedSetpoint, speedInput, speedOutput;
 PID speedPID(&speedInput, &speedOutput, &speedSetpoint, speedKp, speedKi, speedKd, DIRECT);
@@ -76,9 +76,7 @@ PID gyroyPID(&gyroyInput, &gyroyOutput, &gyroySetpoint, gyroKp, gyroKi, gyroKd, 
 /////////////////////          Setup Motors             /////////////////////////
 
 const int m1ndb = 23 , m1pdb = 23, m2ndb = 23 , m2pdb = 23;
-//const int m1ndb = 20 , m1pdb = 20, m2ndb = 35 , m2pdb = 35; // T-Bot-LC 
-const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 257;
-//const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 240;
+const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 235;
 
 Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, m1ndb, m1pdb, mpsfactor);
 
@@ -210,11 +208,21 @@ void gyroPIDCallBack() {
     
     spinval = -spinfactor*joyXf/mpsfactor;
     vel(h,gyroyOutput); // output vxs, vys
-    if (abs(CFilteredlAngleY)>40){
+    
+    if (abs(CFilteredlAngleY)>60){
        m1.speed(spinval);
-       m2.speed(spinval); 
+       m2.speed(spinval);
+       boflag = 1; 
     }
-    else{
+
+    /////////// To prevent brown out on the Bluetooth module when battery is low. //////////
+    if (abs(gyroySetpoint)<0.5  && boflag == 1 && abs(vxy) < 0.1) {
+       boflag = 0; 
+    }
+
+    
+    if (boflag == 0){
+      
     m1.speed((vxy-spinval+rtrim));
     m2.speed((vxy+spinval-rtrim));
     /*
@@ -222,7 +230,6 @@ void gyroPIDCallBack() {
     Serial.print(vxy+spinval-rtrim); Serial.print("\t");
     Serial.print("\n");
     */
-  
     }  
 }
 
@@ -260,7 +267,7 @@ void setup () {
   speedPID.SetMode(AUTOMATIC);
   speedPID.SetSampleTime(speedpidsampletime);
   
-  gyroyPID.SetOutputLimits(-90,90);
+  gyroyPID.SetOutputLimits(-60,60);
   gyroyPID.SetMode(AUTOMATIC);
   gyroyPID.SetSampleTime(gyropidsampletime);
 
