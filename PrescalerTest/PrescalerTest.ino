@@ -17,7 +17,7 @@ void setup() {
   int Prescaler = 1;// this could be a number in [1 , 5]. In this case, 3 corresponds in binary to 011.   
   TCCR1B &= ~Eraser; // this operation (AND plus NOT),  set the three bits in TCCR3B to 0
   TCCR1B |= Prescaler;//this operation (OR), replaces the last three bits in TCCR2B with our new value 011
-Serial.begin(115200);
+Serial.begin(38400);
 pinMode(2, OUTPUT);
 
 }
