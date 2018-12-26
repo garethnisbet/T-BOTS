@@ -52,7 +52,7 @@ float accX, accY, accZ;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-float gtrim = 8.2;   // Compensated for drift in forward or reverse direction.
+float gtrim = 5.5;   // Compensated for drift in forward or reverse direction.
 
 float rtrim = -0.0; // Compensated for rotational drift.
 
@@ -63,7 +63,7 @@ float filter_weighting = 0.015; // See Combination_Filter.h
 float speedpidsampletime = 2;
 float gyropidsampletime = 2;
 
-double speedKp=0.08, speedKi=0, speedKd=0.0, KPS = 0.08, KP = 4.2, KI = 65, KPS_last, KP_last, KI_last;
+double speedKp=0.10, speedKi=0, speedKd=0.0, KPS = 0.10, KP = 4.2, KI = 65, KPS_last, KP_last, KI_last;
 double gyroKp=4.2, gyroKi=65, gyroKd=0.0;
 
 double speedSetpoint, speedInput, speedOutput;
