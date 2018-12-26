@@ -7,10 +7,10 @@
   which is expected to call back (execute) the argument at some convenient time.*/
 
 void pin2CallBack();             // Instantiate callbacks
-void pin4CallBack();
+void pin3CallBack();
 
 Task setpin2(100,TASK_FOREVER, &pin2CallBack); // Define task name frequency, duration and point to callback
-Task setpin4(200, TASK_FOREVER, &pin4CallBack);
+Task setpin3(200, TASK_FOREVER, &pin3CallBack);
 
 Scheduler runner;
 
@@ -21,24 +21,28 @@ void pin2CallBack(){
   delay(5);                  // waits for a second
   digitalWrite(2, LOW);        // sets the digital pin 2 off
 
+
   }
 
-void pin4CallBack(){  
-  digitalWrite(4, HIGH);       // sets the digital pin 2 on
+void pin3CallBack(){  
+  digitalWrite(3, HIGH);       // sets the digital pin 2 on
   delay(5);                  // waits for a second
-  digitalWrite(4, LOW);        // sets the digital pin 2 off
+  digitalWrite(3, LOW);        // sets the digital pin 2 off
+
   }
 
 
 void setup(){
 Serial.begin(38400);
 pinMode(2, OUTPUT);
-pinMode(4, OUTPUT);
+pinMode(3, OUTPUT);
 
 // initialise scheduled tasks
 runner.init();
 runner.addTask(setpin2);
-runner.addTask(setpin4);
+runner.addTask(setpin3);
+setpin2.enable();
+setpin3.enable();
 
 }
 void loop(){
