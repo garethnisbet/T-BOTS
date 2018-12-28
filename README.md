@@ -14,6 +14,8 @@ Ultrasound - Simple example to interrogate the HC-SR04 ultrasound module
 
 ReadGyro - Simple example to interrogate MPU-6050 sensor
 
+SchedulerExample - A simple example to show you how to use a schedular instead of nested loops.
+
 
 
 TBot_Joystick_Python_PYBLUEZ - Bluetooth joystick written in python - Requires python-bluez and Bluez
@@ -22,6 +24,10 @@ TBot_Joystick_Python_SOCKET - Bluetooth joystick written in python - Python3
 
 
 Install the arduino IDE form https://www.arduino.cc. Import the libraries by extracting TBotLibraries.zip directly in the Arduino library folder. Open TBot.ino and click on the upload button to send the code to your T-Bot.
+
+You will need to select
+ 
+Tools->Board->Arduino Nano
 
 Note for Windows users:
 

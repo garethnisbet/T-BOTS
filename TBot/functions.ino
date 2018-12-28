@@ -125,20 +125,20 @@ void getButtonState(int bStatus)  {
 
 // -----------------  BUTTON #5  -----------------------
     case 'I':           // configured as momentary button
-      gtrim += 0.05;
+      gtrim += 0.5;
       break;
    case 'J':
      buttonStatus &= B101111;        // OFF
-      gtrim += 0.05;    
+      gtrim += 0.5;    
      break;
 
 // -----------------  BUTTON #6  -----------------------
     case 'K':
       buttonStatus |= B100000;        // ON
-      gtrim -= 0.05;
+      gtrim -= 0.5;
      break;
     case 'L':
-      gtrim -= 0.05;
+      gtrim -= 0.5;
       break;
 
 }
