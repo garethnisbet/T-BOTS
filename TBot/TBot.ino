@@ -276,7 +276,8 @@ void setup () {
     ///////////   Setup Serial and Bluetooth communication   ////////////////////
 
   // pinMode(15, OUTPUT);  // this pin will pull the HC-05 pin 34 (key pin) HIGH to switch module to AT mode
-  // digitalWrite(15, LOW); //Some modules reqire this to be set to HIGH 
+  // digitalWrite(15, HIGH); //Some modules reqire this to be set to HIGH for AT mode
+  // digitalWrite(15, LOW); //Some modules reqire this to be actively set to LOW for normal use.
   // Others require these lines to be commented out.
 
   Serial.begin(38400);
