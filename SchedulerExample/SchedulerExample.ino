@@ -9,8 +9,8 @@
 void pin2CallBack();             // Instantiate callbacks
 void pin3CallBack();
 
-Task setpin2(100,TASK_FOREVER, &pin2CallBack); // Define task name frequency, duration and point to callback
-Task setpin3(200, TASK_FOREVER, &pin3CallBack);
+Task setpin2(6,TASK_FOREVER, &pin2CallBack); // Define task name frequency, duration and point to callback
+Task setpin3(9, TASK_FOREVER, &pin3CallBack);
 
 Scheduler runner;
 
@@ -18,7 +18,7 @@ Scheduler runner;
 
 void pin2CallBack(){  
   digitalWrite(2, HIGH);       // sets the digital pin 2 on
-  delay(5);                  // waits for a second
+  delay(1);                  // waits for a second
   digitalWrite(2, LOW);        // sets the digital pin 2 off
 
 
@@ -26,13 +26,14 @@ void pin2CallBack(){
 
 void pin3CallBack(){  
   digitalWrite(3, HIGH);       // sets the digital pin 2 on
-  delay(5);                  // waits for a second
+  delay(1);                  // waits for a second
   digitalWrite(3, LOW);        // sets the digital pin 2 off
 
   }
 
 
 void setup(){
+
 Serial.begin(38400);
 pinMode(2, OUTPUT);
 pinMode(3, OUTPUT);

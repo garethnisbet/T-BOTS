@@ -78,12 +78,12 @@ PID gyroyPID(&gyroyInput, &gyroyOutput, &gyroySetpoint, gyroKp, gyroKi, gyroKd, 
 // m1 is the T-Bot's right motor, m2 is the left
 
 const int m1ndb = 23 , m1pdb = 23, m2ndb = 20 , m2pdb = 23; // note the values are always positive
-const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 240;
+const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 240, mpsfactor2 = 240;
 
 Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, m1ndb, m1pdb, mpsfactor);
 
 const int m1stby = 6, m1ain1 = 8, m1ain2 = 7,  m1pwmpin = 10;
-Motor m2 = Motor(m1ain1, m1ain2, m1stby, m1pwmpin, m2ndb, m2pdb, mpsfactor);
+Motor m2 = Motor(m1ain1, m1ain2, m1stby, m1pwmpin, m2ndb, m2pdb, mpsfactor2);
 
 ///////////////////   Setup Gyro with Combination Filter   /////////////////////
 

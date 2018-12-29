@@ -6,11 +6,11 @@ const int m1ndb = 0 , m1pdb = 0, m2ndb = 0 , m2pdb = 0;
 //const int m1ndb = 34 , m1pdb = 34, m2ndb = 34 , m2pdb = 34; // T-Bot
 
 // Set pins and meters per second factor
-const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 1;
+const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 1, mpsfactor2 = 1;
 Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, m1ndb, m1pdb, mpsfactor);
 
 const int m1stby = 6, m1ain1 = 8, m1ain2 = 7,  m1pwmpin = 10;
-Motor m2 = Motor(m1ain1, m1ain2, m1stby, m1pwmpin, m2ndb, m2pdb, mpsfactor);
+Motor m2 = Motor(m1ain1, m1ain2, m1stby, m1pwmpin, m2ndb, m2pdb, mpsfactor2);
 
 void setup() {
   int Eraser = 7; // this is 111 in binary and is used as an eraser  TCCRnB where n 
