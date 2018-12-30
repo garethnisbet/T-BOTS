@@ -5,7 +5,7 @@
 const int m1ndb = 0 , m1pdb = 0, m2ndb = 0 , m2pdb = 0;
 //const int m1ndb = 34 , m1pdb = 34, m2ndb = 34 , m2pdb = 34; // T-Bot
 
-// Set pins and meters per second factor
+// Set pins and metres per second factor
 const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 1, mpsfactor2 = 1;
 Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, m1ndb, m1pdb, mpsfactor);
 
