@@ -52,7 +52,7 @@ float accX, accY, accZ;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-float gtrim = 0.0;   // Compensated for drift in forward or reverse direction.
+float gtrim = 3.45;   // Compensated for drift in forward or reverse direction.
 
 float rtrim = 0.0; // Compensated for rotational drift.
 
@@ -77,7 +77,7 @@ PID gyroyPID(&gyroyInput, &gyroyOutput, &gyroySetpoint, gyroKp, gyroKi, gyroKd, 
 
 // m1 is the T-Bot's right motor, m2 is the left
 
-const int m1ndb = 23 , m1pdb = 23, m2ndb = 20 , m2pdb = 23; // note the values are always positive
+const int m1ndb = 23 , m1pdb = 23, m2ndb = 23 , m2pdb = 23; // note the values are always positive
 const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 240, mpsfactor2 = 240;
 
 Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, m1ndb, m1pdb, mpsfactor);
@@ -119,7 +119,8 @@ Task uSound(60, TASK_FOREVER, &uSoundCallBack);
 Scheduler runner;
 
 
-void uSoundCallBack(){    
+void uSoundCallBack(){
+   // This is where you can setup the swarming rules 
    pingval = sonar.ping_cm();
    if (pingval == pingval){ //check pingval is not NAN
     if (pingval > 0){
