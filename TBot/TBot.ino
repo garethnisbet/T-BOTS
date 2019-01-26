@@ -52,7 +52,7 @@ float accX, accY, accZ;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-float gtrim = 3.45;   // Compensated for drift in forward or reverse direction.
+float gtrim = 8.4;   // Compensated for drift in forward or reverse direction.
 
 float rtrim = 0.0; // Compensated for rotational drift.
 
@@ -106,7 +106,7 @@ void gyroPIDCallBack();                 // Stability PID Control Loop
 void bluetoothCallBack();               // Bluetooth IO Read Loop
 void uSoundCallBack();                  // Ultrasound Measure Loop
 void printDataCallBack();               // Print Data to Serial Loop
-
+void sendTunningCallBack(); // Bluetooth IO Send Loop
 ///////////////////    Set Number of Loops and Frequency  /////////////////////
 
 Task tCFilterRead(2,TASK_FOREVER, &CFilterReadCallBack);
@@ -114,6 +114,7 @@ Task tGyroPID(4, TASK_FOREVER, &gyroPIDCallBack);
 Task tspeedPID(4, TASK_FOREVER, &speedPIDCallBack);
 Task bluetooth(20,TASK_FOREVER,&bluetoothCallBack);
 Task uSound(60, TASK_FOREVER, &uSoundCallBack);
+Task bluetoothsend(500, TASK_FOREVER, &sendTunningCallBack);
 
 
 Scheduler runner;
@@ -158,7 +159,13 @@ void bluetoothCallBack(){
       if(i==7)          getJoystickState(cmd);     // 6 Bytes  ex: < STX "200" "180" ETX >
     }
   }
-  if (KPS + KP + KI !=  KPS_last + KP_last + KI_last){
+   
+}
+
+
+void sendTunningCallBack(){
+  if(BTSerial.available())  { 
+                   if (KPS + KP + KI !=  KPS_last + KP_last + KI_last){
     speedPID.SetTunings(KPS, speedKi, speedKd);
     gyroyPID.SetTunings(KP, KI, gyroKd);
   }
@@ -177,9 +184,10 @@ void bluetoothCallBack(){
  //  BTSerial.print(KI_last);
    BTSerial.print(gtrim);
    BTSerial.print((char)ETX);
+  }
 
-   
 }
+
 void CFilterReadCallBack(){
     gyroread();
 
@@ -295,11 +303,13 @@ void setup () {
   runner.addTask(tGyroPID);  // Add Stability PID control
   runner.addTask(uSound);    // Add Ultrasound Readback
   runner.addTask(bluetooth); // Add Bluetooth Comunication
+  runner.addTask(bluetoothsend); // Add Bluetooth Comunication
   
   tGyroPID.enable();  
   tspeedPID.enable();  
   uSound.enable();
   bluetooth.enable();
+  bluetoothsend.enable();
   tCFilterRead.enable();
 
 }

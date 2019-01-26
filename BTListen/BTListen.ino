@@ -2,7 +2,8 @@
 
 SoftwareSerial BTSerial(17,16);  // RX, TX
 String Data = "";
-
+#define    STX          0x02
+#define    ETX          0x03
 void setup()  
 {
     Serial.begin(38400);
@@ -24,4 +25,14 @@ void loop() // run over and over
             Data = "";
         
     }
+       BTSerial.print((char)STX);
+   BTSerial.print((char)0x1);
+   //BTSerial.print(fping);
+   BTSerial.print(1);
+   BTSerial.print((char)0x4);
+   BTSerial.print(1);
+   BTSerial.print((char)0x5);
+ //  BTSerial.print(KI_last);
+   BTSerial.print(1);
+   BTSerial.print((char)ETX);
 }
