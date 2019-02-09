@@ -48,7 +48,7 @@ float filterFrequency = 1;
 float g = 9.81, pi = 3.1416, h = 0.08;
 float dh, th, phi, v, vxy, vx, vy, vz, norm, vxs, vys, angout;
 float accX, accY, accZ;
-
+int autotrim;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
@@ -107,6 +107,7 @@ void bluetoothCallBack();               // Bluetooth IO Read Loop
 void uSoundCallBack();                  // Ultrasound Measure Loop
 void printDataCallBack();               // Print Data to Serial Loop
 void sendTunningCallBack(); // Bluetooth IO Send Loop
+void autoTrimCallBack();
 ///////////////////    Set Number of Loops and Frequency  /////////////////////
 
 Task tCFilterRead(2,TASK_FOREVER, &CFilterReadCallBack);
@@ -115,7 +116,7 @@ Task tspeedPID(4, TASK_FOREVER, &speedPIDCallBack);
 Task bluetooth(8,TASK_FOREVER,&bluetoothCallBack);
 Task uSound(60, TASK_FOREVER, &uSoundCallBack);
 Task bluetoothsend(16, TASK_FOREVER, &sendTunningCallBack);
-
+Task autoTrim(10, 30, &autoTrimCallBack);
 
 Scheduler runner;
 
@@ -161,6 +162,21 @@ void bluetoothCallBack(){
   }
    
 }
+
+
+
+void autoTrimCallBack(){
+    // data received from smartphone
+    if (vxy > 0.01){
+      gtrim += 0.01;
+      }    
+      
+      else if(vxy < 0.01){
+      gtrim -= 0.01; 
+      }
+          autotrim = 0;
+      }    
+
 
 
 void sendTunningCallBack(){
@@ -214,6 +230,18 @@ void speedPIDCallBack() {
 }
 
 void gyroPIDCallBack() {
+
+    if (autotrim == 1){
+      runner.addTask(autoTrim); // Add Bluetooth Comunication
+      autoTrim.enable();
+    }
+    else {
+      autoTrim.disable();
+      autotrim = 0;
+    }
+     
+    
+  
     gyroyInput = CFilteredlAngleY-(gtrim+GyroTrim*0.1);// sign on GyroTrim to make +ve correspont to forward.
     gyroyPID.Compute();
     
@@ -241,6 +269,11 @@ void gyroPIDCallBack() {
     Serial.print(vxy+spinval-rtrim); Serial.print("\t");
     Serial.print("\n");
     */
+    Serial.print(vxy); Serial.print("\t");
+    Serial.print(autotrim); Serial.print("\t");
+    Serial.print(gtrim); Serial.print("\t");
+    Serial.print("\n");
+    
     }  
 }
 
