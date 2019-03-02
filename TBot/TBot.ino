@@ -52,7 +52,7 @@ float accX, accY, accZ;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-float gtrim = 9.9;   // Compensated for drift in forward or reverse direction.
+float gtrim = 4.85;   // Compensated for drift in forward or reverse direction.
 
 float rtrim = 0.0; // Compensated for rotational drift.
 
@@ -211,6 +211,10 @@ void speedPIDCallBack() {
     v2ang(h, speedOutput);
     gyroySetpoint = angout;
 
+    Serial.print(joyXf); Serial.print("\t");
+    Serial.print(joyYf); Serial.print("\t");
+    Serial.print("\n");
+
 }
 
 void gyroPIDCallBack() {
@@ -240,7 +244,13 @@ void gyroPIDCallBack() {
     Serial.print(vxy-spinval+rtrim); Serial.print("\t");
     Serial.print(vxy+spinval-rtrim); Serial.print("\t");
     Serial.print("\n");
-    */
+  
+   
+    Serial.print(joyXf); Serial.print("\t");
+    Serial.print(joyYf); Serial.print("\t");
+    Serial.print("\n");
+      */
+   
     }  
 }
 

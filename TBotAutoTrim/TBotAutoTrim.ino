@@ -113,10 +113,10 @@ void autoTrimCallBack();
 Task tCFilterRead(2,TASK_FOREVER, &CFilterReadCallBack);
 Task tGyroPID(4, TASK_FOREVER, &gyroPIDCallBack);
 Task tspeedPID(4, TASK_FOREVER, &speedPIDCallBack);
-Task bluetooth(8,TASK_FOREVER,&bluetoothCallBack);
+Task bluetooth(4,TASK_FOREVER,&bluetoothCallBack);
 Task uSound(60, TASK_FOREVER, &uSoundCallBack);
-Task bluetoothsend(16, TASK_FOREVER, &sendTunningCallBack);
-Task autoTrim(10, 30, &autoTrimCallBack);
+Task bluetoothsend(400, TASK_FOREVER, &sendTunningCallBack);
+Task autoTrim(20, 30, &autoTrimCallBack);
 
 Scheduler runner;
 
@@ -140,6 +140,9 @@ void uSoundCallBack(){
   Serial.print(fping); Serial.print("\t");
   Serial.print("\n");
  */
+  Serial.print(joyXf); Serial.print("\t");
+  Serial.print(joyYf); Serial.print("\t");
+  Serial.print("\n");
 }
 }
 
@@ -268,12 +271,12 @@ void gyroPIDCallBack() {
     Serial.print(vxy-spinval+rtrim); Serial.print("\t");
     Serial.print(vxy+spinval-rtrim); Serial.print("\t");
     Serial.print("\n");
-    */
+    
     Serial.print(vxy); Serial.print("\t");
     Serial.print(autotrim); Serial.print("\t");
     Serial.print(gtrim); Serial.print("\t");
     Serial.print("\n");
-    
+    */
     }  
 }
 
@@ -323,7 +326,8 @@ void setup () {
   // Others require these lines to be commented out.
 
   Serial.begin(38400);
-  BTSerial.begin(38400);
+  //BTSerial.begin(38400);
+  BTSerial.begin(57600);
   while(BTSerial.available())  BTSerial.read();
 
   

@@ -134,7 +134,7 @@ void getButtonState(int bStatus)  {
 
 // -----------------  BUTTON #6  -----------------------
     case 'K':
-      buttonStatus |= B100000;        // ON
+      buttonStatus |= B010000;        // ON
       gtrim -= 0.05;
      break;
     case 'L':

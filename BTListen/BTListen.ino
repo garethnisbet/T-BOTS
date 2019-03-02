@@ -25,6 +25,7 @@ void loop() // run over and over
             Data = "";
         
     }
+    /*
        BTSerial.print((char)STX);
    BTSerial.print((char)0x1);
    //BTSerial.print(fping);
@@ -35,4 +36,5 @@ void loop() // run over and over
  //  BTSerial.print(KI_last);
    BTSerial.print(1);
    BTSerial.print((char)ETX);
+   */
 }
