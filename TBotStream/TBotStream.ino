@@ -23,14 +23,20 @@ RunningAverage USound(2);
 
 #define    STX          0x02
 #define    ETX          0x03
-
+#define    comma        0x2C
+byte xy[] = {STX, 50, 48, 48, 50, 48, 48, ETX};
+byte letterA[] = {STX, 0, ETX};
+byte array1[] = {STX, 50, 48, 48, 50, 48, 48, ETX};
+int ii, iii;
+char letter;
+String Data = "";
 int joyX, joyY, joyXbefore, joyYbefore, joyXdiff, joyYdiff, GyroTrim;
 float controller_sensitivity = 1.5; // Increase if you want the T-Bot to go faster. It will be more likely to fall over 
 float joyXf, joyYf;
 float backoff;
 
 SoftwareSerial BTSerial(17,16);                           // BlueTooth module: pin#2=TX pin#3=RX
-byte cmd[8] = {0, 0, 0, 0, 0, 0, 0, 0};                   // bytes received
+
 byte buttonStatus = 0;                                    // first Byte sent to Android device
 String displayStatus = "----"; 
 
@@ -52,7 +58,7 @@ float accX, accY, accZ;
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-float gtrim = 4.85;   // Compensated for drift in forward or reverse direction.
+float gtrim = 8.7;   // Compensated for drift in forward or reverse direction.
 
 float rtrim = 0.0; // Compensated for rotational drift.
 
@@ -114,7 +120,7 @@ Task tGyroPID(4, TASK_FOREVER, &gyroPIDCallBack);
 Task tspeedPID(4, TASK_FOREVER, &speedPIDCallBack);
 Task bluetooth(8,TASK_FOREVER,&bluetoothCallBack);
 Task uSound(60, TASK_FOREVER, &uSoundCallBack);
-Task bluetoothsend(16, TASK_FOREVER, &sendTunningCallBack);
+Task bluetoothsend(300, TASK_FOREVER, &sendTunningCallBack);
 
 
 Scheduler runner;
@@ -143,22 +149,43 @@ void uSoundCallBack(){
 }
 
 void bluetoothCallBack(){
-  if(BTSerial.available())  {                           // data received from smartphone
-    //delay(2);
-    cmd[0] =  BTSerial.read();  
-    if(cmd[0] == STX)  {
-      int i=1;      
-      while(BTSerial.available())  {
-       // delay(1);
-        cmd[i] = BTSerial.read();
-        if(cmd[i]>127 || i>7)                 break;     // Communication error
-        if((cmd[i]==ETX) && (i==2 || i==7))   break;     // Button or Joystick data
-        i++;
+
+    while (BTSerial.available())
+    {
+        
+      char character = BTSerial.read(); // Receive a single character from the software serial port
+        
+      Data.concat(character); // Add the received character to the receive buffer
+        if (character == STX){
+          ii=0; 
+        }
+          array1[ii] = character;
+                ii+=1;
+        }
+      Data = "";
+      
+      if (array1[2]==ETX){
+
+          for(int loop1 = 0; loop1 < 3; loop1++) {
+              letterA[loop1]= array1[loop1];
+              
+          }
+
+      } 
+      if (array1[7]==ETX && array1[2] != ETX){
+          for(int loop2 = 0; loop2 < 8; loop2++) {
+              xy[loop2]= array1[loop2];
+          }
+      
       }
-      if     (i==2)          getButtonState(cmd[1]);    // 3 Bytes  ex: < STX "C" ETX >
-      if(i==7)          getJoystickState(cmd);     // 6 Bytes  ex: < STX "200" "180" ETX >
+   letter = letterA[1];
+   joyX = (xy[1]-48)*100 + (xy[2]-48)*10 + (xy[3]-48);       // obtain the Int from the ASCII representation
+   joyY = (xy[4]-48)*100 + (xy[5]-48)*10 + (xy[6]-48);
+
+    if (joyX > 300 || joyY > 300){
+      array1[1]=50;
+      array1[4]=50;
     }
-  }
    
 }
 
@@ -173,17 +200,22 @@ void sendTunningCallBack(){
   KP_last = gyroyPID.GetKp();
   KI_last = gyroyPID.GetKi();
 
-  
-   BTSerial.print((char)STX);
-   BTSerial.print((char)0x1);
+
+
+
+
+      BTSerial.print((char)STX);
    //BTSerial.print(fping);
    BTSerial.print(KPS_last);
-   BTSerial.print((char)0x4);
+   BTSerial.print((char)comma);
    BTSerial.print(KP_last);
-   BTSerial.print((char)0x5);
+   BTSerial.print((char)comma);
+   BTSerial.print(CFilteredlAngleY);
+   BTSerial.print((char)comma);
  //  BTSerial.print(KI_last);
-   BTSerial.print(gtrim);
+   BTSerial.print(CFilteredlAngleY);
    BTSerial.print((char)ETX);
+   iii = 0;
   }
 
 }
@@ -211,9 +243,9 @@ void speedPIDCallBack() {
     v2ang(h, speedOutput);
     gyroySetpoint = angout;
 
-   // Serial.print(joyXf); Serial.print("\t");
-   // Serial.print(joyYf); Serial.print("\t");
-   // Serial.print("\n");
+    Serial.print(joyXf); Serial.print("\t");
+    Serial.print(joyYf); Serial.print("\t");
+    Serial.print("\n");
 
 }
 
@@ -244,13 +276,7 @@ void gyroPIDCallBack() {
     Serial.print(vxy-spinval+rtrim); Serial.print("\t");
     Serial.print(vxy+spinval-rtrim); Serial.print("\t");
     Serial.print("\n");
-  
-   
-    Serial.print(joyXf); Serial.print("\t");
-    Serial.print(joyYf); Serial.print("\t");
-    Serial.print("\n");
-      */
-   
+    */
     }  
 }
 
