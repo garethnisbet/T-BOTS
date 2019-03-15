@@ -108,8 +108,8 @@ void speedPIDCallBack();     // Speed PID Control Loop
 void CFilterReadCallBack();  // Filtered Angle Readback
 void uSoundCallBack();       // Ultrasound Measure Loop
 
-Task bluetooth(6,TASK_FOREVER,&bluetoothCallBack);
-Task bluetoothsend(100, TASK_FOREVER, &sendDataCallBack);
+Task bluetooth(2,TASK_FOREVER,&bluetoothCallBack);
+Task bluetoothsend(120, TASK_FOREVER, &sendDataCallBack);
 Task printData(50, TASK_FOREVER, &printDataCallBack);
 Task setTuning(200, TASK_FOREVER, &setTuningCallBack);
 Task tGyroPID(4, TASK_FOREVER, &gyroPIDCallBack);
@@ -120,7 +120,7 @@ Scheduler runner;
 
 void bluetoothCallBack(){
 
-    while (BTSerial.available())
+    if (BTSerial.available())
     {
         
       char character = BTSerial.read(); // Receive a single character from the software serial port
@@ -191,7 +191,7 @@ void sendDataCallBack(){
    BTSerial.print((char)comma);
    BTSerial.print(gtrim);
    BTSerial.print((char)comma);
-   //BTSerial.print(CFilteredlAngleY*(255/180)+127.5);
+   //BTSerial.print(fping);
    BTSerial.print((CFilteredlAngleY-plotrange[0])*(255/(plotrange[1]-plotrange[0]))); // the full plotting windoe is 0 to 255
    BTSerial.print((char)ETX);
   
@@ -327,8 +327,8 @@ void setup()
     runner.addTask(bluetoothsend);
     bluetoothsend.enable();
    
-    //runner.addTask(printData);
-    //printData.enable();
+    runner.addTask(printData);
+    printData.enable();
     
     runner.addTask(setTuning);
     setTuning.enable();
