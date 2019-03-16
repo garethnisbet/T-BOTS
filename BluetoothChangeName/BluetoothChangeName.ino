@@ -29,7 +29,6 @@ void setup()
   BTSerial.begin(38400);  // HC-05 default speed in AT command more
   //BTSerial.begin(9600);
 }
-
 void loop()
 {
   // Keep reading from HC-05 and send to Arduino Serial Monitor
