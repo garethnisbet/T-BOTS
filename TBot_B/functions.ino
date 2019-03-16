@@ -134,17 +134,12 @@ void getButtonState(int bStatus)  {
 
 // -----------------  BUTTON #6  -----------------------
     case 'K':
-      buttonStatus |= B010000;        // ON
+      buttonStatus |= B100000;        // ON
       gtrim -= 0.05;
      break;
     case 'L':
       gtrim -= 0.05;
       break;
-// -----------------  BUTTON #7  -----------------------
-    case 'T':
-      buttonStatus |= B100000;        // ON
-      autotrim = 1;
-     break;
 
 }
 }

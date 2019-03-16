@@ -1,5 +1,5 @@
 
-// Import libraries here
+//////////////////   Import libraries here    ///////////////////
 #include <TaskScheduler.h>
 #include <Motor.h>
 #include <PID_v1.h>
@@ -10,6 +10,64 @@
 #include <Wire.h>
 #include "Combination_Filter.h" 
 
+
+
+///////////////  Setup preprocessor directives ///////////////////
+#define    STX          0x02
+#define    ETX          0x03
+#define    comma        0x2C
+
+////////////     Setup variables  //////////////////////////////// 
+byte data[9] = {STX, 50, 48, 48, 50, 48, 48, ETX};
+byte letter;
+byte array1[10] = {STX, 50, 48, 48, 50, 48, 48, 90, ETX};
+int joyXdiff, joyYdiff,joyXcheck, joyYcheck, joyXbefore, joyYbefore, joyX, joyY, boflag;
+float joyXf, joyYf; 
+float backoff;
+int ii, iii;
+String Data = "";
+int StopII, autotrim;
+float g = 9.81, pi = 3.1416, h = 0.08; // physical constants
+float dh, th, phi, v, vxy, vx, vy, vz, norm, vxs, vys, angout;
+float accX, accY, accZ;
+int incflag;
+char character;
+///////   Tuning ////////////////////////////////////////////
+
+float gtrim = 4.85, rtrim = 0;
+float controller_sensitivity = 1.5, spinval, spinfactor = 0.8;
+float speedpidsampletime = 2;
+float gyropidsampletime = 2;
+float filter_weighting = 0.015;
+float speedKp=0.10;
+float speedKi=0;
+double speedKd=0.00, KPS = 0.10, KP = 4.20, KI = 65, KPS_last, KP_last, KI_last;
+String sendKPS, sendKP, sendgtrim;
+double gyroKp=4.2, gyroKi=65, gyroKd=0.0;
+
+float plotrange[2] = {-10, 10};
+
+double speedSetpoint, speedInput, speedOutput;
+PID speedPID(&speedInput, &speedOutput, &speedSetpoint, speedKp, speedKi, speedKd, DIRECT);
+
+double gyroySetpoint, gyroyInput, gyroyOutput;
+PID gyroyPID(&gyroyInput, &gyroyOutput, &gyroySetpoint, gyroKp, gyroKi, gyroKd, DIRECT);
+
+
+///////////////////   Setup Gyro with Combination Filter   /////////////////////
+
+CFilter CFilterY; // Create the CFilter instances
+
+double gyroX, gyroY, gyroZ;
+int16_t tempRaw;
+double  gyroYangle; // Angle calculate using the gyro only
+double CFilteredlAngleY; // Calculated angle using a CFilter
+double pitch,roll,gyroYrate, gyroangle;
+uint32_t timer;
+uint8_t i2cData[14]; // Buffer for I2C data
+double gyroxoffset, gyroyoffset;
+float forward, remoteclock, ac2, accXF;
+
 /////////////////////////////     Setup Ultrasound    ///////////////////////////
 
 float fping, pingval;
@@ -19,58 +77,10 @@ float fping, pingval;
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 RunningAverage USound(2);
 
-///////////////////////////// Setup Bluetooth Control   ///////////////////////////
-
-#define    STX          0x02
-#define    ETX          0x03
-
-int joyX, joyY, joyXbefore, joyYbefore, joyXdiff, joyYdiff, GyroTrim;
-float controller_sensitivity = 1.5; // Increase if you want the T-Bot to go faster. It will be more likely to fall over 
-float joyXf, joyYf;
-float backoff;
-
-SoftwareSerial BTSerial(17,16);                           // BlueTooth module: pin#2=TX pin#3=RX
-byte cmd[8] = {0, 0, 0, 0, 0, 0, 0, 0};                   // bytes received
-byte buttonStatus = 0;                                    // first Byte sent to Android device
-String displayStatus = "----"; 
-
-/////////////////////////////////////////////////////////////////////////////////
-
-int starttime;
-int kp, ki, kd; // for inread function
-int gyrocounter, commandcounter;
-int boflag;
-float gyrocomp;
-float forward, remoteclock, ac2, accXF;
-float spinval;
-float spinfactor = 0.8;
-float filterFrequency = 1;  
-float g = 9.81, pi = 3.1416, h = 0.08;
-float dh, th, phi, v, vxy, vx, vy, vz, norm, vxs, vys, angout;
-float accX, accY, accZ;
+////////////////// Setup Pins for Bluetooth  ///////////////////////////////////
 
 
-////////////////////  Speed and Stability tunings   /////////////////////////
-
-float gtrim = 4.85;   // Compensated for drift in forward or reverse direction.
-
-float rtrim = 0.0; // Compensated for rotational drift.
-
-
-float filter_weighting = 0.015; // See Combination_Filter.h
-
-
-float speedpidsampletime = 2;
-float gyropidsampletime = 2;
-
-double speedKp=0.10, speedKi=0, speedKd=0.0, KPS = 0.10, KP = 4.2, KI = 65, KPS_last, KP_last, KI_last;
-double gyroKp=4.2, gyroKi=65, gyroKd=0.0;
-
-double speedSetpoint, speedInput, speedOutput;
-PID speedPID(&speedInput, &speedOutput, &speedSetpoint, speedKp, speedKi, speedKd, DIRECT);
-
-double gyroySetpoint, gyroyInput, gyroyOutput;
-PID gyroyPID(&gyroyInput, &gyroyOutput, &gyroySetpoint, gyroKp, gyroKi, gyroKd, DIRECT);
+SoftwareSerial BTSerial(17,16);  // RX, TX
 
 
 /////////////////////          Setup Motors             /////////////////////////
@@ -85,39 +95,72 @@ Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, m1ndb, m1pdb, mpsfactor);
 const int m1stby = 6, m1ain1 = 8, m1ain2 = 7,  m1pwmpin = 10;
 Motor m2 = Motor(m1ain1, m1ain2, m1stby, m1pwmpin, m2ndb, m2pdb, mpsfactor2);
 
-///////////////////   Setup Gyro with Combination Filter   /////////////////////
 
-CFilter CFilterY; // Create the CFilter instances
 
-double gyroX, gyroY, gyroZ;
-int16_t tempRaw;
-double  gyroYangle; // Angle calculate using the gyro only
-double CFilteredlAngleY; // Calculated angle using a CFilter
-double pitch,roll,gyroYrate, gyroangle;
-uint32_t timer;
-uint8_t i2cData[14]; // Buffer for I2C data
-double gyroxoffset, gyroyoffset;
+/////////////////  Setup schedules  //////////////////////////////
 
-///////////////////         Setup Scheduled Tasks         /////////////////////
+void bluetoothCallBack();    // Bluetooth IO receive data
+void sendDataCallBack();     // Bluetooth IO Send data
+void printDataCallBack();    // Serial Print
+void setTuningCallBack();    // Serial Print
+void gyroPIDCallBack();      // Stability PID Control Loop
+void speedPIDCallBack();     // Speed PID Control Loop
+void CFilterReadCallBack();  // Filtered Angle Readback
+void uSoundCallBack();       // Ultrasound Measure Loop
 
-void CFilterReadCallBack();             // Filtered Angle Readback
-void speedPIDCallBack();                // Speed PID Control Loop
-void gyroPIDCallBack();                 // Stability PID Control Loop
-void bluetoothCallBack();               // Bluetooth IO Read Loop
-void uSoundCallBack();                  // Ultrasound Measure Loop
-void printDataCallBack();               // Print Data to Serial Loop
-void sendTunningCallBack(); // Bluetooth IO Send Loop
-///////////////////    Set Number of Loops and Frequency  /////////////////////
-
-Task tCFilterRead(2,TASK_FOREVER, &CFilterReadCallBack);
+Task bluetooth(2,TASK_FOREVER,&bluetoothCallBack);
+Task bluetoothsend(120, TASK_FOREVER, &sendDataCallBack);
+Task printData(50, TASK_FOREVER, &printDataCallBack);
+Task setTuning(200, TASK_FOREVER, &setTuningCallBack);
 Task tGyroPID(4, TASK_FOREVER, &gyroPIDCallBack);
 Task tspeedPID(4, TASK_FOREVER, &speedPIDCallBack);
-Task bluetooth(8,TASK_FOREVER,&bluetoothCallBack);
+Task tCFilterRead(2,TASK_FOREVER, &CFilterReadCallBack);
 Task uSound(60, TASK_FOREVER, &uSoundCallBack);
-Task bluetoothsend(16, TASK_FOREVER, &sendTunningCallBack);
-
-
 Scheduler runner;
+
+void bluetoothCallBack(){
+
+    if (BTSerial.available())
+    {
+        
+      char character = BTSerial.read(); // Receive a single character from the software serial port
+        
+      Data.concat(character); // Add the received character to the receive buffer
+        if (character == STX){
+          ii=0; 
+        }
+          if(ii > 0 && ii < 7 && character > 47 && character < 58){        
+          array1[ii] = character;
+
+          }
+
+          if (ii == 7 && character > 64 && character < 91){
+            array1[ii] = character;
+          }
+         
+                ii+=1;
+         Data = "";
+        }
+
+          for(int loop1 = 0; loop1 < 8; loop1++) {
+              data[loop1]= array1[loop1];
+              }
+              if (array1[7] > 64 && array1[7] < 91){
+          letter =   array1[7];
+              } 
+              else{
+                letter = 90;
+                }
+
+        if (ii == 7){
+        setJoystick(data);
+        
+        
+        }
+         
+    }
+             
+           
 
 
 void uSoundCallBack(){
@@ -134,57 +177,45 @@ void uSoundCallBack(){
   else{
     backoff = 0;
    }
-  /*
-  Serial.print(pingval); Serial.print("\t");
-  Serial.print(fping); Serial.print("\t");
-  Serial.print("\n");
- */
-}
-}
-
-void bluetoothCallBack(){
-  if(BTSerial.available())  {                           // data received from smartphone
-    //delay(2);
-    cmd[0] =  BTSerial.read();  
-    if(cmd[0] == STX)  {
-      int i=1;      
-      while(BTSerial.available())  {
-       // delay(1);
-        cmd[i] = BTSerial.read();
-        if(cmd[i]>127 || i>7)                 break;     // Communication error
-        if((cmd[i]==ETX) && (i==2 || i==7))   break;     // Button or Joystick data
-        i++;
-      }
-      if     (i==2)          getButtonState(cmd[1]);    // 3 Bytes  ex: < STX "C" ETX >
-      if(i==7)          getJoystickState(cmd);     // 6 Bytes  ex: < STX "200" "180" ETX >
-    }
   }
-   
 }
 
 
-void sendTunningCallBack(){
-  if(BTSerial.available())  { 
-                   if (KPS + KP + KI !=  KPS_last + KP_last + KI_last){
+
+void sendDataCallBack(){
+
+   BTSerial.print((char)STX);
+   BTSerial.print(KPS);
+   BTSerial.print((char)comma);
+   BTSerial.print(KP);
+   BTSerial.print((char)comma);
+   BTSerial.print(gtrim);
+   BTSerial.print((char)comma);
+   //BTSerial.print(fping);
+   BTSerial.print((CFilteredlAngleY-plotrange[0])*(255/(plotrange[1]-plotrange[0]))); // the full plotting windoe is 0 to 255
+   BTSerial.print((char)ETX);
+  
+}
+
+void printDataCallBack(){
+    Serial.print(joyXf); Serial.print("\t");
+    Serial.print(joyYf); Serial.print("\t");
+   // Serial.print(fping);Serial.print("\t");
+   // Serial.print(KPS);Serial.print("\t");
+   // Serial.print(KP);Serial.print("\t");
+   // Serial.print(gtrim);Serial.print("\t");
+   // Serial.print(CFilteredlAngleY);Serial.print("\t");
+   // Serial.print(array1[7]);Serial.print("\t");
+    Serial.print("\n");
+}
+
+
+void setTuningCallBack(){
+    incflag = 1;
+    refreshTuningFields(array1[7]);
     speedPID.SetTunings(KPS, speedKi, speedKd);
     gyroyPID.SetTunings(KP, KI, gyroKd);
-  }
-  KPS_last = speedPID.GetKp();
-  KP_last = gyroyPID.GetKp();
-  KI_last = gyroyPID.GetKi();
-
-  
-   BTSerial.print((char)STX);
-   BTSerial.print((char)0x1);
-   //BTSerial.print(fping);
-   BTSerial.print(KPS_last);
-   BTSerial.print((char)0x4);
-   BTSerial.print(KP_last);
-   BTSerial.print((char)0x5);
- //  BTSerial.print(KI_last);
-   BTSerial.print(gtrim);
-   BTSerial.print((char)ETX);
-  }
+    
 
 }
 
@@ -192,6 +223,7 @@ void CFilterReadCallBack(){
     gyroread();
 
 }
+
 
 void speedPIDCallBack() {
   if (abs(joyXf)>60){ // Compensation to prevent robot falling over when spinning
@@ -211,14 +243,14 @@ void speedPIDCallBack() {
     v2ang(h, speedOutput);
     gyroySetpoint = angout;
 
-   // Serial.print(joyXf); Serial.print("\t");
-   // Serial.print(joyYf); Serial.print("\t");
-   // Serial.print("\n");
+  //  Serial.print(joyXf); Serial.print("\t");
+  //  Serial.print(joyYf); Serial.print("\t");
+  //  Serial.print("\n");
 
 }
 
 void gyroPIDCallBack() {
-    gyroyInput = CFilteredlAngleY-(gtrim+GyroTrim*0.1);// sign on GyroTrim to make +ve correspont to forward.
+    gyroyInput = CFilteredlAngleY-(gtrim);// sign on GyroTrim to make +ve correspont to forward.
     gyroyPID.Compute();
     
     spinval = -spinfactor*joyXf/mpsfactor;
@@ -240,21 +272,13 @@ void gyroPIDCallBack() {
       
     m1.speed((vxy-spinval+rtrim));
     m2.speed((vxy+spinval-rtrim));
-    /*
-    Serial.print(vxy-spinval+rtrim); Serial.print("\t");
-    Serial.print(vxy+spinval-rtrim); Serial.print("\t");
-    Serial.print("\n");
-  
-   
-    Serial.print(joyXf); Serial.print("\t");
-    Serial.print(joyYf); Serial.print("\t");
-    Serial.print("\n");
-      */
-   
     }  
 }
 
-void setup () {
+
+
+void setup()  
+{
   Wire.begin();
 
   ////// Scale up PWM frequency to avoid annoying high pitch motor noise ///////
@@ -284,48 +308,45 @@ void setup () {
   
   ////////////////           Set PID output limits       /////////////////////
   
-  speedPID.SetOutputLimits(-0.2,0.2);
-  speedPID.SetMode(AUTOMATIC);
-  speedPID.SetSampleTime(speedpidsampletime);
+    speedPID.SetOutputLimits(-0.2,0.2);
+    speedPID.SetMode(AUTOMATIC);
+    speedPID.SetSampleTime(speedpidsampletime);
   
-  gyroyPID.SetOutputLimits(-60,60);
-  gyroyPID.SetMode(AUTOMATIC);
-  gyroyPID.SetSampleTime(gyropidsampletime);
-
-    ///////////   Setup Serial and Bluetooth communication   ////////////////////
-
-  // pinMode(15, OUTPUT);  // this pin will pull the HC-05 pin 34 (key pin) HIGH to switch module to AT mode
-  // digitalWrite(15, HIGH); //Some modules reqire this to be set to HIGH for AT mode
-  // digitalWrite(15, LOW); //Some modules reqire this to be actively set to LOW for normal use.
-  // Others require these lines to be commented out.
-
-  Serial.begin(38400);
-  BTSerial.begin(38400);
-  while(BTSerial.available())  BTSerial.read();
+    gyroyPID.SetOutputLimits(-60,60);
+    gyroyPID.SetMode(AUTOMATIC);
+    gyroyPID.SetSampleTime(gyropidsampletime);
 
   
-  /////////////////         Start Scheduled Tasks         /////////////////////
+    Serial.begin(38400);
+    BTSerial.begin(38400);
+    runner.init();
+    
+    runner.addTask(bluetooth);
+    bluetooth.enable();
+    
+    runner.addTask(bluetoothsend);
+    bluetoothsend.enable();
+   
+    runner.addTask(printData);
+    printData.enable();
+    
+    runner.addTask(setTuning);
+    setTuning.enable();
+    
+    runner.addTask(tCFilterRead);
+    tCFilterRead.enable();
+    
+    runner.addTask(tspeedPID); // Add Speed PID control
+    tspeedPID.enable();
+    
+    runner.addTask(tGyroPID);  // Add Stability PID control
+    tGyroPID.enable();
 
-  runner.init();
-
-  runner.addTask(tCFilterRead);
-  runner.addTask(tspeedPID); // Add Speed PID control 
-  runner.addTask(tGyroPID);  // Add Stability PID control
-  runner.addTask(uSound);    // Add Ultrasound Readback
-  runner.addTask(bluetooth); // Add Bluetooth Comunication
-  runner.addTask(bluetoothsend); // Add Bluetooth Comunication
-  
-  tGyroPID.enable();  
-  tspeedPID.enable();  
-  uSound.enable();
-  bluetooth.enable();
-  bluetoothsend.enable();
-  tCFilterRead.enable();
-
+    runner.addTask(uSound);    // Add Ultrasound Readback
+    uSound.enable();
+      
 }
 
 void loop () {
   runner.execute();
 }
-
-

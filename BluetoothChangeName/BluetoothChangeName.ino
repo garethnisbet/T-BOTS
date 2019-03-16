@@ -14,7 +14,7 @@ void setup()
   Serial.println("Type AT+ADDR? to get the mac address (YOU WILL NEED THIS LATER)");
   Serial.println("Type AT+ROLE? to check if master (1) or slave (0)");
   Serial.println("Type AT+CMODE? Connect to one device (0) connect to any (1)");
-  Serial.println("Type AT+BIND = mac address");
+  Serial.println("Type AT+BIND = mac address. Eg AT+BIND = 98d3,32,114ccf");
   
   Serial.println(" ");
 

@@ -57,91 +57,79 @@ void gyroread(){
 
 } // end of gyro function
 
-void getJoystickState(byte databt[8])    {
-  joyX = (databt[1]-48)*100 + (databt[2]-48)*10 + (databt[3]-48);       // obtain the Int from the ASCII representation
-  joyY = (databt[4]-48)*100 + (databt[5]-48)*10 + (databt[6]-48);
+void refreshTuningFields(int bStatus)  {
+        switch (bStatus){
+        case 'A':
+         
+            KPS -= 0.01;
+            
+          break;
+        
+        case 'B':
+
+            KPS += 0.01;
+
+            
+          break;
+        
+        case 'C':
+           
+            KP -= 0.1;
+
+           
+          break;
+        
+        case 'D':
+            
+            KP += 0.1;
+
+                    
+          break;
+                  
+        case 'E':
+            
+            gtrim -= 0.1;
+
+          
+          break;
+        
+        case 'F':
+            
+            gtrim += 0.1;
+           
+          break;
+        
+        case 'T':
+            autotrim = 1;
+            break;
+
+        case 'Z':
+            StopII = 0;
+        break;   
+        }
+
+        array1[7]= 'Z';
+        incflag = 0; 
+        
+}
+        
+void setJoystick(byte databt[8]){
+   joyXcheck = (databt[1]-48)*100 + (databt[2]-48)*10 + (databt[3]-48);       // obtain the Int from the ASCII representation
+   joyYcheck = (databt[4]-48)*100 + (databt[5]-48)*10 + (databt[6]-48);
+    if (joyXcheck < 300 && joyYcheck < 300){
+      joyX = joyXcheck - 200;
+      joyY = joyYcheck - 200;
+      
+    }
   joyXdiff = joyX - joyXbefore;
   joyYdiff = joyY - joyYbefore;
-  if (abs(joyXdiff) <= 100){
-  joyXf = joyX - 200;// Offset to avoid transmitting negative numbers
+  if (abs(joyXdiff) <= 300){
+  joyXf = joyX;// Offset to avoid transmitting negative numbers
   }
   if (abs(joyYdiff) <= 100){
-  joyYf = joyY - 200;
+  joyYf = joyY;
   }
   joyXbefore = joyX;
   joyYbefore = joyY;
-  /*
-  Serial.print(joyX); Serial.print("\t");
-  Serial.print(joyY); Serial.print("\t");
-  Serial.print("\n");
-  */
   
 }
-
-
-
-void getButtonState(int bStatus)  {
-  switch (bStatus) {
-// -----------------  BUTTON #1  -----------------------
-    case 'A':
-      buttonStatus |= B000001;    
-      KPS += 0.01;
-      break;
-    case 'B':
-      buttonStatus &= B111110;      
-      KPS += 0.01;
-
-      break;
-
-// -----------------  BUTTON #2  -----------------------
-    case 'C':
-      buttonStatus |= B000010;    
-      KPS -= 0.01;
-      break;
-    case 'D':
-      buttonStatus &= B111101;    
-      KPS -= 0.01;
-      break;
-
-// -----------------  BUTTON #3  -----------------------
-    case 'E':
-      buttonStatus |= B000100;        
-      KP += 0.02;
-      break;
-    case 'F':
-      buttonStatus &= B111011;      
-      KP += 0.02;
-      break;
-
-// -----------------  BUTTON #4  -----------------------
-    case 'G':
-      buttonStatus |= B001000;      
-      KP -= 0.02;
-    break;
-    case 'H':
-      buttonStatus &= B110111;    
-      KP -= 0.02;
-    break;
-
-// -----------------  BUTTON #5  -----------------------
-    case 'I':           // configured as momentary button
-      gtrim += 0.05;
-      break;
-   case 'J':
-     buttonStatus &= B101111;        // OFF
-      gtrim += 0.05;    
-     break;
-
-// -----------------  BUTTON #6  -----------------------
-    case 'K':
-      buttonStatus |= B100000;        // ON
-      gtrim -= 0.05;
-     break;
-    case 'L':
-      gtrim -= 0.05;
-      break;
-
-}
-}
-
-

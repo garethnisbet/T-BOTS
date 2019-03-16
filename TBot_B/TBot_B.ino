@@ -48,11 +48,11 @@ float filterFrequency = 1;
 float g = 9.81, pi = 3.1416, h = 0.08;
 float dh, th, phi, v, vxy, vx, vy, vz, norm, vxs, vys, angout;
 float accX, accY, accZ;
-int autotrim;
+
 
 ////////////////////  Speed and Stability tunings   /////////////////////////
 
-float gtrim = 9.9;   // Compensated for drift in forward or reverse direction.
+float gtrim = 4.85;   // Compensated for drift in forward or reverse direction.
 
 float rtrim = 0.0; // Compensated for rotational drift.
 
@@ -107,16 +107,15 @@ void bluetoothCallBack();               // Bluetooth IO Read Loop
 void uSoundCallBack();                  // Ultrasound Measure Loop
 void printDataCallBack();               // Print Data to Serial Loop
 void sendTunningCallBack(); // Bluetooth IO Send Loop
-void autoTrimCallBack();
 ///////////////////    Set Number of Loops and Frequency  /////////////////////
 
 Task tCFilterRead(2,TASK_FOREVER, &CFilterReadCallBack);
 Task tGyroPID(4, TASK_FOREVER, &gyroPIDCallBack);
 Task tspeedPID(4, TASK_FOREVER, &speedPIDCallBack);
-Task bluetooth(4,TASK_FOREVER,&bluetoothCallBack);
+Task bluetooth(8,TASK_FOREVER,&bluetoothCallBack);
 Task uSound(60, TASK_FOREVER, &uSoundCallBack);
-Task bluetoothsend(400, TASK_FOREVER, &sendTunningCallBack);
-Task autoTrim(20, 30, &autoTrimCallBack);
+Task bluetoothsend(16, TASK_FOREVER, &sendTunningCallBack);
+
 
 Scheduler runner;
 
@@ -140,9 +139,6 @@ void uSoundCallBack(){
   Serial.print(fping); Serial.print("\t");
   Serial.print("\n");
  */
-  Serial.print(joyXf); Serial.print("\t");
-  Serial.print(joyYf); Serial.print("\t");
-  Serial.print("\n");
 }
 }
 
@@ -165,21 +161,6 @@ void bluetoothCallBack(){
   }
    
 }
-
-
-
-void autoTrimCallBack(){
-    // data received from smartphone
-    if (vxy > 0.01){
-      gtrim += 0.01;
-      }    
-      
-      else if(vxy < 0.01){
-      gtrim -= 0.01; 
-      }
-          autotrim = 0;
-      }    
-
 
 
 void sendTunningCallBack(){
@@ -230,21 +211,13 @@ void speedPIDCallBack() {
     v2ang(h, speedOutput);
     gyroySetpoint = angout;
 
+   // Serial.print(joyXf); Serial.print("\t");
+   // Serial.print(joyYf); Serial.print("\t");
+   // Serial.print("\n");
+
 }
 
 void gyroPIDCallBack() {
-
-    if (autotrim == 1){
-      runner.addTask(autoTrim); // Add Bluetooth Comunication
-      autoTrim.enable();
-    }
-    else {
-      autoTrim.disable();
-      autotrim = 0;
-    }
-     
-    
-  
     gyroyInput = CFilteredlAngleY-(gtrim+GyroTrim*0.1);// sign on GyroTrim to make +ve correspont to forward.
     gyroyPID.Compute();
     
@@ -271,12 +244,13 @@ void gyroPIDCallBack() {
     Serial.print(vxy-spinval+rtrim); Serial.print("\t");
     Serial.print(vxy+spinval-rtrim); Serial.print("\t");
     Serial.print("\n");
-    
-    Serial.print(vxy); Serial.print("\t");
-    Serial.print(autotrim); Serial.print("\t");
-    Serial.print(gtrim); Serial.print("\t");
+  
+   
+    Serial.print(joyXf); Serial.print("\t");
+    Serial.print(joyYf); Serial.print("\t");
     Serial.print("\n");
-    */
+      */
+   
     }  
 }
 
@@ -326,8 +300,7 @@ void setup () {
   // Others require these lines to be commented out.
 
   Serial.begin(38400);
-  //BTSerial.begin(38400);
-  BTSerial.begin(57600);
+  BTSerial.begin(38400);
   while(BTSerial.available())  BTSerial.read();
 
   
