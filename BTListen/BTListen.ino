@@ -22,8 +22,7 @@ void loop() // run over and over
             // Add your code to parse the received line here....
 
             // Clear receive buffer so we're ready to receive the next line
-            Data = "";
-        
+            Data = "";        
     }
     /*
        BTSerial.print((char)STX);

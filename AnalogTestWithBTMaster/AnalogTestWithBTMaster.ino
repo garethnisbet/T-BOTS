@@ -50,5 +50,4 @@ void loop(){
         
     }
     BTSerial.flush();
-   
 }
