@@ -10,8 +10,6 @@
 #include <Wire.h>
 #include "Combination_Filter.h" 
 
-
-
 ///////////////  Setup preprocessor directives ///////////////////
 #define    STX          0x02
 #define    ETX          0x03
@@ -52,7 +50,6 @@ PID speedPID(&speedInput, &speedOutput, &speedSetpoint, speedKp, speedKi, speedK
 
 double gyroySetpoint, gyroyInput, gyroyOutput;
 PID gyroyPID(&gyroyInput, &gyroyOutput, &gyroySetpoint, gyroKp, gyroKi, gyroKd, DIRECT);
-
 
 ///////////////////   Setup Gyro with Combination Filter   /////////////////////
 
