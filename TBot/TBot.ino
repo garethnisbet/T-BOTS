@@ -32,8 +32,8 @@ int incflag;
 char character;
 ///////   Tuning ////////////////////////////////////////////
 
-//float gtrim = 4.3, rtrim = 0;
-float gtrim = 9.3, rtrim = 0;
+float gtrim = 4.3, rtrim = 0;
+//float gtrim = 9.3, rtrim = 0;
 
 
 float controller_sensitivity = 1.5, spinval, spinfactor = 0.8;
@@ -91,8 +91,8 @@ SoftwareSerial BTSerial(17,16);  // RX, TX
 
 // m1 is the T-Bot's right motor, m2 is the left
 
-//const int m1ndb = 23 , m1pdb = 23, m2ndb = 23 , m2pdb = 23; // note the values are always positive good for george
-const int m1ndb = 32 , m1pdb = 31, m2ndb = 27 , m2pdb = 26; // good fot T-Bot
+const int m1ndb = 23 , m1pdb = 23, m2ndb = 23 , m2pdb = 23; // note the values are always positive good for george
+//const int m1ndb = 32 , m1pdb = 31, m2ndb = 27 , m2pdb = 26; // good fot T-Bot
 const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 240, mpsfactor2 = 240;
 
 Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, m1ndb, m1pdb, mpsfactor);
