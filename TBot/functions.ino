@@ -101,6 +101,7 @@ void refreshTuningFields(int bStatus)  {
         
         case 'T':
             autotrim = 1;
+            gtrim = CFilteredlAngleY;
             break;
 
         case 'Z':

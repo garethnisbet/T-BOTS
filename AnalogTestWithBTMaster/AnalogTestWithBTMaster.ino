@@ -22,10 +22,10 @@ void loop(){
    X = ((255/1034.)*analogRead(X_Pin))+100;
    Y = ((255/1034.)*analogRead(Y_Pin))+100;
    dval = digitalRead(D_Pin);
-   Serial.print(X); Serial.print('\t');
-   Serial.print(Y); Serial.print('\t');
-   Serial.print((char)Z); Serial.print('\t');
-   Serial.print('\n');
+//  Serial.print(X); Serial.print('\t');
+//   Serial.print(Y); Serial.print('\t');
+//   Serial.print((char)Z); Serial.print('\t');
+//   Serial.print('\n');
    if (abs(X-X_old) > 5 || abs(Y-Y_old) > 5){
       BTSerial.print((char)STX);
       BTSerial.print(X);

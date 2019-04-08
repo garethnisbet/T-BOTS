@@ -32,7 +32,10 @@ int incflag;
 char character;
 ///////   Tuning ////////////////////////////////////////////
 
-float gtrim = 4.85, rtrim = 0;
+//float gtrim = 4.3, rtrim = 0;
+float gtrim = 9.3, rtrim = 0;
+
+
 float controller_sensitivity = 1.5, spinval, spinfactor = 0.8;
 float speedpidsampletime = 2;
 float gyropidsampletime = 2;
@@ -42,6 +45,10 @@ float speedKi=0;
 double speedKd=0.00, KPS = 0.10, KP = 4.20, KI = 65, KPS_last, KP_last, KI_last;
 String sendKPS, sendKP, sendgtrim;
 double gyroKp=4.2, gyroKi=65, gyroKd=0.0;
+
+//double speedKd=0.00, KPS = 0.02, KP = 2.00, KI = 55, KPS_last, KP_last, KI_last;
+//String sendKPS, sendKP, sendgtrim;
+//double gyroKp=2.0, gyroKi=35, gyroKd=0.0;
 
 float plotrange[2] = {-10, 10};
 
@@ -84,7 +91,8 @@ SoftwareSerial BTSerial(17,16);  // RX, TX
 
 // m1 is the T-Bot's right motor, m2 is the left
 
-const int m1ndb = 23 , m1pdb = 23, m2ndb = 23 , m2pdb = 23; // note the values are always positive
+//const int m1ndb = 23 , m1pdb = 23, m2ndb = 23 , m2pdb = 23; // note the values are always positive good for george
+const int m1ndb = 32 , m1pdb = 31, m2ndb = 27 , m2pdb = 26; // good fot T-Bot
 const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 240, mpsfactor2 = 240;
 
 Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, m1ndb, m1pdb, mpsfactor);
@@ -122,7 +130,6 @@ void bluetoothCallBack(){
         
       char character = BTSerial.read(); // Receive a single character from the software serial port
         
-      Data.concat(character); // Add the received character to the receive buffer
         if (character == STX){
           ii=0; 
         }
@@ -136,7 +143,6 @@ void bluetoothCallBack(){
           }
          
                 ii+=1;
-         Data = "";
         }
 
           for(int loop1 = 0; loop1 < 8; loop1++) {
@@ -189,7 +195,7 @@ void sendDataCallBack(){
    BTSerial.print(gtrim);
    BTSerial.print((char)comma);
    //BTSerial.print(fping);
-   BTSerial.print((CFilteredlAngleY-plotrange[0])*(255/(plotrange[1]-plotrange[0]))); // the full plotting windoe is 0 to 255
+   BTSerial.print((CFilteredlAngleY-gtrim-plotrange[0])*(255/(plotrange[1]-plotrange[0]))); // the full plotting windoe is 0 to 255
    BTSerial.print((char)ETX);
   
 }
@@ -324,8 +330,8 @@ void setup()
     runner.addTask(bluetoothsend);
     bluetoothsend.enable();
    
-    runner.addTask(printData);
-    printData.enable();
+  //  runner.addTask(printData);
+  //  printData.enable();
     
     runner.addTask(setTuning);
     setTuning.enable();
