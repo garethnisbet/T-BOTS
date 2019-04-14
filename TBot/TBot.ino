@@ -112,6 +112,8 @@ void gyroPIDCallBack();      // Stability PID Control Loop
 void speedPIDCallBack();     // Speed PID Control Loop
 void CFilterReadCallBack();  // Filtered Angle Readback
 void uSoundCallBack();       // Ultrasound Measure Loop
+void autoTrimCallBack();     // Auto Trim on button press
+
 
 Task bluetooth(2,TASK_FOREVER,&bluetoothCallBack);
 Task bluetoothsend(120, TASK_FOREVER, &sendDataCallBack);
@@ -121,6 +123,7 @@ Task tGyroPID(4, TASK_FOREVER, &gyroPIDCallBack);
 Task tspeedPID(4, TASK_FOREVER, &speedPIDCallBack);
 Task tCFilterRead(2,TASK_FOREVER, &CFilterReadCallBack);
 Task uSound(60, TASK_FOREVER, &uSoundCallBack);
+Task autoTrim(10, TASK_FOREVER, &autoTrimCallBack);
 Scheduler runner;
 
 void bluetoothCallBack(){
@@ -246,9 +249,9 @@ void speedPIDCallBack() {
     v2ang(h, speedOutput);
     gyroySetpoint = angout;
 
-  //  Serial.print(joyXf); Serial.print("\t");
-  //  Serial.print(joyYf); Serial.print("\t");
-  //  Serial.print("\n");
+ //   Serial.print(joyXf); Serial.print("\t");
+ //   Serial.print(joyYf); Serial.print("\t");
+ //   Serial.print("\n");
 
 }
 
@@ -265,7 +268,7 @@ void gyroPIDCallBack() {
        boflag = 1; 
     }
 
-    /////////// To prevent brown out on the Bluetooth module when battery is low. //////////
+    /////////// To help prevent brown out on the Bluetooth module when battery is low. //////////
     if (abs(gyroySetpoint)<0.5  && boflag == 1 && abs(vxy) < 0.1) {
        boflag = 0; 
     }
@@ -278,7 +281,22 @@ void gyroPIDCallBack() {
     }  
 }
 
-
+void autoTrimCallBack(){
+    if (abs(joyYf) < 0.1 && autotrim != 0){
+      if (vxy > 0.05){
+          gtrim += 0.01;
+      }
+      else if (vxy < 0.01){
+        gtrim -= 0.01;
+        
+      }
+      autotrim +=1;
+    }
+    
+    if (autotrim > 100){
+      autotrim = 0;
+    } 
+}
 
 void setup()  
 {
@@ -347,6 +365,9 @@ void setup()
 
     runner.addTask(uSound);    // Add Ultrasound Readback
     uSound.enable();
+
+    runner.addTask(autoTrim);
+    autoTrim.enable();
       
 }
 
