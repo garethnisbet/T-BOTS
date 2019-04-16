@@ -32,8 +32,8 @@ int incflag;
 char character;
 ///////   Tuning ////////////////////////////////////////////
 
-float gtrim = 4.3, rtrim = 0;
-//float gtrim = 9.3, rtrim = 0;
+//float gtrim = 4.3, rtrim = 0;
+float gtrim = 6.3, rtrim = 0;
 
 
 float controller_sensitivity = 1.5, spinval, spinfactor = 0.8;
@@ -92,6 +92,7 @@ SoftwareSerial BTSerial(17,16);  // RX, TX
 // m1 is the T-Bot's right motor, m2 is the left
 
 const int m1ndb = 23 , m1pdb = 23, m2ndb = 23 , m2pdb = 23; // note the values are always positive good for george
+//const int m1ndb = 33 , m1pdb = 33, m2ndb = 33 , m2pdb = 33; // note the values are always positive good for B
 //const int m1ndb = 32 , m1pdb = 31, m2ndb = 27 , m2pdb = 26; // good fot T-Bot
 const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 240, mpsfactor2 = 240;
 
@@ -123,7 +124,7 @@ Task tGyroPID(4, TASK_FOREVER, &gyroPIDCallBack);
 Task tspeedPID(4, TASK_FOREVER, &speedPIDCallBack);
 Task tCFilterRead(2,TASK_FOREVER, &CFilterReadCallBack);
 Task uSound(60, TASK_FOREVER, &uSoundCallBack);
-Task autoTrim(10, TASK_FOREVER, &autoTrimCallBack);
+Task autoTrim(20, TASK_FOREVER, &autoTrimCallBack);
 Scheduler runner;
 
 void bluetoothCallBack(){
@@ -283,7 +284,7 @@ void gyroPIDCallBack() {
 
 void autoTrimCallBack(){
     if (abs(joyYf) < 0.1 && autotrim != 0){
-      if (vxy > 0.05){
+      if (vxy > 0.01){
           gtrim += 0.01;
       }
       else if (vxy < 0.01){
