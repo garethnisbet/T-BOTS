@@ -44,7 +44,7 @@ void gyroread(){
   
   CFilteredlAngleY = CFilterY.getAngle(pitch, gyroYrate, dt); // Calculate the angle using a Simple Combination filter
   CFilterY.setWeighting(filter_weighting);
- // gyroYangle += gyroYrate * dt; // Calculate gyro angle without any filter
+  gyroYangle += gyroYrate * dt; // Calculate gyro angle without any filter
   
   /*
   Serial.print(dt); Serial.print("\t");
@@ -114,7 +114,7 @@ void refreshTuningFields(int bStatus)  {
         
 }
         
-void setJoystick(byte databt[8]){
+void getJoystick(byte databt[8]){
    joyXcheck = (databt[1]-48)*100 + (databt[2]-48)*10 + (databt[3]-48);       // obtain the Int from the ASCII representation
    joyYcheck = (databt[4]-48)*100 + (databt[5]-48)*10 + (databt[6]-48);
     if (joyXcheck < 300 && joyYcheck < 300){
@@ -125,9 +125,9 @@ void setJoystick(byte databt[8]){
   joyXdiff = joyX - joyXbefore;
   joyYdiff = joyY - joyYbefore;
   if (abs(joyXdiff) <= 300){
-  joyXf = joyX;// Offset to avoid transmitting negative numbers
+  joyXf = joyX;// Helps filter out corrupted numbers
   }
-  if (abs(joyYdiff) <= 100){
+  if (abs(joyYdiff) <= 200){
   joyYf = joyY;
   }
   joyXbefore = joyX;

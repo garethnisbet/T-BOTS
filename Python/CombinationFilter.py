@@ -15,7 +15,7 @@ to see how effective your filter is.
 '''
 
 angle = 0
-filter_weighting = 0.04
+filter_weighting = 0.06
 
 def getAngleCFilter(pitch, gyro_rate, dt):
     global angle
