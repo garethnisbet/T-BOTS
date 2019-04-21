@@ -3,7 +3,7 @@
 // Set motor deadbands
 // m1 is the right motor m2 is the left
 const int m1ndb = 0 , m1pdb = 0, m2ndb = 0 , m2pdb = 0;
-//const int m1ndb = 34 , m1pdb = 34, m2ndb = 34 , m2pdb = 34; // T-Bot
+//const int m1ndb = 34 , m1pdb = 34, m2ndb = 30 , m2pdb = 30; // T-Bot
 
 // Set pins and metres per second factor
 const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 1, mpsfactor2 = 1;
@@ -26,8 +26,8 @@ void loop() {
 //  m2.speed(-0.3);
 //  delay(2000);
   
-  m1.speed(0); // Right Motor
-  m2.speed(0);  // Left Motor
+  m1.speed(42); // Right Motor
+  m2.speed(21);  // Left Motor
  
 
 }

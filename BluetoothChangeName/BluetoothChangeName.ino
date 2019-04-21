@@ -12,6 +12,10 @@ void setup()
   Serial.println("Type AT+NAME:NewName to change your T-BOTS name.");
   Serial.println("Type AT+UART=38400,0,0 to change baud rate");
   Serial.println("Type AT+ADDR? to get the mac address (YOU WILL NEED THIS LATER)");
+  Serial.println("Type AT+ROLE? to check if master (1) or slave (0)");
+  Serial.println("Type AT+CMODE? Connect to one device (0) connect to any (1)");
+  Serial.println("Type AT+BIND = mac address. Eg AT+BIND = 98d3,32,114ccf");
+  
   Serial.println(" ");
 
   Serial.println("Enter AT commands:");
@@ -25,7 +29,6 @@ void setup()
   BTSerial.begin(38400);  // HC-05 default speed in AT command more
   //BTSerial.begin(9600);
 }
-
 void loop()
 {
   // Keep reading from HC-05 and send to Arduino Serial Monitor

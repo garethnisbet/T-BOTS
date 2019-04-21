@@ -22,9 +22,9 @@ void loop() // run over and over
             // Add your code to parse the received line here....
 
             // Clear receive buffer so we're ready to receive the next line
-            Data = "";
-        
+            Data = "";        
     }
+    /*
        BTSerial.print((char)STX);
    BTSerial.print((char)0x1);
    //BTSerial.print(fping);
@@ -35,4 +35,5 @@ void loop() // run over and over
  //  BTSerial.print(KI_last);
    BTSerial.print(1);
    BTSerial.print((char)ETX);
+   */
 }
