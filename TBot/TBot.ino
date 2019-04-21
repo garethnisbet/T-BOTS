@@ -87,7 +87,7 @@ SoftwareSerial BTSerial(17,16);  // RX, TX
 
 /////////////////////          Setup Motors             /////////////////////////
 
-// m1 is the T-Bot's right motor, m2 is the left
+// m1 is the T-Bot's right motor, m2 is the left (USE DCMotorCalibrate.ino to find the correct values)
 
 //const int m1ndb = 23 , m1pdb = 23, m2ndb = 23 , m2pdb = 23; // note the values are always positive good for george
 //const int m1ndb = 33 , m1pdb = 33, m2ndb = 33 , m2pdb = 33; // note the values are always positive good for B
