@@ -13,23 +13,22 @@ basicfont = pygame.font.SysFont(None, 30)
 #Create an array with all the MAC
 #addresses of the detected devices
 
+oldkps, oldkp, oldtrim, oldgyro = str(0),str(0),str(0), str(0)
 
 def parse():
     global oldkps
     global oldkp
     global oldtrim
-    data = sock.recv(128)
+    global oldgyro
     try:
-        STX_index = [n for n in xrange(len(data)) if data.find('\x02', n) == n]
-        ETX_index = [n for n in xrange(len(data)) if data.find('\x03', n) == n]
-        if STX_index[-1] < ETX_index[-1]:
-            ministring = data[STX_index[-1]+1:ETX_index[-1]]
-        else:
-            ministring = data[STX_index[-2]+1:ETX_index[-1]]
-        oldkps, oldkp, oldtrim = ministring[1:5], ministring[6:10], ministring[11:15]
-        return ministring[1:5], ministring[6:10],  ministring[11:15] # return KPS, KP, Trim
+        data = sock.recv(256).decode(encoding='utf-8')
+        data = data.split('\x02')
+        ministring = data[0]
+        splitstr = ministring.split(',')
+        oldkps, oldkp, oldtrim, oldgyro = splitstr[0], splitstr[1], splitstr[2], splitstr[3]
+        return oldkps, oldkp, oldtrim, oldgyro
     except:
-        return oldkps, oldkp, oldtrim
+        return oldkps, oldkp, oldtrim, oldgyro
 
 search = True
 if search == True:
@@ -97,7 +96,7 @@ mxnew, mynew = 250, 250
 
 while True: # Continuous Pygame loop
     
-    kps, kp, trim = parse()
+    kps, kp, trim, gyrodata = parse()
     kpstext = basicfont.render('KPS '+kps, True, textcolour)
     kptext = basicfont.render('KP ' +kp, True, textcolour)
     trimtext = basicfont.render('TRIM '+trim, True, textcolour)
@@ -121,34 +120,34 @@ while True: # Continuous Pygame loop
             pygame.display.quit()
             sys.exit()
         elif event.type == MOUSEBUTTONDOWN:
-            kps, kp, trim = parse()
+            kps, kp, trim, gyrodata = parse()
             if p2x > 0 and p2x < 500 and p2y > 0 and p2y < 500:
                 mx, my = 250,250
 
             if p2x > 680 and p2x < 706 and p2y > 100 and p2y < 123:
-                buttonstring = chr(0X02)+'A'+chr(0X03)
+                buttonstring = chr(0X02)+'200200B'+chr(0X03)
                 send(buttonstring)
                 button1 = 1
             if p2x > 680 and p2x < 706 and p2y > 130 and p2y < 153:
-                buttonstring2 = chr(0X02)+'C'+chr(0X03)
+                buttonstring2 = chr(0X02)+'200200A'+chr(0X03)
                 send(buttonstring2)
                 button2 = 1
 
             if p2x > 680 and p2x < 706 and p2y > 230 and p2y < 253:
-                buttonstring3 = chr(0X02)+'E'+chr(0X03)
+                buttonstring3 = chr(0X02)+'200200D'+chr(0X03)
                 send(buttonstring3)
                 button3 = 1
             if p2x > 680 and p2x < 706 and p2y > 260 and p2y < 283:
-                buttonstring4 = chr(0X02)+'G'+chr(0X03)
+                buttonstring4 = chr(0X02)+'200200C'+chr(0X03)
                 send(buttonstring4)
                 button4 = 1
 
             if p2x > 580 and p2x < 706 and p2y > 360 and p2y < 383:
-                buttonstring5 = chr(0X02)+'I'+chr(0X03)
+                buttonstring5 = chr(0X02)+'200200F'+chr(0X03)
                 send(buttonstring5)
                 button5 = 1
             if p2x > 680 and p2x < 706 and p2y > 390 and p2y < 413:
-                buttonstring6 = chr(0X02)+'K'+chr(0X03)
+                buttonstring6 = chr(0X02)+'200200E'+chr(0X03)
                 send(buttonstring6)
                 button6 = 1
 

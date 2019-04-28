@@ -88,8 +88,7 @@ void refreshTuningFields(int bStatus)  {
                   
         case 'E':
             
-            //gtrim -= 0.1;
-            KI -= 0.1;
+            gtrim -= 0.1;
 
           
           break;
@@ -97,7 +96,6 @@ void refreshTuningFields(int bStatus)  {
         case 'F':
             
             gtrim += 0.1;
-            //KI += 0.1;
            
           break;
         

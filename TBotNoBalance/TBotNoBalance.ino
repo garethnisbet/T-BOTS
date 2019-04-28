@@ -196,7 +196,6 @@ void sendDataCallBack(){
    BTSerial.print(KP);
    BTSerial.print((char)comma);
    BTSerial.print(gtrim);
-   //BTSerial.print(KI);
    BTSerial.print((char)comma);
    //BTSerial.print(fping);
    BTSerial.print((CFilteredlAngleY-gtrim-plotrange[0])*(255/(plotrange[1]-plotrange[0]))); // the full plotting windoe is 0 to 255
