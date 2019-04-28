@@ -57,7 +57,9 @@ minus = pygame.image.load('images/minus.png')
 plus = pygame.image.load('images/plus.png')
 pluslight = pygame.image.load('images/pluslight.png')
 minuslight = pygame.image.load('images/minuslight.png')
-button1,button2,button3,button4,button5,button6, = 0,0,0,0,0,0
+gTrim = pygame.image.load('images/Trim.png')
+gTrimlight = pygame.image.load('images/Trimlight.png')
+button1,button2,button3,button4,button5,button6,button7 = 0,0,0,0,0,0,0
 # initialize variables
 x,y = 0,0
 colour = (0,0,0)
@@ -121,6 +123,10 @@ while True: # Continuous Pygame loop
                 buttonstring6 = chr(0X02)+'200200E'+chr(0X03)
                 send(buttonstring6)
                 button6 = 1
+            if p2x > 680 and p2x < 706 and p2y > 430 and p2y < 460:
+                buttonstring7 = chr(0X02)+'200200T'+chr(0X03)
+                send(buttonstring7)
+                button7 = 1
 
         elif event.type == MOUSEBUTTONUP:
             button1 = 0
@@ -129,6 +135,7 @@ while True: # Continuous Pygame loop
             button4 = 0
             button5 = 0
             button6 = 0
+            button7 = 0
 
         elif event.type == KEYDOWN and event.key == K_ESCAPE:
             sock.close()
@@ -150,6 +157,7 @@ while True: # Continuous Pygame loop
         screen.blit(minus,(680,260))
         screen.blit(plus,(680,360))
         screen.blit(minus,(680,390))
+        screen.blit(gTrim,(680,440))
 
 
         if button1:
@@ -164,6 +172,8 @@ while True: # Continuous Pygame loop
             screen.blit(pluslight,(680-3,360-3))
         if button6:
             screen.blit(minuslight,(680-3,390-3))
+        if button7:
+            screen.blit(gTrimlight,(680-2,440-2))
         screen.blit(kpstext,(560,115))
         screen.blit(kptext,(560,245))
         screen.blit(trimtext,(560,375))
