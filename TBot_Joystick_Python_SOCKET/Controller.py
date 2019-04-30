@@ -66,7 +66,7 @@ button1,button2,button3,button4,button5,button6,button7, button8 = 0,0,0,0,0,0,0
 x,y = 0,0
 colour = (0,0,0,0)
 linecolor = 255, 0, 0
-plotcolours = [(255, 0, 0),(0, 255, 0),(0, 0, 255),(255, 255, 0),(255, 0, 255), (0,255,255)]
+plotcolours = [(0, 255, 0),(255, 0, 0),(0, 0, 255),(255, 255, 0),(255, 0, 255), (0,255,255)]
 iicolour = 0
 textcolour = (255,255, 255)
 mx,my = 0,0
@@ -199,6 +199,8 @@ while True: # Continuous Pygame loop
             screen.blit(gTrimlight,(680-2,440-2))
         if button8:
             screen.fill(colour,(800,0,1200,500))
+            iicolour = 0
+            ii = 800
 
 
         screen.blit(kpstext,(560,115))
