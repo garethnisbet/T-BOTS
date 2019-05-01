@@ -187,6 +187,12 @@ while True: # Continuous Pygame loop,
             button7 = 0
             button8 = 0
 
+        elif event.type == KEYDOWN and event.key == K_c:
+            screen.fill(colour,(800,0,1200,500))
+            pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,400),(800,400),(800,100)),1)
+            iicolour = 0
+            ii = 800
+
         elif event.type == KEYDOWN and event.key == K_ESCAPE:
             sock.close()
             print('Your now disconnected.')
