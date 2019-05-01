@@ -73,16 +73,17 @@ mx,my = 0,0
 mxnew, mynew = 250, 250
 oldgyrodata = 0
 ii=800
-while True: # Continuous Pygame loop
+pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,400),(800,400),(800,100)),1)
+while True: # Continuous Pygame loop,
     pygame.display.update((800,0,1200,500))
     
     kps, kp, trim, gyrodata = parse()
 
-    if gyrodata > 255:
-        gyrodata = 255
+    if gyrodata > 298:
+        gyrodata = 298
     if gyrodata < 0:
         gyrodata = 0
-    pygame.draw.lines(screen, plotcolours[iicolour], False, ((ii,oldgyrodata+100), (ii+1,gyrodata+100)),1)
+    pygame.draw.lines(screen, plotcolours[iicolour], False, ((ii,oldgyrodata+101), (ii+1,gyrodata+101)),1)
     oldgyrodata = gyrodata
     kpstext = basicfont.render('KPS '+kps, True, textcolour)
     kptext = basicfont.render('KP ' +kp, True, textcolour)
@@ -142,6 +143,7 @@ while True: # Continuous Pygame loop
             if p2x > 680 and p2x < 706 and p2y > 430 and p2y < 460:
                 buttonstring7 = chr(0X02)+'200200T'+chr(0X03)
                 send(buttonstring7)
+                button7 = 1
                 
             if p2x > 800 and p2x < 1200 and p2y > 0 and p2y < 500:
                 button8 = 1
@@ -199,6 +201,7 @@ while True: # Continuous Pygame loop
             screen.blit(gTrimlight,(680-2,440-2))
         if button8:
             screen.fill(colour,(800,0,1200,500))
+            pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,400),(800,400),(800,100)),1)
             iicolour = 0
             ii = 800
 
@@ -210,10 +213,10 @@ while True: # Continuous Pygame loop
         
     ii+=1
     
-    if ii > 1199:
+    if ii > 1159:
         iicolour+=1
-        ii = 800
+        ii = 801
     if iicolour > 5:
         iicolour = 0
-    pygame.display.update(((0,0,800,500),(800,0,1200,500)))
+    pygame.display.update()
     
