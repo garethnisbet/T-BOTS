@@ -2,13 +2,9 @@ import pygame, sys, pygame.mixer
 from pygame.locals import *
 import serial
 from time import sleep
-timeout = 5
 baudrate = 38400
-port = '/dev/rfcomm0'
-
-#bd_addr = '98:D3:32:11:4C:CF' # put the bluetooth address of your T-Bot here. 
-port = 1
-sock = serial.Serial(port, baudrate, timeout)
+port = 'COM9'
+sock = serial.Serial(port, baudrate)
 #except:
 #    print('Failed to connect.')
 
