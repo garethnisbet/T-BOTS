@@ -22,6 +22,9 @@ TBot_Joystick_Python_PYBLUEZ - Bluetooth joystick written in python - Requires p
 
 TBot_Joystick_Python_SOCKET - Bluetooth joystick written in python - Python3
 
+TBot_Joystick_Python_Pyserial - Bluetooth joystick written in python - Works on Windows
+
+
 
 Install the arduino IDE form https://www.arduino.cc. Import the libraries by extracting TBotLibraries.zip directly in the Arduino library folder. Open TBot.ino and click on the upload button to send the code to your T-Bot.
 
