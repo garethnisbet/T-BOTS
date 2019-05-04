@@ -2,6 +2,10 @@ import pygame, sys, pygame.mixer
 from pygame.locals import *
 import bluetooth as bt
 from time import sleep
+print('-----------------------------------------------------------------')
+print('Controls:\nClick and drag joystick to drive the T-Bot\nUse up, down, left, right arrow keys to drive T-Bot\nClick on plot or press c to clear plots\nPress q or Esc to quit or Ctrl c in this window\n')
+print('-----------------------------------------------------------------\n\n\n')
+
 pygame.font.init()
 #sansfont = pygame.font.Font('sans.ttf', 60)
 basicfont = pygame.font.SysFont(None, 30)
@@ -104,7 +108,6 @@ pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,40
 while True: # Continuous Pygame loop,
     pygame.display.update((800,0,1200,500))
     xstr, ystr = '200', '200'
-    b1,b2,b3,b4 = 0,0,0,0
     kps, kp, trim, gyrodata = parse()
 
     if gyrodata > 298:
@@ -121,6 +124,7 @@ while True: # Continuous Pygame loop,
     p2x = mx
     p2y = my
     #print('x '+str(mx)+' y ' +str(my))
+    c1, c2, c3 =  pygame.mouse.get_pressed()
     if mx > 480 or mx < 20 or my > 480 or my < 20:
         mx,my = 250,250
 
@@ -129,8 +133,8 @@ while True: # Continuous Pygame loop,
 
     if mxnew != mx or mynew != my:   
         sendstring = chr(0X02)+str(jx)+str(jy)+chr(0X03)
-        b1, b2, b3 =  pygame.mouse.get_pressed()
-        if b1:
+        
+        if c1==1:
             send(sendstring)
         else:
             send(chr(0X02)+'200200Z'+chr(0X03))         
@@ -201,37 +205,38 @@ while True: # Continuous Pygame loop,
         keys = pygame.key.get_pressed()
 
         if keys[K_RIGHT] and keys[K_UP]:
-            send(chr(0X02)+'240250Z'+chr(0X03))
+            send(chr(0X02)+'240260Z'+chr(0X03))
 
         elif keys[K_LEFT] and keys[K_UP]:
-            send(chr(0X02)+'160250Z'+chr(0X03))
+            send(chr(0X02)+'160260Z'+chr(0X03))
 
         elif keys[K_RIGHT] and keys[K_DOWN]:
-            send(chr(0X02)+'260160Z'+chr(0X03))
+            send(chr(0X02)+'260140Z'+chr(0X03))
 
         elif keys[K_LEFT] and keys[K_DOWN]:
-            send(chr(0X02)+'140160Z'+chr(0X03))
+            send(chr(0X02)+'140140Z'+chr(0X03))
 
 
         elif keys[K_DOWN]:
-            send(chr(0X02)+'200160Z'+chr(0X03))
+            send(chr(0X02)+'200140Z'+chr(0X03))
 
 
         elif keys[K_UP]:
-            send(chr(0X02)+'200250Z'+chr(0X03))
+            send(chr(0X02)+'200260Z'+chr(0X03))
 
 
         elif keys[K_RIGHT]:
-            send(chr(0X02)+'240200Z'+chr(0X03))
+            send(chr(0X02)+'260200Z'+chr(0X03))
 
 
         elif keys[K_LEFT]:
-            send(chr(0X02)+'160200Z'+chr(0X03))
+            send(chr(0X02)+'140200Z'+chr(0X03))
 
 
 
-        if keys[K_LEFT] and keys[K_RIGHT]:
-            send(chr(0X02)+'200200Z'+chr(0X03))
+        else:
+            if c1==0:
+                send(chr(0X02)+'200200Z'+chr(0X03))
 
 
         if event.type == KEYDOWN and event.key == K_ESCAPE:
