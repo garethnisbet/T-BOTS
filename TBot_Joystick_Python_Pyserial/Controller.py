@@ -66,13 +66,15 @@ ii=800
 pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,400),(800,400),(800,100)),1)
 while True: # Continuous Pygame loop,
     pygame.display.update((800,0,1200,500))
-    
+    xstr, ystr = '200', '200'
+    b1,b2,b3,b4 = 0,0,0,0
     kps, kp, trim, gyrodata = parse()
 
     if gyrodata > 298:
         gyrodata = 298
     if gyrodata < 0:
         gyrodata = 0
+
     pygame.draw.lines(screen, plotcolours[iicolour], False, ((ii,oldgyrodata+101), (ii+1,gyrodata+101)),1)
     oldgyrodata = gyrodata
     kpstext = basicfont.render('KPS '+kps, True, textcolour)
@@ -88,9 +90,13 @@ while True: # Continuous Pygame loop,
     jx = int(((mx-250)*0.43)+200)
     jy = int(((250-my)*0.43)+200)
 
-    if mxnew != mx or mynew != my:
+    if mxnew != mx or mynew != my:   
         sendstring = chr(0X02)+str(jx)+str(jy)+chr(0X03)
-        send(sendstring)          
+        b1, b2, b3 =  pygame.mouse.get_pressed()
+        if b1:
+            send(sendstring)
+        else:
+            send(chr(0X02)+'200200Z'+chr(0X03))         
         mxnew = mx
         mynew = my
     
@@ -100,8 +106,8 @@ while True: # Continuous Pygame loop,
             sys.exit()
         elif event.type == MOUSEBUTTONDOWN:
             kps, kp, trim, gyrodata = parse()
-            if p2x > 0 and p2x < 500 and p2y > 0 and p2y < 500:
-                mx, my = 250,250
+ #           if p2x > 0 and p2x < 500 and p2y > 0 and p2y < 500:
+ #               mx, my = 250,250
 
             if p2x > 680 and p2x < 706 and p2y > 100 and p2y < 123:
                 buttonstring = chr(0X02)+'200200B'+chr(0X03)
@@ -149,17 +155,54 @@ while True: # Continuous Pygame loop,
             button6 = 0
             button7 = 0
             button8 = 0
-        elif event.type == KEYDOWN and event.key == K_c:
+
+        if event.type == KEYDOWN and event.key == K_c:
             screen.fill(colour,(800,0,1200,500))
             pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,400),(800,400),(800,100)),1)
             iicolour = 0
             ii = 800
+        keys = pygame.key.get_pressed()
 
-        elif event.type == KEYDOWN and event.key == K_ESCAPE:
+        if keys[K_RIGHT] and keys[K_UP]:
+            send(chr(0X02)+'240250Z'+chr(0X03))
+
+        elif keys[K_LEFT] and keys[K_UP]:
+            send(chr(0X02)+'160250Z'+chr(0X03))
+
+        elif keys[K_RIGHT] and keys[K_DOWN]:
+            send(chr(0X02)+'260160Z'+chr(0X03))
+
+        elif keys[K_LEFT] and keys[K_DOWN]:
+            send(chr(0X02)+'140160Z'+chr(0X03))
+
+
+        elif keys[K_DOWN]:
+            send(chr(0X02)+'200160Z'+chr(0X03))
+
+
+        elif keys[K_UP]:
+            send(chr(0X02)+'200250Z'+chr(0X03))
+
+
+        elif keys[K_RIGHT]:
+            send(chr(0X02)+'240200Z'+chr(0X03))
+
+
+        elif keys[K_LEFT]:
+            send(chr(0X02)+'160200Z'+chr(0X03))
+
+
+
+        if keys[K_LEFT] and keys[K_RIGHT]:
+            send(chr(0X02)+'200200Z'+chr(0X03))
+
+
+        if event.type == KEYDOWN and event.key == K_ESCAPE:
             sock.close()
             print('Your now disconnected.')
             pygame.display.quit()
             sys.exit()
+
         elif event.type == KEYDOWN and event.key == K_q:
             sock.close()
             pygame.display.quit()
