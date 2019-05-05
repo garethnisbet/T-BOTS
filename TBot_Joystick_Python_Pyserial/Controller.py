@@ -29,13 +29,19 @@ def parse():
     global oldkp
     global oldtrim
     global oldgyro
+    global toggle
     try:
-        data = sock.read(64).decode(encoding='utf-8')
+        data = sock.recv(64).decode(encoding='utf-8')
         data = data.split('\x02')
         ministring = data[0]
         splitstr = ministring.split(',')
         oldkps, oldkp, oldtrim, oldgyro = splitstr[0], splitstr[1], splitstr[2], splitstr[3]
         oldgyro = oldgyro[:-2]
+        if toggle == 1:
+            print('writing...')
+            f.write(oldkps+','+oldkp+','+oldtrim+','+oldgyro+'\n')
+        else:
+            print('Not writing')
         return oldkps, oldkp, oldtrim, float(oldgyro)
     except:
         try:
@@ -56,9 +62,10 @@ pluslight = pygame.image.load('images/pluslight.png')
 minuslight = pygame.image.load('images/minuslight.png')
 gTrim = pygame.image.load('images/Trim.png')
 gTrimlight = pygame.image.load('images/Trimlight.png')
+record = pygame.image.load('images/record.png')
+pause = pygame.image.load('images/pause.png')
 
-
-button1,button2,button3,button4,button5,button6,button7, button8 = 0,0,0,0,0,0,0,0
+button1,button2,button3,button4,button5,button6,button7, button8, button9 , toggle = 0,0,0,0,0,0,0,0,0,0
 # initialize variables
 x,y = 0,0
 colour = (0,0,0,0)
@@ -71,8 +78,10 @@ mxnew, mynew = 250, 250
 oldgyrodata = 0
 ii=800
 pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,400),(800,400),(800,100)),1)
+f= open('plot.csv','w')
 while True: # Continuous Pygame loop,
     pygame.display.update((800,0,1200,500))
+
     xstr, ystr = '200', '200'
     kps, kp, trim, gyrodata = parse()
 
@@ -137,8 +146,11 @@ while True: # Continuous Pygame loop,
             if p2x > 720 and p2x < 740 and p2y > 375 and p2y < 395:
                 button7 = 1
                 
-            if p2x > 800 and p2x < 1200 and p2y > 0 and p2y < 500:
+            if p2x > 800 and p2x < 1200 and p2y > 0 and p2y < 400:
                 button8 = 1
+
+            if p2x > 1120 and p2x < 1150 and p2y > 420 and p2y < 450:
+                button9 = 1
                 
 
 
@@ -151,9 +163,13 @@ while True: # Continuous Pygame loop,
             button6 = 0
             button7 = 0
             button8 = 0
+            button9 = 0
+
+            
+
 
         if event.type == KEYDOWN and event.key == K_c:
-            screen.fill(colour,(800,0,1200,500))
+            screen.fill(colour,(800,0,1200,402))
             pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,400),(800,400),(800,100)),1)
             iicolour = 0
             ii = 800
@@ -196,6 +212,7 @@ while True: # Continuous Pygame loop,
 
         if event.type == KEYDOWN and event.key == K_ESCAPE:
             sock.close()
+            f.close()
             print('Your now disconnected.')
             pygame.display.quit()
             sys.exit()
@@ -203,10 +220,13 @@ while True: # Continuous Pygame loop,
         elif event.type == KEYDOWN and event.key == K_q:
             sock.close()
             pygame.display.quit()
+            f.close()
             print('Your now disconnected.')
             sys.exit()
     
         screen.fill(colour,(0,0,800,500))
+
+        screen.fill(colour,(1116,410,1146,440))
         screen.blit(joybase,(250-230,250-230))
         screen.blit(joytop,(mx-75,my-75))
         screen.blit(plus,(680,100))
@@ -216,6 +236,7 @@ while True: # Continuous Pygame loop,
         screen.blit(plus,(680,360))
         screen.blit(minus,(680,390))
         screen.blit(gTrim,(720,375))
+        
 
 
 
@@ -252,6 +273,32 @@ while True: # Continuous Pygame loop,
             pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,400),(800,400),(800,100)),1)
             iicolour = 0
             ii = 800
+
+
+        if button9==0 and toggle == 0:
+            screen.fill(colour,(1116,410,1146,440))
+            screen.blit(record,(1120,420))
+
+
+        if toggle == 0:
+            if button9==1:
+                screen.fill(colour,(1116,410,1146,440))
+                screen.blit(pause,(1120,420))
+                toggle = 1
+                
+
+        elif toggle == 1:
+            if button9==1:
+                f.close()
+                toggle = 0
+        if toggle:
+            screen.fill(colour,(1116,410,1146,400))
+            screen.blit(pause,(1120,420))
+            
+        else:
+            screen.fill(colour,(1116,410,1146,400))
+            screen.blit(record,(1120,420))
+            
 
 
         screen.blit(kpstext,(560,115))
