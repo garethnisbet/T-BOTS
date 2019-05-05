@@ -171,7 +171,7 @@ while True: # Continuous Pygame loop,
             if p2x > 680 and p2x < 706 and p2y > 390 and p2y < 413:
                 button6 = 1
 
-            if p2x > 680 and p2x < 706 and p2y > 430 and p2y < 460:
+            if p2x > 720 and p2x < 740 and p2y > 375 and p2y < 395:
                 button7 = 1
                 
             if p2x > 800 and p2x < 1200 and p2y > 0 and p2y < 500:
@@ -252,7 +252,7 @@ while True: # Continuous Pygame loop,
         screen.blit(minus,(680,260))
         screen.blit(plus,(680,360))
         screen.blit(minus,(680,390))
-        screen.blit(gTrim,(680,440))
+        screen.blit(gTrim,(720,375))
 
 
 
@@ -281,7 +281,7 @@ while True: # Continuous Pygame loop,
             buttonstring6 = chr(0X02)+'200200E'+chr(0X03)
             send(buttonstring6)
         if button7:
-            screen.blit(gTrimlight,(680-2,440-2))
+            screen.blit(gTrimlight,(720-2,375-2))
             buttonstring7 = chr(0X02)+'200200T'+chr(0X03)
             send(buttonstring7)
         if button8:
