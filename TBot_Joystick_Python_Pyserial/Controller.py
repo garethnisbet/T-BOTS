@@ -7,7 +7,8 @@ print('Controls:\nClick and drag joystick to drive the T-Bot\nUse up, down, left
 print('-----------------------------------------------------------------\n\n\n')
 
 baudrate = 38400
-port = 'COM9'
+#port = 'COM5'
+port = '/dev/tty.T-Bot-DevB'
 sock = serial.Serial(port, baudrate)
 #except:
 #    print('Failed to connect.')
@@ -31,7 +32,7 @@ def parse():
     global oldgyro
     global toggle
     try:
-        data = sock.recv(64).decode(encoding='utf-8')
+        data = sock.read(64).decode(encoding='utf-8')
         data = data.split('\x02')
         ministring = data[0]
         splitstr = ministring.split(',')
@@ -64,6 +65,7 @@ gTrim = pygame.image.load('images/Trim.png')
 gTrimlight = pygame.image.load('images/Trimlight.png')
 record = pygame.image.load('images/record.png')
 pause = pygame.image.load('images/pause.png')
+
 
 button1,button2,button3,button4,button5,button6,button7, button8, button9 , toggle = 0,0,0,0,0,0,0,0,0,0
 # initialize variables
@@ -284,6 +286,7 @@ while True: # Continuous Pygame loop,
             if button9==1:
                 screen.fill(colour,(1116,410,1146,440))
                 screen.blit(pause,(1120,420))
+                f= open('plot.csv','a')
                 toggle = 1
                 
 
@@ -314,4 +317,3 @@ while True: # Continuous Pygame loop,
     if iicolour > 5:
         iicolour = 0
     pygame.display.update()
-    

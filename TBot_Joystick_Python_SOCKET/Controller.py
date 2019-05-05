@@ -295,6 +295,7 @@ while True: # Continuous Pygame loop,
 
         if toggle == 0:
             if button9==1:
+                f= open('plot.csv','a')
                 screen.fill(colour,(1116,410,1146,440))
                 screen.blit(pause,(1120,420))
                 toggle = 1
