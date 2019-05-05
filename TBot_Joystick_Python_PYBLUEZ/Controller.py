@@ -151,35 +151,24 @@ while True: # Continuous Pygame loop,
  #               mx, my = 250,250
 
             if p2x > 680 and p2x < 706 and p2y > 100 and p2y < 123:
-                buttonstring = chr(0X02)+'200200B'+chr(0X03)
-                send(buttonstring)
                 button1 = 1
+
             if p2x > 680 and p2x < 706 and p2y > 130 and p2y < 153:
-                buttonstring2 = chr(0X02)+'200200A'+chr(0X03)
-                send(buttonstring2)
                 button2 = 1
 
             if p2x > 680 and p2x < 706 and p2y > 230 and p2y < 253:
-                buttonstring3 = chr(0X02)+'200200D'+chr(0X03)
-                send(buttonstring3)
                 button3 = 1
+
             if p2x > 680 and p2x < 706 and p2y > 260 and p2y < 283:
-                buttonstring4 = chr(0X02)+'200200C'+chr(0X03)
-                send(buttonstring4)
                 button4 = 1
 
             if p2x > 580 and p2x < 706 and p2y > 360 and p2y < 383:
-                buttonstring5 = chr(0X02)+'200200F'+chr(0X03)
-                send(buttonstring5)
                 button5 = 1
+
             if p2x > 680 and p2x < 706 and p2y > 390 and p2y < 413:
-                buttonstring6 = chr(0X02)+'200200E'+chr(0X03)
-                send(buttonstring6)
                 button6 = 1
 
             if p2x > 680 and p2x < 706 and p2y > 430 and p2y < 460:
-                buttonstring7 = chr(0X02)+'200200T'+chr(0X03)
-                send(buttonstring7)
                 button7 = 1
                 
             if p2x > 800 and p2x < 1200 and p2y > 0 and p2y < 500:
@@ -266,19 +255,32 @@ while True: # Continuous Pygame loop,
 
         if button1:
             screen.blit(pluslight,(680-3,100-3))
+            buttonstring = chr(0X02)+'200200B'+chr(0X03)
+            send(buttonstring)
         if button2:
             screen.blit(minuslight,(680-3,130-3))
+            buttonstring2 = chr(0X02)+'200200A'+chr(0X03)
+            send(buttonstring2)
         if button3:
             screen.blit(pluslight,(680-3,230-3))
+            buttonstring3 = chr(0X02)+'200200D'+chr(0X03)
+            send(buttonstring3)
         if button4:
             screen.blit(minuslight,(680-3,260-3))
+            buttonstring4 = chr(0X02)+'200200C'+chr(0X03)
+            send(buttonstring4)
         if button5:
             screen.blit(pluslight,(680-3,360-3))
+            buttonstring5 = chr(0X02)+'200200F'+chr(0X03)
+            send(buttonstring5)
         if button6:
             screen.blit(minuslight,(680-3,390-3))
-
+            buttonstring6 = chr(0X02)+'200200E'+chr(0X03)
+            send(buttonstring6)
         if button7:
             screen.blit(gTrimlight,(680-2,440-2))
+            buttonstring7 = chr(0X02)+'200200T'+chr(0X03)
+            send(buttonstring7)
         if button8:
             screen.fill(colour,(800,0,1200,500))
             pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,400),(800,400),(800,100)),1)
