@@ -49,7 +49,10 @@ def parse():
         oldgyro = oldgyro[:-2]
         return oldkps, oldkp, oldtrim, float(oldgyro)
     except:
-        return oldkps, oldkp, oldtrim, float(oldgyro)
+        try:
+            return oldkps, oldkp, oldtrim, float(oldgyro)
+        except:
+            return oldkps, oldkp, oldtrim, 0
 
 pygame.init()
 clock = pygame.time.Clock()
