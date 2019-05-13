@@ -18,11 +18,11 @@ SchedulerExample - A simple example to show you how to use a schedular instead o
 
 
 
-TBot_Joystick_Python_PYBLUEZ - Bluetooth joystick written in python - Requires python-bluez and Bluez
+TBot_Joystick_Python_PYBLUEZ - Bluetooth joystick written in python - Requires python-bluez and Bluez - works on Linux
 
-TBot_Joystick_Python_SOCKET - Bluetooth joystick written in python - Python3
+TBot_Joystick_Python_SOCKET - Bluetooth joystick written in python - Python3 - works on Linux
 
-TBot_Joystick_Python_Pyserial - Bluetooth joystick written in python - Works on Windows
+TBot_Joystick_Python_Pyserial - Bluetooth joystick written in python - Works on Windows and Mac
 
 
 
