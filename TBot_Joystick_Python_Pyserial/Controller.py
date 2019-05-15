@@ -41,8 +41,6 @@ def parse():
         if toggle == 1:
             print('writing...')
             f.write(oldkps+','+oldkp+','+oldtrim+','+oldgyro+'\n')
-        else:
-            print('Not writing')
         return oldkps, oldkp, oldtrim, float(oldgyro)
     except:
         try:
