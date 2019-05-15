@@ -3,7 +3,7 @@ from pygame.locals import *
 import bluetooth as bt
 from time import sleep
 print('-----------------------------------------------------------------')
-print('Controls:\nClick and drag joystick to drive the T-Bot\nUse up, down, left, right arrow keys to drive T-Bot\nClick on plot or press c to clear plots\nPress q or Esc to quit or Ctrl c in this window\n')
+print('Controls:\nClick and drag joystick to drive the T-Bot\nUse up, down, left, right arrow keys to drive the T-Bot\nPress w or s to change the speed factor for arrow controls.\nClick on plot or press c to clear plots\nPress q or Esc to quit or Ctrl c in this window\n')
 print('-----------------------------------------------------------------\n\n\n')
 
 pygame.font.init()
@@ -35,8 +35,7 @@ def parse():
         if toggle == 1:
             print('writing...')
             f.write(oldkps+','+oldkp+','+oldtrim+','+oldgyro+'\n')
-        else:
-            print('Not writing')
+
         return oldkps, oldkp, oldtrim, float(oldgyro)
     except:
         try:
@@ -114,6 +113,7 @@ mx,my = 0,0
 mxnew, mynew = 250, 250
 oldgyrodata = 0
 ii=800
+speedfactor = 0.5
 pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,400),(800,400),(800,100)),1)
 f= open('plot.csv','w')
 while True: # Continuous Pygame loop,
@@ -132,6 +132,8 @@ while True: # Continuous Pygame loop,
     kpstext = basicfont.render('KPS '+kps, True, textcolour)
     kptext = basicfont.render('KP ' +kp, True, textcolour)
     trimtext = basicfont.render('TRIM '+trim, True, textcolour)
+
+    speedfactortext = basicfont.render('Speed Factor '+str(speedfactor), True, textcolour)
     mx,my = pygame.mouse.get_pos()
     p2x = mx
     p2y = my
@@ -212,25 +214,25 @@ while True: # Continuous Pygame loop,
             ii = 800
         keys = pygame.key.get_pressed()
 
+
         if keys[K_RIGHT] and keys[K_UP]:
-            send(chr(0X02)+'240260Z'+chr(0X03))
+            send(chr(0X02)+'%03d%03dZ'%(240,200+(speedfactor*100))+chr(0X03))
 
         elif keys[K_LEFT] and keys[K_UP]:
-            send(chr(0X02)+'160260Z'+chr(0X03))
+            send(chr(0X02)+'%03d%03dZ'%(160,200+(speedfactor*100))+chr(0X03))
 
         elif keys[K_RIGHT] and keys[K_DOWN]:
-            send(chr(0X02)+'260140Z'+chr(0X03))
+            send(chr(0X02)+'%03d%03dZ'%(260,200-(speedfactor*100))+chr(0X03))
 
         elif keys[K_LEFT] and keys[K_DOWN]:
-            send(chr(0X02)+'140140Z'+chr(0X03))
+            send(chr(0X02)+'%03d%03dZ'%(140,200-(speedfactor*100))+chr(0X03))
 
 
         elif keys[K_DOWN]:
-            send(chr(0X02)+'200140Z'+chr(0X03))
-
+            send(chr(0X02)+'%03d%03dZ'%(200,200-(speedfactor*100))+chr(0X03))
 
         elif keys[K_UP]:
-            send(chr(0X02)+'200260Z'+chr(0X03))
+            send(chr(0X02)+'%03d%03dZ'%(200,200+(speedfactor*100))+chr(0X03))
 
 
         elif keys[K_RIGHT]:
@@ -240,11 +242,23 @@ while True: # Continuous Pygame loop,
         elif keys[K_LEFT]:
             send(chr(0X02)+'140200Z'+chr(0X03))
 
+        elif keys[K_w]:
+            
+            speedfactor +=0.1
+            if speedfactor > 1:
+                speedfactor = 1.0
+            
+        elif keys[K_s]:
+            speedfactor -=0.1
+            if speedfactor < 0.1:
+                speedfactor = 0.1
+            
 
 
         else:
             if c1==0:
                 send(chr(0X02)+'200200Z'+chr(0X03))
+        
 
 
         if event.type == KEYDOWN and event.key == K_ESCAPE:
@@ -264,6 +278,7 @@ while True: # Continuous Pygame loop,
         screen.fill(colour,(0,0,800,500))
 
         screen.fill(colour,(1116,410,1146,440))
+        screen.fill(colour,(800,420,1146,500))
         screen.blit(joybase,(250-230,250-230))
         screen.blit(joytop,(mx-75,my-75))
         screen.blit(plus,(680,100))
@@ -343,6 +358,8 @@ while True: # Continuous Pygame loop,
         screen.blit(kptext,(560,245))
         screen.blit(trimtext,(560,375))
         screen.blit(joytop,(mx-75,my-75))
+        screen.blit(speedfactortext,(800,420))
+        
         
     ii+=1
     
