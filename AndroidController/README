@@ -1,5 +1,0 @@
-This app is required if you want to use TBotWithPlottingOverBT. This doesn't perform quite as well as the combination of Bluetooth Joystick Commander and the T-Bot.ino sketch but it is useful for tuning.
-
-This is a test version for you to try on your Android device. Simply copy the apk file to your phone or tablet and install it. 
-
-If you would like to develop your own app, you can create an account with MIT App Inventor and import the aia file. Maybe you can see a way of boosting the performance! 
