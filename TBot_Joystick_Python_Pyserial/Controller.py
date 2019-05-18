@@ -63,7 +63,10 @@ def parse():
         if toggle == 1:
             print('writing...')
             f.write(oldkps+','+oldkp+','+oldtrim+','+oldgyro+'\n')
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6685877d2dbb000a5a795eab017f382c451c6cd7
         return oldkps, oldkp, oldtrim, float(oldgyro)
     except:
         try:
@@ -234,6 +237,7 @@ while True: # Continuous Pygame loop,
 
 
         if keys[K_RIGHT] and keys[K_UP]:
+<<<<<<< HEAD
             send('%03d%03dZ'%(240,200+(speedfactor*100)))
 
         elif keys[K_LEFT] and keys[K_UP]:
@@ -251,6 +255,25 @@ while True: # Continuous Pygame loop,
 
         elif keys[K_UP]:
             send('%03d%03dZ'%(200,200+(speedfactor*100)))
+=======
+            send(chr(0X02)+'%03d%03dZ'%(240,200+(speedfactor*100))+chr(0X03))
+
+        elif keys[K_LEFT] and keys[K_UP]:
+            send(chr(0X02)+'%03d%03dZ'%(160,200+(speedfactor*100))+chr(0X03))
+
+        elif keys[K_RIGHT] and keys[K_DOWN]:
+            send(chr(0X02)+'%03d%03dZ'%(260,200-(speedfactor*100))+chr(0X03))
+
+        elif keys[K_LEFT] and keys[K_DOWN]:
+            send(chr(0X02)+'%03d%03dZ'%(140,200-(speedfactor*100))+chr(0X03))
+
+
+        elif keys[K_DOWN]:
+            send(chr(0X02)+'%03d%03dZ'%(200,200-(speedfactor*100))+chr(0X03))
+
+        elif keys[K_UP]:
+            send(chr(0X02)+'%03d%03dZ'%(200,200+(speedfactor*100))+chr(0X03))
+>>>>>>> 6685877d2dbb000a5a795eab017f382c451c6cd7
 
 
         elif keys[K_RIGHT]:
@@ -275,7 +298,11 @@ while True: # Continuous Pygame loop,
 
         else:
             if c1==0:
+<<<<<<< HEAD
                 send('200200Z')
+=======
+                send(chr(0X02)+'200200Z'+chr(0X03))
+>>>>>>> 6685877d2dbb000a5a795eab017f382c451c6cd7
         
 
 
@@ -449,6 +476,7 @@ while True: # Continuous Pygame loop,
         screen.blit(joytop,(mx-75,my-75))
         screen.blit(speedfactortext,(800,420))
         
+<<<<<<< HEAD
         if Play:
             playmacro('cmd.csv')
             Play = 0
@@ -456,6 +484,8 @@ while True: # Continuous Pygame loop,
             toggle2 = 0
 
 
+=======
+>>>>>>> 6685877d2dbb000a5a795eab017f382c451c6cd7
         
     ii+=1
     
