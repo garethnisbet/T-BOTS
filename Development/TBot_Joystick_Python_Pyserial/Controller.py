@@ -2,7 +2,6 @@ import pygame, sys, pygame.mixer
 from pygame.locals import *
 import serial
 from time import sleep, time
-import bluetooth as bt
 print('-----------------------------------------------------------------')
 print('Controls:\nClick and drag joystick to drive the T-Bot\nUse up, down, left, right arrow keys to drive the T-Bot\nPress w or s to change the speed factor for arrow controls.\nClick on plot or press c to clear plots\nPress q or Esc to quit or Ctrl c in this window\n')
 print('-----------------------------------------------------------------\n\n\n')
@@ -24,7 +23,7 @@ def send(sendstr):
     global timestart
     try:
         builtstr = chr(0X02)+sendstr+chr(0X03)
-        sock.send(builtstr.encode(encoding='utf-8'))
+        sock.write(builtstr.encode(encoding='utf-8'))
         if cmdwrite:
             f2.write(str(time()-timestart)+','+sendstr+'\n')
     except:
@@ -54,7 +53,7 @@ def parse():
     global oldgyro
     global toggle
     try:
-        data = sock.recv(64).decode(encoding='utf-8')
+        data = sock.read(64).decode(encoding='utf-8')
         data = data.split('\x02')
         ministring = data[0]
         splitstr = ministring.split(',')
