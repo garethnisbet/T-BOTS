@@ -65,7 +65,7 @@ def parse():
     global oldgyro
     global toggle
     try:
-        data = sock.recv(64).decode(encoding='utf-8')
+        data = sock.recv(32).decode(encoding='utf-8')
         data = data.split('\x02')
         ministring = data[0]
         splitstr = ministring.split(',')
