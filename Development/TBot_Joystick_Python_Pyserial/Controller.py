@@ -32,19 +32,19 @@ def send(sendstr):
         sys.exit()
     timestart = time()
 
-
-
-
 def playmacro(filename):
-    ff = open(filename)
-    cmd_data = ff.readlines()
-    ff.close()
-    for ii in range(len(cmd_data)):
-        aa = cmd_data[ii].split(',')
-        dtime = float(aa[0])
-        cmsstr = aa[1]
-        sleep(dtime)
-        send(cmsstr)
+    try:
+        ff = open(filename)
+        cmd_data = ff.readlines()
+        ff.close()
+        for ii in range(len(cmd_data)):
+            aa = cmd_data[ii].split(',')
+            dtime = float(aa[0])
+            cmsstr = aa[1]
+            sleep(dtime)
+            send(cmsstr)
+    except:
+        print('The cmd.csv file does not exist. Try recording a macro first.')
 
 def parse():
     global oldkps

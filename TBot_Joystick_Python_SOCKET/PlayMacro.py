@@ -2,58 +2,32 @@ import pygame, sys, pygame.mixer
 from pygame.locals import *
 import socket
 from time import sleep, time
-import bluetooth as bt
 print('-----------------------------------------------------------------')
 print('Controls:\nClick and drag joystick to drive the T-Bot\nUse up, down, left, right arrow keys to drive the T-Bot\nPress w or s to change the speed factor for arrow controls.\nClick on plot or press c to clear plots\nPress q or Esc to quit or Ctrl c in this window\n')
 print('-----------------------------------------------------------------\n\n\n')
 
+timestart = time()
+cmdwrite = 0
+import mac
+bd_addr, name = mac.io('MAC_Adresses')
 
-
-###################  Connection #############################
-
-search = True
-if search == True:
-    print('Searching for devices...')
-    print("")
-    nearby_devices = bt.discover_devices()
-    #Run through all the devices found and list their name
-    num = 0
-    
-    for i in nearby_devices:
-	    num+=1
-	    print(num , ": " , bt.lookup_name( i ))
-    print('Select your device by entering its coresponding number...')
-    selection = input("> ") - 1
-    print('You have selected - '+bt.lookup_name(nearby_devices[selection]))
-
-    bd_addr = nearby_devices[selection]
-else:
-    bd_addr = '98:D3:32:11:4C:CF'
-    print('connecting...')
-error = 1
+print('Connecting to '+name)
+#bd_addr = '98:D3:32:11:4C:CF' # put the bluetooth address of your T-Bot here. 
 port = 1
-while error:
-    try:
-        sock = bt.BluetoothSocket( bt.RFCOMM )
-        sock.connect((bd_addr,1))
-        sock.settimeout(5)
-        error = 0
-        print('connected to '+bd_addr)
-    except:
-        print('Trying again...')
-        sock.close()
-        error = 1
-        sleep(2)
-
-
-##########################  functions  #####################################
-
-
+try:
+    sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
+    sock.connect((bd_addr,port))
+except:
+    print('Device not found')
+    bd_addr, name = mac.io('MAC_Adresses')
+    sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
+    sock.connect((bd_addr,port))
+sock.settimeout(1)
+print('Connected to '+name)
 def send(sendstr):
     global timestart
     try:
-        builtstr = chr(0X02)+sendstr+chr(0X03)
-        sock.send(builtstr.encode(encoding='utf-8'))
+        sock.send(sendstr.encode(encoding='utf-8'))
         if cmdwrite:
             f2.write(str(time()-timestart)+','+sendstr+'\n')
     except:
@@ -63,20 +37,9 @@ def send(sendstr):
     timestart = time()
 
 
-
-def playmacro(filename):
-    try:
-        ff = open(filename)
-        cmd_data = ff.readlines()
-        ff.close()
-        for ii in range(len(cmd_data)):
-            aa = cmd_data[ii].split(',')
-            dtime = float(aa[0])
-            cmsstr = aa[1]
-            sleep(dtime)
-            send(cmsstr)
-    except:
-        print('The cmd.csv file does not exist. Try recording a macro first.')
+pygame.font.init()
+basicfont = pygame.font.SysFont(None, 30)
+oldkps, oldkp, oldtrim, oldgyro = str(0),str(0),str(0), str(0)
 
 def parse():
     global oldkps
@@ -85,7 +48,7 @@ def parse():
     global oldgyro
     global toggle
     try:
-        data = sock.recv(32).decode(encoding='utf-8')
+        data = sock.recv(64).decode(encoding='utf-8')
         data = data.split('\x02')
         ministring = data[0]
         splitstr = ministring.split(',')
@@ -102,17 +65,11 @@ def parse():
         except:
             return oldkps, oldkp, oldtrim, 0
 
-###################    Setup Pygame   ########################
-
-pygame.font.init()
-basicfont = pygame.font.SysFont(None, 30)
-oldkps, oldkp, oldtrim, oldgyro = str(0),str(0),str(0), str(0)
 pygame.init()
 clock = pygame.time.Clock()
 size = width, height = 1200, 500
 screen=pygame.display.set_mode(size)
-
-############   Load art work    ##############################
+############   Load art work    #####################
 joytop = pygame.image.load('images/joytopglow.png')
 joybase = pygame.image.load('images/joybase.png')
 minus = pygame.image.load('images/minus.png')
@@ -131,10 +88,8 @@ cmdrecord = pygame.image.load('images/cmdrecord.png')
 trash = pygame.image.load('images/trash.png')
 trashlight = pygame.image.load('images/trashlight.png')
 
-########################  initialize variables  #################
-timestart = time()
-cmdwrite = 0
 button1,button2,button3,button4,button5,button6,button7, button8, button9 ,button10, button11 ,button12 , toggle,  toggle2, toggle3 = 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+# initialize variables
 x,y = 0,0
 colour = (0,0,0,0)
 linecolor = 255, 0, 0
@@ -148,12 +103,9 @@ ii=800
 speedfactor = 0.5
 pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,400),(800,400),(800,100)),1)
 f= open('plot.csv','w')
+#f2= open('cmd.csv','w')
 Play = 0
 cmdindex = 0
-
-
-##############  Start main loop ###################################
-
 while True: # Continuous Pygame loop,
     pygame.display.update((800,0,1200,500))
 
@@ -265,31 +217,31 @@ while True: # Continuous Pygame loop,
 
 
         if keys[K_RIGHT] and keys[K_UP]:
-            send('%03d%03dZ'%(240,200+(speedfactor*100)))
+            send(chr(0X02)+'%03d%03dZ'%(240,200+(speedfactor*100))+chr(0X03))
 
         elif keys[K_LEFT] and keys[K_UP]:
-            send('%03d%03dZ'%(160,200+(speedfactor*100)))
+            send(chr(0X02)+'%03d%03dZ'%(160,200+(speedfactor*100))+chr(0X03))
 
         elif keys[K_RIGHT] and keys[K_DOWN]:
-            send('%03d%03dZ'%(260,200-(speedfactor*100)))
+            send(chr(0X02)+'%03d%03dZ'%(260,200-(speedfactor*100))+chr(0X03))
 
         elif keys[K_LEFT] and keys[K_DOWN]:
-            send('%03d%03dZ'%(140,200-(speedfactor*100)))
+            send(chr(0X02)+'%03d%03dZ'%(140,200-(speedfactor*100))+chr(0X03))
 
 
         elif keys[K_DOWN]:
-            send('%03d%03dZ'%(200,200-(speedfactor*100)))
+            send(chr(0X02)+'%03d%03dZ'%(200,200-(speedfactor*100))+chr(0X03))
 
         elif keys[K_UP]:
-            send('%03d%03dZ'%(200,200+(speedfactor*100)))
+            send(chr(0X02)+'%03d%03dZ'%(200,200+(speedfactor*100))+chr(0X03))
 
 
         elif keys[K_RIGHT]:
-            send('260200Z')
+            send(chr(0X02)+'260200Z'+chr(0X03))
 
 
         elif keys[K_LEFT]:
-            send('140200Z')
+            send(chr(0X02)+'140200Z'+chr(0X03))
 
         elif keys[K_w]:
             
@@ -306,7 +258,7 @@ while True: # Continuous Pygame loop,
 
         else:
             if c1==0:
-                send('200200Z')
+                send(chr(0X02)+'200200Z'+chr(0X03))
         
 
 
@@ -325,10 +277,11 @@ while True: # Continuous Pygame loop,
             sys.exit()
     
         screen.fill(colour,(0,0,800,500))           # Joystick
-        screen.fill(colour,(1116,410,1146,440))
-        screen.fill(colour,(800,420,1146,500))
+        screen.fill(colour,(1056,37,1093,55))       # Trash
+
+        screen.fill(colour,(801,420,1146,500))      # Speed factor
         screen.blit(joybase,(250-230,250-230))
-        screen.blit(joytop,(mx-75,my-75))
+        screen.blit(joytop,(mx-75,my-65))
         screen.blit(plus,(680,100))
         screen.blit(minus,(680,130))
         screen.blit(plus,(680,230))
@@ -342,31 +295,31 @@ while True: # Continuous Pygame loop,
 
         if button1:
             screen.blit(pluslight,(680-3,100-3))
-            buttonstring = '200200B'
+            buttonstring = chr(0X02)+'200200B'+chr(0X03)
             send(buttonstring)
         if button2:
             screen.blit(minuslight,(680-3,130-3))
-            buttonstring2 = '200200A'
+            buttonstring2 = chr(0X02)+'200200A'+chr(0X03)
             send(buttonstring2)
         if button3:
             screen.blit(pluslight,(680-3,230-3))
-            buttonstring3 = '200200D'
+            buttonstring3 = chr(0X02)+'200200D'+chr(0X03)
             send(buttonstring3)
         if button4:
             screen.blit(minuslight,(680-3,260-3))
-            buttonstring4 = '200200C'
+            buttonstring4 = chr(0X02)+'200200C'+chr(0X03)
             send(buttonstring4)
         if button5:
             screen.blit(pluslight,(680-3,360-3))
-            buttonstring5 = '200200F'
+            buttonstring5 = chr(0X02)+'200200F'+chr(0X03)
             send(buttonstring5)
         if button6:
             screen.blit(minuslight,(680-3,390-3))
-            buttonstring6 = '200200E'
+            buttonstring6 = chr(0X02)+'200200E'+chr(0X03)
             send(buttonstring6)
         if button7:
             screen.blit(gTrimlight,(720-2,375-2))
-            buttonstring7 = '200200T'
+            buttonstring7 = chr(0X02)+'200200T'+chr(0X03)
             send(buttonstring7)
         if button8:
             screen.fill(colour,(800,100,1200,500))
@@ -417,6 +370,9 @@ while True: # Continuous Pygame loop,
         if toggle2 == 0:
             if button10==1:
                 Play = 1
+                ff = open('cmd.csv')
+                cmd_data = ff.readlines()
+                ff.close()
                 cmdindex = 0
                 toggle2 = 1
 
@@ -427,12 +383,10 @@ while True: # Continuous Pygame loop,
         if toggle2:
             screen.fill(colour,(860,40,900,44))
             screen.blit(stop,(860,40))
-            Play = 1
             
         else:
             screen.fill(colour,(860,40,900,44))
             screen.blit(play,(860,40))
-            Play = 0
 
 #####################  Command record logic  ###########################
 
@@ -479,12 +433,18 @@ while True: # Continuous Pygame loop,
         screen.blit(trimtext,(560,375))
         screen.blit(joytop,(mx-75,my-75))
         screen.blit(speedfactortext,(800,420))
-        
         if Play:
-            playmacro('cmd.csv')
-            Play = 0
-            button10 = 0
-            toggle2 = 0
+            if len(cmd_data) != 0:
+                aa = cmd_data[cmdindex].split(',')
+                dtime = float(aa[0])
+                cmsstr = aa[1]           
+                sleep(dtime)
+                send(cmsstr)
+                cmdindex += 1
+            if cmdindex == len(cmd_data):
+                cmdindex = 0
+                Play =0
+
 
 
         
