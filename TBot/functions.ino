@@ -119,7 +119,7 @@ void refreshTuningFields(int bStatus)  {
 void getJoystick(byte databt[8]){
    joyXcheck = (databt[1]-48)*100 + (databt[2]-48)*10 + (databt[3]-48);       // obtain the Int from the ASCII representation
    joyYcheck = (databt[4]-48)*100 + (databt[5]-48)*10 + (databt[6]-48);
-    if (joyXcheck < 300 && joyYcheck < 300){
+    if (joyXcheck <= 300 && joyYcheck <= 300){
       joyX = joyXcheck - 200;
       joyY = joyYcheck - 200;
       
