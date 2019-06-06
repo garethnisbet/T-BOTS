@@ -11,17 +11,18 @@ x = []
 y = []
 x2 = []
 y2 = []
+loopcount = 0
 #################### set variables ###################
 
-pid = PID.PID(0.2,10,0) # P I D
+pid = PID.PID(5,50,0) # P I D
 pid.SetPoint = 0
 pid.setSampleTime(0.1)
 forwardspeed = 200
 blueLower = (96,170,150)
 blueUpper = (131,255,247)
 
-greenLower = (0,74,141)
-greenUpper = (90,255,255)
+greenLower = (37,64,0)
+greenUpper = (100,255,211)
 
 pts = deque(maxlen=22)
 pts2 = deque(maxlen=22)
@@ -100,7 +101,7 @@ while error:
         error = 1
 
 ################  Get or set destination points  ##########
-numpathpoints = 19
+numpathpoints = 60
 
 try:
     aa = np.loadtxt('pathpoints.dat')
@@ -134,7 +135,7 @@ for ii in range(len(aa)):
 ############   Start main loop #############################
 
 cap = cv2.VideoCapture(1)
-#cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 #cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 #cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 #cap.set(0,1280)
@@ -214,7 +215,7 @@ if __name__ == '__main__':
         if x != [] and x2 !=[]:
             vto = aa[pathindex]
             _distance = distance((x,y),(x2,y2),vto)
-            if _distance < 30:
+            if _distance < 40:
                 pathindex += 1
             if pathindex == len(aa):
                 send('200200Z')
@@ -223,25 +224,46 @@ if __name__ == '__main__':
 
             angle = turn((x,y),(x2,y2),vto)
             pid.update(-angle)
+
             rotspeed = pid.output+200
-            rspeedfactor = 10
+
+            if np.abs(angle) > 25:
+                
+                forwardspeed = 200
+            else:
+                loopcount += 2 # accelerate loop count
+                forwardspeed = 210+(_distance)*0.1
+
+
+            ###################  Set Limits  ################
+
+            if forwardspeed > 220:
+                forwardspeed = 220
+
+            rspeedfactor = 40
+
             if rotspeed >=200 + rspeedfactor:
                 rotspeed = 200 + rspeedfactor
             elif rotspeed <=200 - rspeedfactor:
                 rotspeed = 200 - rspeedfactor
-            if np.abs(angle)> 25:
-                forwardspeed = 200
-            else:
-                forwardspeed = 218#+(_distance)*0.1
-            if forwardspeed > 260:
-                forwardspeed = 260
-            
+
+            ##############  build data string  ##############
 
             rotspeed = '%03d' % rotspeed
         
             forwardspeed = '%03d' % forwardspeed
-            send(rotspeed+forwardspeed+'Z')
-            
+
+
+            #################   Send data    ###############
+
+            if loopcount < 6:
+                send(rotspeed+forwardspeed+'Z')
+            else:
+               send('200'+forwardspeed+'Z')
+
+            loopcount +=1
+            if loopcount > 20:
+               loopcount = 0             
 
         key = cv2.waitKey(1) & 0xFF
      
