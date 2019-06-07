@@ -2,4 +2,8 @@ Requires pyBlues, and opencv.
 
 Delete pathpoints.dat to create a new path. When you run either TBot_HSVTracking_BT.py or TBotTrackerBT.py, an image is captured which you can click on to create your own path.
 
+This is in the very early stages of development but I thought some of you might enjoy the chalenge making it better yourselves. S
+
+I will add a series of tutorials on computer vision in the near future. 
+
 
