@@ -12,6 +12,7 @@ y = []
 x2 = []
 y2 = []
 loopcount = 0
+pathindex = 0
 #################### set variables ###################
 
 pid = PID.PID(5,50,0) # P I D
@@ -101,7 +102,7 @@ while error:
         error = 1
 
 ################  Get or set destination points  ##########
-numpathpoints = 60
+numpathpoints = 70
 
 try:
     aa = np.loadtxt('pathpoints.dat')
@@ -215,8 +216,12 @@ if __name__ == '__main__':
         if x != [] and x2 !=[]:
             vto = aa[pathindex]
             _distance = distance((x,y),(x2,y2),vto)
-            if _distance < 40:
+
+            if _distance < 50:
                 pathindex += 1
+                vto = aa[pathindex]
+            
+
             if pathindex == len(aa):
                 send('200200Z')
                 print('Done')
@@ -227,18 +232,18 @@ if __name__ == '__main__':
 
             rotspeed = pid.output+200
 
-            if np.abs(angle) > 25:
+            if np.abs(angle) > 40:
                 
                 forwardspeed = 200
             else:
-                loopcount += 2 # accelerate loop count
+                loopcount += 5 # accelerate loop count
                 forwardspeed = 210+(_distance)*0.1
 
 
             ###################  Set Limits  ################
 
-            if forwardspeed > 220:
-                forwardspeed = 220
+            if forwardspeed > 215:
+                forwardspeed = 215
 
             rspeedfactor = 40
 
