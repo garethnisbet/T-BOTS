@@ -2,9 +2,9 @@ import sys
 import cv2
 import imutils
 from collections import deque
+import PID
 import numpy as np
 import matplotlib.pyplot as plt
-from time import time
 plt.ion()
 import bluetooth as bt
 x = []
@@ -16,24 +16,21 @@ pathindex = 0
 
 #----------------- set variables --------------------#
 
-#blueLower = (96,170,150)
-#blueUpper = (131,255,247)
-blueLower = (90,220,141)
-blueUpper = (222,255,255)
+pid = PID.PID(5,50,0) # P I D
+pid.SetPoint = 0
+pid.setSampleTime(0.1)
+forwardspeed = 200
+blueLower = (96,134,141)
+blueUpper = (172,255,255)
 
-
-#greenLower = (37,64,0)
-#greenUpper = (100,255,211)
-greenLower = (36,42,62)
-greenUpper = (91,255,255)
+greenLower = (37,64,0)
+greenUpper = (100,255,211)
 
 pts = deque(maxlen=22)
 pts2 = deque(maxlen=22)
 
 pathindex = 0
 rotspeed = 200
-speedfactor = 0.3
-turntimefactor = 0.02
 
 #--------------  Define functions  ------------------#
 
@@ -74,7 +71,7 @@ def tracker(image, lowthresh, highthresh):
 #######################################################
 #------------- Bluetooth  Connection -----------------#
 #######################################################
-
+'''
 search = False
 if search == True:
     print('Searching for devices...')
@@ -107,7 +104,7 @@ while error:
         print('Trying again...')
         sock.close()
         error = 1
-
+'''
 #---------  Get or set destination points  ------------#
 
 numpathpoints = 70
@@ -152,7 +149,7 @@ cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 #cap.set(0,1280)
-starttime = time()
+
 if __name__ == '__main__':
     success, frame = cap.read()
     if not success:
@@ -182,8 +179,8 @@ if __name__ == '__main__':
             x2, y2, center2, radius2, M2, cents2 = tracker(frame, blueLower, blueUpper)
 
             if radius2 > 3:
-                cv2.circle(frame, (int(x2), int(y2)), int(radius2),(113,212,198), 2)
-                cv2.circle(frame, center2, 2, (113,212,198), -1)
+                cv2.circle(frame, (int(x2), int(y2)), int(radius2),(255,0,0), 2)
+                cv2.circle(frame, center2, 2, (255,0,0), -1)
                 pts2.appendleft(center2)
             
         except:
@@ -211,50 +208,51 @@ if __name__ == '__main__':
             
             cv2.line(frame, pts2[ii - 1], pts2[ii], (113,212,198), 1)
 
-        frame[:,:,1]=frame[:,:,1]*mask
+        #frame[:,:,1]=frame[:,:,1]*mask
         cv2.imshow('MultiTracker', frame)
 
 
         ###################################################
         #---------------  Control Strategy ---------------#
         ###################################################
-        
+        '''
         if x != [] and x2 !=[]:
             vto = aa[pathindex]
             _distance = distance((x,y),(x2,y2),vto)
 
-            if _distance < 30:
+            if _distance < 50:
                 pathindex += 1
-                vto = aa[pathindex]          
+                vto = aa[pathindex]
+            
 
-            if pathindex == len(aa)-1:
+            if pathindex == len(aa):
                 send('200200Z')
                 print('Done')
                 break
 
             angle = turn((x,y),(x2,y2),vto)
-            turnduration = np.abs(turntimefactor * angle)
-            elapsedtime = time()-starttime
+            pid.update(-angle)
 
-            if elapsedtime < turnduration:
-                if angle > 0:
-                    rotspeed = 240
-                    if np.abs(angle) < 5:
-                        rotspeed = 200
-                else:
-                    rotspeed = 160
-                    if np.abs(angle) < 5:
-                        rotspeed = 200
-            else:
-                rotspeed = 200             
-                starttime = time()
-            if np.abs(angle) < 40:
+            rotspeed = pid.output+200
+
+            if np.abs(angle) > 40:
                 
-                forwardspeed = 200+(speedfactor*100)
-
-            else: 
                 forwardspeed = 200
+            else:
+                loopcount += 5 # accelerate loop count
+                forwardspeed = 210+(_distance)*0.1
 
+
+            #---------------  Set Limits  -----------------#
+
+            if forwardspeed > 220:
+                forwardspeed = 220
+
+            rspeedfactor = 40
+            if rotspeed >=200 + rspeedfactor:
+                rotspeed = 200 + rspeedfactor
+            elif rotspeed <=200 - rspeedfactor:
+                rotspeed = 200 - rspeedfactor
 
 
             #------------  build data string  ------------#
@@ -266,15 +264,21 @@ if __name__ == '__main__':
 
             #--------------   Send data    ---------------#
 
-            send(rotspeed+forwardspeed+'Z')
-           
+            if loopcount < 6:
+                send(rotspeed+forwardspeed+'Z')
+            else:
+               send('200'+forwardspeed+'Z')
 
+            loopcount +=1
+            if loopcount > 15:
+               loopcount = 0             
+        '''
         key = cv2.waitKey(1) & 0xFF
      
             # if the 'q' key is pressed, stop the loop
         if key == ord("q"):
             cap.release()
-            send('200200Z')
+            #send('200200Z')
             break
 
 cv2.destroyAllWindows()
