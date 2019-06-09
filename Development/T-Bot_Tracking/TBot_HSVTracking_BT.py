@@ -32,7 +32,7 @@ pts2 = deque(maxlen=22)
 
 pathindex = 0
 rotspeed = 200
-speedfactor = 0.2
+speedfactor = 0.25
 turnspeedfactor = 0.2
 turntimefactor = 0.02
 
