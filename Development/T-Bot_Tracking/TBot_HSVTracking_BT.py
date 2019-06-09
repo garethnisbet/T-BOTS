@@ -32,7 +32,8 @@ pts2 = deque(maxlen=22)
 
 pathindex = 0
 rotspeed = 200
-speedfactor = 0.3
+speedfactor = 0.2
+turnspeedfactor = 0.2
 turntimefactor = 0.02
 
 #--------------  Define functions  ------------------#
@@ -238,11 +239,11 @@ if __name__ == '__main__':
 
             if elapsedtime < turnduration:
                 if angle > 0:
-                    rotspeed = 240
+                    rotspeed = 200+(turnspeedfactor*100)
                     if np.abs(angle) < 5:
                         rotspeed = 200
                 else:
-                    rotspeed = 160
+                    rotspeed = 200-(turnspeedfactor*100)
                     if np.abs(angle) < 5:
                         rotspeed = 200
             else:
