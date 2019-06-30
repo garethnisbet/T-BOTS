@@ -23,8 +23,8 @@ blueUpper = (255,255,255)
 
 greenLower = (37,64,0)
 greenUpper = (100,255,211)
-#greenLower = (36,42,62)
-#greenUpper = (91,255,255)
+greenLower = (71,43,84)
+greenUpper = (101,255,255)
 
 
 
@@ -79,7 +79,7 @@ def parse():
     global oldgyro
     global toggle
     try:
-        data = sock.recv(32).decode(encoding='utf-8')
+        data = sock.recv(500).decode(encoding='utf-8')
         data = data.split('\x02')
         ministring = data[0]
         splitstr = ministring.split(',')
@@ -156,8 +156,8 @@ success, frame = cap.read()
 cap.release()
 
 #---------  Generate target function  ------------#
-amplitude = 60
-frequency = 3
+amplitude = 70
+frequency = 2
 phase = 0
 border = 70
 bg = frame.shape[0]/2
@@ -178,7 +178,7 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 #cap.set(0,1280)
 starttime = time()
 if __name__ == '__main__':
-    kps, kp, trim, gyrodata = parse() # read data from T-Bot to stop buffer overflow
+    
     success, frame = cap.read()
     if not success:
         print('Failed to capture video')
@@ -248,7 +248,7 @@ if __name__ == '__main__':
             vto = aa[pathindex]
             _distance = distance((x,y),(x2,y2),vto)
 
-            if _distance < 20:
+            if _distance < 30:
                 pathindex += 1
                 vto = aa[pathindex]          
 
@@ -256,6 +256,7 @@ if __name__ == '__main__':
                 send('200200Z')
                 print('Done')
                 pathindex = 0
+                kps, kp, trim, gyrodata = parse() # read data from T-Bot to stop buffer overflow
                 #break
 
             angle = turn((x,y),(x2,y2),vto)
@@ -275,8 +276,10 @@ if __name__ == '__main__':
                 rotspeed = 200             
                 starttime = time()
             if np.abs(angle) < 40:
-                
-                forwardspeed = 200+(speedfactor*100)
+                if _distance > 200:
+                    forwardspeed = 260
+                else:                 
+                    forwardspeed = 200+(speedfactor*100)
 
             else: 
                 forwardspeed = 200
