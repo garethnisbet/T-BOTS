@@ -73,6 +73,12 @@ def main():
             frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     else:
         camera = cv2.VideoCapture(1)
+        camera.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+        camera.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+        camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
+
+
+
 
     setup_trackbars(range_filter)
 

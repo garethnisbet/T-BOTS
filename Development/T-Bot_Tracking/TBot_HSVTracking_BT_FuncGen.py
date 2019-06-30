@@ -16,23 +16,24 @@ pathindex = 0
 
 #----------------- set variables --------------------#
 
-#blueLower = (96,170,150)
-#blueUpper = (131,255,247)
-blueLower = (90,220,141)
-blueUpper = (222,255,255)
+blueLower = (89,214,139)
+blueUpper = (255,255,255)
 
 
-#greenLower = (37,64,0)
-#greenUpper = (100,255,211)
-greenLower = (36,42,62)
-greenUpper = (91,255,255)
 
-pts = deque(maxlen=22)
-pts2 = deque(maxlen=22)
+greenLower = (37,64,0)
+greenUpper = (100,255,211)
+#greenLower = (36,42,62)
+#greenUpper = (91,255,255)
+
+
+
+pts = deque(maxlen=200)
+pts2 = deque(maxlen=200)
 
 pathindex = 0
 rotspeed = 200
-speedfactor = 0.1
+speedfactor = 0.19
 turnspeedfactor = 0.2
 turntimefactor = 0.02
 
@@ -70,7 +71,42 @@ def tracker(image, lowthresh, highthresh):
     M = cv2.moments(c)   
     center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
     return x, y, center, radius, M, cnts
+oldkps, oldkp, oldtrim, oldgyro, toggle = 0,0,0,0,0
+def parse():
+    global oldkps
+    global oldkp
+    global oldtrim
+    global oldgyro
+    global toggle
+    try:
+        data = sock.recv(32).decode(encoding='utf-8')
+        data = data.split('\x02')
+        ministring = data[0]
+        splitstr = ministring.split(',')
+        oldkps, oldkp, oldtrim, oldgyro = splitstr[0], splitstr[1], splitstr[2], splitstr[3]
+        oldgyro = oldgyro[:-2]
+        if toggle == 1:
+            print('writing...')
+            f.write(oldkps+','+oldkp+','+oldtrim+','+oldgyro+'\n')
 
+        return oldkps, oldkp, oldtrim, float(oldgyro)
+    except:
+        try:
+            return oldkps, oldkp, oldtrim, float(oldgyro)
+        except:
+            return oldkps, oldkp, oldtrim, 0
+
+def buildmask(inputarray,frame,maskdx,maskdy):
+    mask = np.ones(frame.shape)[:,:,0]
+    for ii in range(len(inputarray)):
+        mask[np.meshgrid(np.r_[inputarray[ii][1]-maskdx:inputarray[ii][1]+maskdx],np.r_[inputarray[ii][0]-maskdy:inputarray[ii][0]+maskdy])]=0
+    return mask
+
+def sinfunc(xdata,border,bg,amplitude,frequency,phase):
+    scaledx = ((xdata-border)*2*np.pi)/(xdata.max()-border)
+    xdata = np.array([xdata]).T
+    ydata = np.array([bg+(amplitude*np.sin((frequency*scaledx)+phase))]).T
+    return np.concatenate((xdata,ydata),1).astype(int)
 
 #######################################################
 #------------- Bluetooth  Connection -----------------#
@@ -111,38 +147,25 @@ while error:
 
 #---------  Get or set destination points  ------------#
 
-numpathpoints = 100
 
-try:
-    aa = np.loadtxt('pathpoints.dat')
-    nomapdata = 0
-except:
-    nomapdata = 1
 cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 success, frame = cap.read()
-if nomapdata:
-    plt.figure()
-    plt.imshow(frame)
-    aa = plt.ginput(numpathpoints,0)
-    aa = map(list,np.array(aa).astype(int))
-    np.savetxt('pathpoints.dat',aa)
-    plt.close()
-else:
-    aa = aa.astype(int)
 cap.release()
 
+#---------  Generate target function  ------------#
+amplitude = 60
+frequency = 3
+phase = 0
+border = 70
+bg = frame.shape[0]/2
 #----------   Create mask for coordinates   ------------#
-
-mask = np.ones(frame.shape)[:,:,0]
-print(mask.shape)
+xdata =  np.arange(border, frame.shape[1]-border, 1)
+aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
 maskdx, maskdy = 2,2
-for ii in range(len(aa)):
-    mask[np.meshgrid(np.r_[aa[ii][1]-maskdx:aa[ii][1]+maskdx],np.r_[aa[ii][0]-maskdy:aa[ii][0]+maskdy])]=0
-
-
+mask = buildmask(aa,frame,maskdx,maskdy)
 
 #########################################################
 #----------------   Start main loop --------------------#
@@ -155,6 +178,7 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 #cap.set(0,1280)
 starttime = time()
 if __name__ == '__main__':
+    kps, kp, trim, gyrodata = parse() # read data from T-Bot to stop buffer overflow
     success, frame = cap.read()
     if not success:
         print('Failed to capture video')
@@ -224,14 +248,15 @@ if __name__ == '__main__':
             vto = aa[pathindex]
             _distance = distance((x,y),(x2,y2),vto)
 
-            if _distance < 30:
+            if _distance < 20:
                 pathindex += 1
                 vto = aa[pathindex]          
 
             if pathindex == len(aa)-1:
                 send('200200Z')
                 print('Done')
-                break
+                pathindex = 0
+                #break
 
             angle = turn((x,y),(x2,y2),vto)
             turnduration = np.abs(turntimefactor * angle)
@@ -271,9 +296,39 @@ if __name__ == '__main__':
            
 
         key = cv2.waitKey(1) & 0xFF
-     
+
+        if key == ord("w"):
+            amplitude += 5
+            aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            mask = buildmask(aa,frame,maskdx,maskdy)
+        if key == ord("s"):
+            amplitude -= 5
+            aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            mask = buildmask(aa,frame,maskdx,maskdy)  
+        if key == ord("d"):
+            frequency += 0.5
+            aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            mask = buildmask(aa,frame,maskdx,maskdy)
+        if key == ord("a"):
+            frequency -= 0.5
+            aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            mask = buildmask(aa,frame,maskdx,maskdy)
+        if key == ord("g"):
+            speedfactor += 0.01
+            print('speedfactor = '+str(speedfactor))
+
+        if key == ord("f"):
+            speedfactor -= 0.01
+            print('speedfactor = '+str(speedfactor))
+        if key == ord("t"):
+            turnspeedfactor += 0.01
+            print('turnspeedfactor = '+str(turnspeedfactor))
+        if key == ord("y"):
+            turnspeedfactor -= 0.01
+            print('turnspeedfactor = '+str(turnspeedfactor))
             # if the 'q' key is pressed, stop the loop
         if key == ord("q"):
+
             cap.release()
             send('200200Z')
             break

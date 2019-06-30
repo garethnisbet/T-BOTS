@@ -11,7 +11,7 @@ print('-----------------------------------------------------------------\n\n\n')
 
 ###################  Connection #############################
 
-search = True
+search = False
 if search == True:
     print('Searching for devices...')
     print("")
@@ -28,7 +28,7 @@ if search == True:
 
     bd_addr = nearby_devices[selection]
 else:
-    bd_addr = '98:D3:32:11:4C:CF'
+    bd_addr = '98:D3:51:FD:81:AC'
     print('connecting...')
 error = 1
 port = 1
