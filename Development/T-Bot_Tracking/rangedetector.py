@@ -5,7 +5,7 @@
 #
 # (python) range-detector --filter RGB --image /home/gareth/Desktop/2019-06-02-163848.jpg
 # or
-# (python) range-detector --filter HSV --webcam
+# python range-detector.py --filter HSV --webcam
 
 import cv2
 import argparse

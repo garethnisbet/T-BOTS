@@ -16,6 +16,9 @@ pathindex = 0
 
 #----------------- set variables --------------------#
 
+#blueLower = (96,205,185)
+#blueUpper = (152,255,255)
+
 blueLower = (89,214,139)
 blueUpper = (255,255,255)
 
@@ -23,8 +26,8 @@ blueUpper = (255,255,255)
 
 greenLower = (37,64,0)
 greenUpper = (100,255,211)
-greenLower = (71,43,84)
-greenUpper = (101,255,255)
+#greenLower = (71,43,84)
+#greenUpper = (101,255,255)
 
 
 
@@ -33,9 +36,10 @@ pts2 = deque(maxlen=200)
 
 pathindex = 0
 rotspeed = 200
-speedfactor = 0.19
+speedfactor = 0.26
 turnspeedfactor = 0.2
 turntimefactor = 0.02
+bendscalefactor = 6
 
 #--------------  Define functions  ------------------#
 
@@ -62,8 +66,8 @@ def tracker(image, lowthresh, highthresh):
     blurred = cv2.GaussianBlur(frame, (11, 11), 0)
     hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lowthresh, highthresh)
-    mask = cv2.erode(mask, None, iterations=2)
-    mask = cv2.dilate(mask, None, iterations=2)
+    #mask = cv2.erode(mask, None, iterations=2)
+    #mask = cv2.dilate(mask, None, iterations=2)
     cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     c = max(cnts, key=cv2.contourArea)
@@ -72,41 +76,25 @@ def tracker(image, lowthresh, highthresh):
     center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
     return x, y, center, radius, M, cnts
 oldkps, oldkp, oldtrim, oldgyro, toggle = 0,0,0,0,0
-def parse():
-    global oldkps
-    global oldkp
-    global oldtrim
-    global oldgyro
-    global toggle
-    try:
-        data = sock.recv(500).decode(encoding='utf-8')
-        data = data.split('\x02')
-        ministring = data[0]
-        splitstr = ministring.split(',')
-        oldkps, oldkp, oldtrim, oldgyro = splitstr[0], splitstr[1], splitstr[2], splitstr[3]
-        oldgyro = oldgyro[:-2]
-        if toggle == 1:
-            print('writing...')
-            f.write(oldkps+','+oldkp+','+oldtrim+','+oldgyro+'\n')
 
-        return oldkps, oldkp, oldtrim, float(oldgyro)
-    except:
-        try:
-            return oldkps, oldkp, oldtrim, float(oldgyro)
-        except:
-            return oldkps, oldkp, oldtrim, 0
 
 def buildmask(inputarray,frame,maskdx,maskdy):
+    inputarray= inputarray.astype(int)
     mask = np.ones(frame.shape)[:,:,0]
     for ii in range(len(inputarray)):
-        mask[np.meshgrid(np.r_[inputarray[ii][1]-maskdx:inputarray[ii][1]+maskdx],np.r_[inputarray[ii][0]-maskdy:inputarray[ii][0]+maskdy])]=0
+        mask[tuple(np.meshgrid(np.r_[inputarray[ii][1]-maskdx:inputarray[ii][1]+maskdx],np.r_[inputarray[ii][0]-maskdy:inputarray[ii][0]+maskdy]))]=0
     return mask
 
 def sinfunc(xdata,border,bg,amplitude,frequency,phase):
     scaledx = ((xdata-border)*2*np.pi)/(xdata.max()-border)
     xdata = np.array([xdata]).T
     ydata = np.array([bg+(amplitude*np.sin((frequency*scaledx)+phase))]).T
-    return np.concatenate((xdata,ydata),1).astype(int)
+    return np.concatenate((xdata,ydata),1)
+
+def bend(array_in,pathindex):
+    array_in = array_in.astype(float)
+    v1,v2 = array_in[pathindex+1]-array_in[pathindex], array_in[pathindex+2]-array_in[pathindex+1]
+    return np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
 
 #######################################################
 #------------- Bluetooth  Connection -----------------#
@@ -152,6 +140,8 @@ cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
+
+
 success, frame = cap.read()
 cap.release()
 
@@ -195,7 +185,7 @@ if __name__ == '__main__':
         try:         
             x, y, center, radius, M, cents = tracker(frame, greenLower, greenUpper)
 
-            if radius > 3:
+            if radius > 1:
                 cv2.circle(frame, (int(x), int(y)), int(radius),(0, 255, 0), 2)
                 cv2.circle(frame, center, 2, (0, 255, 0), -1)
                 pts.appendleft(center)
@@ -206,7 +196,7 @@ if __name__ == '__main__':
         try:
             x2, y2, center2, radius2, M2, cents2 = tracker(frame, blueLower, blueUpper)
 
-            if radius2 > 3:
+            if radius2 > 1:
                 cv2.circle(frame, (int(x2), int(y2)), int(radius2),(113,212,198), 2)
                 cv2.circle(frame, center2, 2, (113,212,198), -1)
                 pts2.appendleft(center2)
@@ -246,6 +236,10 @@ if __name__ == '__main__':
         
         if x != [] and x2 !=[]:
             vto = aa[pathindex]
+            try:
+                vto_next = aa[pathindex+3]
+            except:
+                pass
             _distance = distance((x,y),(x2,y2),vto)
 
             if _distance < 30:
@@ -255,11 +249,15 @@ if __name__ == '__main__':
             if pathindex == len(aa)-1:
                 send('200200Z')
                 print('Done')
+                aa = np.flipud(aa)
                 pathindex = 0
-                kps, kp, trim, gyrodata = parse() # read data from T-Bot to stop buffer overflow
-                #break
+                data = sock.recv(10000).decode(encoding='utf-8')
+                data = []
+
+
 
             angle = turn((x,y),(x2,y2),vto)
+            angle2 = turn((x,y),(x2,y2),vto_next)
             turnduration = np.abs(turntimefactor * angle)
             elapsedtime = time()-starttime
 
@@ -276,10 +274,18 @@ if __name__ == '__main__':
                 rotspeed = 200             
                 starttime = time()
             if np.abs(angle) < 40:
-                if _distance > 200:
+                if _distance > 100:
                     forwardspeed = 260
-                else:                 
-                    forwardspeed = 200+(speedfactor*100)
+                else:
+                    if pathindex < len(aa)-2:
+                        bendangle = bend(aa,pathindex)
+                    else:
+                        bendangle = 0
+
+                    straightspeedfactor = 1-np.sin(bendangle*bendscalefactor)
+       
+                    forwardspeed = 200+(straightspeedfactor*speedfactor*100)
+                    #forwardspeed = 200+(speedfactor*100)
 
             else: 
                 forwardspeed = 200
