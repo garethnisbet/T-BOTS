@@ -223,9 +223,9 @@ while not done:
     # #############   Send data   #################################
     #
         if abs(axis0)+abs(axis1)+abs(axis2)+abs(axis3) != 0:
-        
-            turn = 200+int(((axis0+axis2)*speedfactor*100))
-            speed = 200-int(((axis1+axis3)*speedfactor*100))
+            slowfactor = 1+joystick.get_button(7)
+            turn = 200+int(((axis0+axis2)*speedfactor*100/slowfactor))
+            speed = 200-int(((axis1+axis3)*speedfactor*100/slowfactor))
             if speed > 200+speedlimit:
                 speed = 200+speedlimit
             if speed < 200-speedlimit:
