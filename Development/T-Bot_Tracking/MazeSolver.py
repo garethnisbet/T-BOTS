@@ -1,127 +1,41 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-plt.ion()
-class Node():
-    """A node class for A* Pathfinding"""
-
-    def __init__(self, parent=None, position=None):
-        self.parent = parent
-        self.position = position
-
-        self.g = 0
-        self.h = 0
-        self.f = 0
-
-    def __eq__(self, other):
-        return self.position == other.position
 
 
-def astar(maze, start, end):
-    """Returns a list of tuples as a path from the given start to the given end in the given maze"""
+img = cv2.imread('maze2.png')
+# Binary conversion
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+ret, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV)
 
-    # Create start and end node
-    start_node = Node(None, start)
-    start_node.g = start_node.h = start_node.f = 0
-    end_node = Node(None, end)
-    end_node.g = end_node.h = end_node.f = 0
+# Contours
+contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
+#contours, hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+cv2.drawContours(thresh, contours, 0, (255, 255, 255), -1)
 
-    # Initialize both open and closed list
-    open_list = []
-    closed_list = []
+ret, thresh = cv2.threshold(thresh, 240, 255, cv2.THRESH_BINARY)
 
-    # Add the start node
-    open_list.append(start_node)
+# Dilate
+kernel = np.ones((25, 25), np.uint8)
+dilation = cv2.dilate(thresh, kernel, iterations=1)
 
-    # Loop until you find the end
-    while len(open_list) > 0:
+# Erosion
+erosion = cv2.erode(dilation, kernel, iterations=1)
 
-        # Get the current node
-        current_node = open_list[0]
-        current_index = 0
-        for index, item in enumerate(open_list):
-            if item.f < current_node.f:
-                current_node = item
-                current_index = index
+diff = cv2.absdiff(dilation, erosion)
 
-        # Pop current off open list, add to closed list
-        open_list.pop(current_index)
-        closed_list.append(current_node)
+# splitting the channels of maze
+b, g, r = cv2.split(img)
+mask_inv = cv2.bitwise_not(diff)
 
-        # Found the goal
-        if current_node == end_node:
-            path = []
-            current = current_node
-            while current is not None:
-                path.append(current.position)
-                current = current.parent
-            return path[::-1] # Return reversed path
+# masking out the green and red colour from the solved path
+r = cv2.bitwise_and(r, r, mask=mask_inv)
+g = cv2.bitwise_and(g, g, mask=mask_inv)
 
-        # Generate children
-        children = []
-        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
-
-            # Get node position
-            node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
-
-            # Make sure within range
-            if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) -1) or node_position[1] < 0:
-                continue
-
-            # Make sure walkable terrain
-            if maze[node_position[0]][node_position[1]] != 0:
-                continue
-
-            # Create new node
-            new_node = Node(current_node, node_position)
-
-            # Append
-            children.append(new_node)
-
-        # Loop through children
-        for child in children:
-
-            # Child is on the closed list
-            for closed_child in closed_list:
-                if child == closed_child:
-                    continue
-
-            # Create the f, g, and h values
-            child.g = current_node.g + 1
-            child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
-            child.f = child.g + child.h
-
-            # Child is already in the open list
-            for open_node in open_list:
-                if child == open_node and child.g > open_node.g:
-                    continue
-
-            # Add the child to the open list
-            open_list.append(child)
-
-
-maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
-start = (0, 0)
-end = (0, 8)
-
-
-path = np.array(astar(maze, start, end))
-print(path)
-maze = np.array(maze)
-maze[start]=2
-maze[end] = 4
-maze[map(tuple,path.T)]=3
-
-plt.figure()
-plt.imshow(maze)
-
+res = cv2.merge((b, g, r))
+#cv2.imshow('dilation', dilation)
+#cv2.imshow('erosion', erosion)
+#cv2.imshow('diff', diff)
+cv2.imshow('Solved Maze', res)
+#cv2.imshow('thresh', thresh)
+cv2.waitKey(0)
+cv2.destroyAllWindows()

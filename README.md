@@ -18,6 +18,7 @@
 
 [SchedulerExample](/SchedulerExample) - A simple example to show you how to use a schedular instead of nested loops.
 
+[Joystick](/Joystick) - Wireless USB controller to Bluetooth bridge written in python - Requires physical USB Joystich - python-bluez and Bluez - works on Linux.
 
 [TBot_Joystick_Python_PYBLUEZ](/TBot_Joystick_Python_PYBLUEZ) - Bluetooth joystick written in python - Requires python-bluez and Bluez - works on Linux.
 

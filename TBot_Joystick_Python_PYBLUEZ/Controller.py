@@ -28,7 +28,8 @@ if search == True:
 
     bd_addr = nearby_devices[selection]
 else:
-    bd_addr = '98:D3:51:FD:81:AC'
+    #bd_addr = '98:D3:51:FD:81:AC'
+    bd_addr = '98:D3:91:FD:46:C9'
     print('connecting...')
 error = 1
 port = 1
@@ -184,12 +185,12 @@ while True: # Continuous Pygame loop,
     jy = int(((250-my)*0.43)+200)
 
     if mxnew != mx or mynew != my:   
-        sendstring = chr(0X02)+str(jx)+str(jy)+chr(0X03)
+        sendstring = str(jx)+str(jy)
         
         if c1==1:
-            send(sendstring)
+            send(sendstring+'Z')
         else:
-            send(chr(0X02)+'200200Z'+chr(0X03))         
+            send('200200Z')         
         mxnew = mx
         mynew = my
     
