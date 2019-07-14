@@ -2,6 +2,8 @@
 
 [TBot](/TBot) - Main code to run T-Bot.
 
+[Development](/Development) - Check this folder regularly because this is where experimental software will show up first.
+
 [DCMotorTest](/DCMotorTest) - Simple example to drive motors using the TB6612FNG driver board (used to calibrate motors).
 
 [BluetoothChangeName](/BluetoothChangeName) - Used to set BAUD rate, set name for T-Bot and get MAC address.
