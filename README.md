@@ -2,7 +2,7 @@
 
 [TBot](/TBot) - Main code to run T-Bot.
 
-[Development](/Development) - Check this folder regularly because this is where experimental software will show up first.
+[Development](/Development) - Check this folder regularly. This is where experimental software will show up first.
 
 [DCMotorTest](/DCMotorTest) - Simple example to drive motors using the TB6612FNG driver board (used to calibrate motors).
 
