@@ -1,1 +1,7 @@
-A bridge for a wireless USB controller to control the T-Bot over Bluetooth
+A bridge for a wireless USB controller to control the T-Bot over Bluetooth.
+
+Trim:   Triangle/X
+KPS:    Square/Circle
+Slow:   R2
+
+You can control the T-Bot with both left and right joysticks.
