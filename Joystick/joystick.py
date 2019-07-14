@@ -1,4 +1,5 @@
 import pygame, sys, pygame.mixer
+from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
 timestart = time()
@@ -96,9 +97,6 @@ def parse():
         splitstr = ministring.split(',')
         oldkps, oldkp, oldtrim, oldgyro = splitstr[0], splitstr[1], splitstr[2], splitstr[3]
         oldgyro = oldgyro[:-2]
-        if toggle == 1:
-            print('writing...')
-            f.write(oldkps+','+oldkp+','+oldtrim+','+oldgyro+'\n')
 
         return oldkps, oldkp, oldtrim, float(oldgyro)
     except:
@@ -145,7 +143,10 @@ while not done:
             print("Joystick button pressed.")
         elif event.type == pygame.JOYBUTTONUP:
             print("Joystick button released.")
-
+    if event.type == KEYDOWN and event.key == K_q:
+            sock.close()
+            pygame.display.quit()
+            sys.exit()
     #
     # DRAWING STEP
     #
