@@ -1,8 +1,13 @@
 Requires pyBlues, and opencv.
 
-Delete pathpoints.dat to create a new path. When you run either TBot_HSVTracking_BT.py or TBotTrackerBT.py, an image is captured which you can click on to create your own path.
+Delete pathpoints.dat to create a new path. When you run either TBot_HSVTracking_BT.py or TBotTrackerBT.py, an image is captured which you can click on to create your own data points.
 
-This is in the very early stages of development but I thought some of you might enjoy the chalenge making it better yourselves. S
+TBot_HSVTracking_BT.py and TBot_HSVTracking_BT_FuncGen.py both use colour tracking in the HSV colour space.
+
+TBotTrackerBT.py uses cv2.selectROI() to allow the user to select an object to track. 
+
+
+This is in the very early stages of development but I thought some of you might enjoy the challenge of improving it yourselves. Please let me know how you get on.
 
 I will add a series of tutorials on computer vision in the near future. 
 
