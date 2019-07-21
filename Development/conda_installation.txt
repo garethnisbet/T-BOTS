@@ -1,0 +1,8 @@
+conda install -c conda-forge opencv
+conda install pip
+pip install pygame
+pip install imutils
+conda install scipy
+conda install matplotlib
+pip install pyserial
+
