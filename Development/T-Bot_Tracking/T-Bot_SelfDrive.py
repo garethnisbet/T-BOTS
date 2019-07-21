@@ -61,25 +61,27 @@ if __name__ == '__main__':
         empty = np.zeros(frame.shape)
         gray_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         img_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        lowthresh = np.array([0,0, 212], dtype = 'uint8')
-        highthresh = np.array([191,32,237], dtype='uint8')
+        lowthresh = np.array([14,0,127], dtype = 'uint8')
+        highthresh = np.array([109,255,255], dtype='uint8')
         mask = cv2.inRange(img_hsv, lowthresh, highthresh)
         #cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 #        mask_yellow = cv2.inRange(img_hsv, lower_yellow, upper_yellow)
 #        mask_white = cv2.inRange(gray_image, 200, 255)
  #       mask_yw = cv2.bitwise_or(mask_white, mask_yellow)
 #        mask_yw_image = cv2.bitwise_and(gray_image, mask_yw)
-        gauss_gray = blurred = cv2.GaussianBlur(mask, (11, 11), 0)
+        gauss_gray = blurred = cv2.GaussianBlur(mask, (21, 21), 0)
         low_threshold = 100
         high_threshold = 150
         canny_edges = cv2.Canny(gauss_gray,low_threshold,high_threshold)
         #roi_image = region_of_interest(canny_edges, vertices)
         
-        
+        '''
         try:
-            lines = cv2.HoughLines(canny_edges,1,np.pi/180,10)
-            for ii in range(5):
+            lines = cv2.HoughLines(canny_edges,1,np.pi/180,60)
+            
+            for ii in range(6):
                 for rho,theta in lines[ii]:
+                    print('theta min = '+ str(theta.min()) + ' theta max = '+ str(theta.max()))
                     a = np.cos(theta)
                     b = np.sin(theta)
                     x0 = a*rho
@@ -89,11 +91,11 @@ if __name__ == '__main__':
                     x2 = int(x0 - 1000*(-b))
                     y2 = int(y0 - 1000*(a))
 
-                    cv2.line(frame,(x1,y1),(x2,y2),(0,0,255),1)
+                    cv2.line(frame,(x1,y1),(x2,y2),(0,0,255),5)
         except:
             print('Hough didn not work')
-
-        '''
+    '''
+        
         lines = cv2.HoughLinesP(canny_edges, rho = 1, theta = 1*np.pi/180, threshold = 100, minLineLength = 50,maxLineGap = 500)
         N = lines.shape[0]
         for i in range(N):
@@ -102,7 +104,7 @@ if __name__ == '__main__':
             x2 = lines[i][0][2]
             y2 = lines[i][0][3]    
             cv2.line(frame,(x1,y1),(x2,y2),(0,0,255),2)
-        '''
+       
 
         cv2.imshow('Overlay', frame)
         cv2.imshow('Edges', canny_edges)
