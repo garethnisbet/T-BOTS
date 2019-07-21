@@ -3,9 +3,9 @@
 
 # USAGE: You need to specify a filter and "only one" image source
 #
-# (python) range-detector --filter RGB --image /home/gareth/Desktop/2019-06-02-163848.jpg
+# (python) rangedetector --filter RGB --image /home/gareth/Desktop/2019-06-02-163848.jpg
 # or
-# python range-detector.py --filter HSV --webcam
+# python rangedetector.py --filter HSV --webcam
 
 import cv2
 import argparse

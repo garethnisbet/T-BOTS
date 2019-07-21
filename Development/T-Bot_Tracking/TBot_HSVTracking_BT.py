@@ -15,26 +15,28 @@ loopcount = 0
 pathindex = 0
 
 #----------------- set variables --------------------#
+#blueLower = (96,205,185)
+#blueUpper = (152,255,255)
 
-#blueLower = (96,170,150)
-#blueUpper = (131,255,247)
-blueLower = (90,220,141)
-blueUpper = (222,255,255)
+blueLower = (89,214,139)
+blueUpper = (255,255,255)
 
 
-#greenLower = (37,64,0)
-#greenUpper = (100,255,211)
-greenLower = (36,42,62)
-greenUpper = (91,255,255)
+
+greenLower = (37,64,0)
+greenUpper = (100,255,211)
+#greenLower = (71,43,84)
+#greenUpper = (101,255,255)
 
 pts = deque(maxlen=22)
 pts2 = deque(maxlen=22)
 
 pathindex = 0
 rotspeed = 200
-speedfactor = 0.1
+speedfactor = 0.26
 turnspeedfactor = 0.2
 turntimefactor = 0.02
+bendscalefactor = 6
 
 #--------------  Define functions  ------------------#
 
@@ -71,7 +73,10 @@ def tracker(image, lowthresh, highthresh):
     center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
     return x, y, center, radius, M, cnts
 
-
+def bend(array_in,pathindex):
+    array_in = array_in.astype(float)
+    v1,v2 = array_in[pathindex+1]-array_in[pathindex], array_in[pathindex+2]-array_in[pathindex+1]
+    return np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
 #######################################################
 #------------- Bluetooth  Connection -----------------#
 #######################################################
@@ -171,7 +176,7 @@ if __name__ == '__main__':
         try:         
             x, y, center, radius, M, cents = tracker(frame, greenLower, greenUpper)
 
-            if radius > 3:
+            if radius > 1:
                 cv2.circle(frame, (int(x), int(y)), int(radius),(0, 255, 0), 2)
                 cv2.circle(frame, center, 2, (0, 255, 0), -1)
                 pts.appendleft(center)
@@ -182,7 +187,7 @@ if __name__ == '__main__':
         try:
             x2, y2, center2, radius2, M2, cents2 = tracker(frame, blueLower, blueUpper)
 
-            if radius2 > 3:
+            if radius2 > 1:
                 cv2.circle(frame, (int(x2), int(y2)), int(radius2),(113,212,198), 2)
                 cv2.circle(frame, center2, 2, (113,212,198), -1)
                 pts2.appendleft(center2)
@@ -216,12 +221,18 @@ if __name__ == '__main__':
         cv2.imshow('MultiTracker', frame)
 
 
+
+
         ###################################################
         #---------------  Control Strategy ---------------#
         ###################################################
         
         if x != [] and x2 !=[]:
             vto = aa[pathindex]
+            try:
+                vto_next = aa[pathindex+3]
+            except:
+                pass
             _distance = distance((x,y),(x2,y2),vto)
 
             if _distance < 30:
@@ -231,9 +242,15 @@ if __name__ == '__main__':
             if pathindex == len(aa)-1:
                 send('200200Z')
                 print('Done')
-                break
+                aa = np.flipud(aa)
+                pathindex = 0
+                data = sock.recv(10000).decode(encoding='utf-8')
+                data = []
+
+
 
             angle = turn((x,y),(x2,y2),vto)
+            angle2 = turn((x,y),(x2,y2),vto_next)
             turnduration = np.abs(turntimefactor * angle)
             elapsedtime = time()-starttime
 
@@ -250,8 +267,18 @@ if __name__ == '__main__':
                 rotspeed = 200             
                 starttime = time()
             if np.abs(angle) < 40:
-                
-                forwardspeed = 200+(speedfactor*100)
+                if _distance > 100:
+                    forwardspeed = 260
+                else:
+                    if pathindex < len(aa)-2:
+                        bendangle = bend(aa,pathindex)
+                    else:
+                        bendangle = 0
+
+                    straightspeedfactor = 1-np.sin(bendangle*bendscalefactor)
+       
+                    forwardspeed = 200+(straightspeedfactor*speedfactor*100)
+                    #forwardspeed = 200+(speedfactor*100)
 
             else: 
                 forwardspeed = 200
@@ -268,9 +295,24 @@ if __name__ == '__main__':
             #--------------   Send data    ---------------#
 
             send(rotspeed+forwardspeed+'Z')
+ 
            
 
         key = cv2.waitKey(1) & 0xFF
+
+        if key == ord("g"):
+            speedfactor += 0.01
+            print('speedfactor = '+str(speedfactor))
+
+        if key == ord("f"):
+            speedfactor -= 0.01
+            print('speedfactor = '+str(speedfactor))
+        if key == ord("t"):
+            turnspeedfactor += 0.01
+            print('turnspeedfactor = '+str(turnspeedfactor))
+        if key == ord("y"):
+            turnspeedfactor -= 0.01
+            print('turnspeedfactor = '+str(turnspeedfactor))
      
             # if the 'q' key is pressed, stop the loop
         if key == ord("q"):

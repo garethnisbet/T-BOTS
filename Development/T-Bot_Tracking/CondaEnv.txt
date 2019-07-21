@@ -1,0 +1,13 @@
+conda create --name tbot
+
+conda install -c conda-forge opencv
+
+
+conda install pip
+
+pip install opencv-contrib-pytho
+pip install pygame
+
+sudo apt-get install libbluetooth-dev
+sudo apt-get install python-dev
+sudo pip install PyBluez
