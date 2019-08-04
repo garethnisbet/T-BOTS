@@ -46,6 +46,7 @@ while error:
 # Define some colors.
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
+GRAY = pygame.Color('gray')
 
 
 ################### Functions  ###########################
@@ -139,20 +140,19 @@ while not done:
     for event in pygame.event.get(): # User did something.
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
-        elif event.type == pygame.JOYBUTTONDOWN:
-            print("Joystick button pressed.")
-        elif event.type == pygame.JOYBUTTONUP:
-            print("Joystick button released.")
-    if event.type == KEYDOWN and event.key == K_q:
             sock.close()
-            pygame.display.quit()
-            sys.exit()
+            print('Connection Closed')
+    if event.type == KEYDOWN and event.key == K_q:
+        sock.close()
+        pygame.display.quit()
+        sys.exit()
+        print('Connection Closed')
     #
     # DRAWING STEP
     #
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
-    screen.fill(WHITE)
+    screen.fill(GRAY)
     textPrint.reset()
 
     # Get count of joysticks.
@@ -176,6 +176,7 @@ while not done:
         # Usually axis run in pairs, up/down for one, and left/right for
         # the other.
         axes = joystick.get_numaxes()
+        textPrint.tprint(screen, "")
         textPrint.tprint(screen, "Number of axes: {}".format(axes))
         textPrint.indent()
 
@@ -187,7 +188,7 @@ while not done:
         axis2 = joystick.get_axis(2)
         axis3 = joystick.get_axis(3)
         textPrint.unindent()
-
+        textPrint.tprint(screen, "")
         buttons = joystick.get_numbuttons()
         textPrint.tprint(screen, "Number of buttons: {}".format(buttons))
         textPrint.indent()
@@ -199,6 +200,7 @@ while not done:
         textPrint.unindent()
 
         hats = joystick.get_numhats()
+        textPrint.tprint(screen, "")
         textPrint.tprint(screen, "Number of hats: {}".format(hats))
         textPrint.indent()
 

@@ -28,8 +28,8 @@ if search == True:
 
     bd_addr = nearby_devices[selection]
 else:
-    #bd_addr = '98:D3:51:FD:81:AC'
-    bd_addr = '98:D3:91:FD:46:C9'
+    bd_addr = '98:D3:51:FD:81:AC'
+    #bd_addr = '98:D3:91:FD:46:C9'
     print('connecting...')
 error = 1
 port = 1
@@ -86,9 +86,12 @@ def parse():
     global oldgyro
     global toggle
     try:
-        data = sock.recv(32).decode(encoding='utf-8')
-        data = data.split('\x02')
-        ministring = data[0]
+        dataraw = sock.recv(32).decode(encoding='utf-8')
+        datastripped = dataraw.strip('\x03\x02').split('\x03\x02')
+        if datastripped[0] == '':
+            dataraw = sock.recv(32).decode(encoding='utf-8')
+            datastripped = dataraw.strip('\x03\x02').split('\x03\x02')
+            ministring = datastripped[0]
         splitstr = ministring.split(',')
         oldkps, oldkp, oldtrim, oldgyro = splitstr[0], splitstr[1], splitstr[2], splitstr[3]
         oldgyro = oldgyro[:-2]
@@ -185,12 +188,12 @@ while True: # Continuous Pygame loop,
     jy = int(((250-my)*0.43)+200)
 
     if mxnew != mx or mynew != my:   
-        sendstring = str(jx)+str(jy)
+        sendstring = chr(0X02)+str(jx)+str(jy)+chr(0X03)
         
         if c1==1:
-            send(sendstring+'Z')
+            send(sendstring)
         else:
-            send('200200Z')         
+            send(chr(0X02)+'200200Z'+chr(0X03))         
         mxnew = mx
         mynew = my
     

@@ -53,9 +53,14 @@ def parse():
     global oldgyro
     global toggle
     try:
-        data = sock.read(32).decode(encoding='utf-8')
-        data = data.split('\x02')
-        ministring = data[0]
+        dataraw = sock.read(32).decode(encoding='utf-8')
+        datastripped = dataraw.strip('\x03\x02').split('\x03\x02')
+
+        if datastripped[0] == '':
+            dataraw = sock.read(32).decode(encoding='utf-8')
+            datastripped = dataraw.strip('\x03\x02').split('\x03\x02')
+            ministring = datastripped[0]
+
         splitstr = ministring.split(',')
         oldkps, oldkp, oldtrim, oldgyro = splitstr[0], splitstr[1], splitstr[2], splitstr[3]
         oldgyro = oldgyro[:-2]

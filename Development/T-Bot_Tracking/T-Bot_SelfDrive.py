@@ -21,7 +21,9 @@ def buildmask(inputarray,frame,maskdx,maskdy):
 #########################################################
 
 #cap = cv2.VideoCapture('/home/gareth/Desktop/Driving.mp4')
+
 cap = cv2.VideoCapture(1)
+
 #cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 #cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 #cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -50,7 +52,7 @@ if __name__ == '__main__':
         low_threshold = 60
         high_threshold = 120
         canny_edges = cv2.Canny(gray_filtered,low_threshold,high_threshold)
-        canny_edges[np.r_[0:300],:] = 0
+        canny_edges[np.r_[0:int(frame.shape[0]/3)],:] = 0
         '''
         try:
             lines = cv2.HoughLines(canny_edges,1,np.pi/180,60)
@@ -71,8 +73,8 @@ if __name__ == '__main__':
         except:
             print('Hough didn not work')
     '''
-        try:
-            lines = cv2.HoughLinesP(canny_edges, rho = 1, theta = 1*np.pi/90, threshold = 100, minLineLength = 45,maxLineGap = 535)
+        lines = cv2.HoughLinesP(canny_edges, rho = 1, theta = 1*np.pi/90, threshold = 80, minLineLength = 75,maxLineGap = 535)
+        if lines is not None:
             N = lines.shape[0]
             for i in range(N):
                 x1 = lines[i][0][0]
@@ -81,16 +83,16 @@ if __name__ == '__main__':
                 y2 = lines[i][0][3]
                 angle = np.arctan2(y1 - y2, x1 - x2)*180/np.pi;
                 #print(angle)
-                if np.abs(angle) > 60 and np.abs(angle) < 130: 
+                if np.abs(angle) > 20 and np.abs(angle) < 160: 
                     cv2.line(frame,(x1,y1),(x2,y2),(0,0,255),2)
                 else: 
                     cv2.line(frame,(x1,y1),(x2,y2),(255,0,255),2)
-        except:
-            print('Hough didn not work')
+        else:
+            print('No lines detected')
        
-
-        cv2.imshow('Overlay', frame)
         cv2.imshow('Edges', canny_edges)
+        cv2.imshow('Overlay', frame)
+
         #cv2.imshow('MultiTracker', canny_edges)
 
 

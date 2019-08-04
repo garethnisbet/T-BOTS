@@ -29,7 +29,7 @@ def setup_trackbars(range_filter):
 def get_arguments():
     ap = argparse.ArgumentParser()
     ap.add_argument('-f', '--filter', required=True,
-                    help='Range filter. RGB or HSV')
+                    help='Range filter. RGB, HSV or LAB')
     ap.add_argument('-i', '--image', required=False,
                     help='Path to the image')
     ap.add_argument('-w', '--webcam', required=False,
@@ -42,7 +42,7 @@ def get_arguments():
     if not xor(bool(args['image']), bool(args['webcam'])):
         ap.error("Please specify only one image source")
 
-    if not args['filter'].upper() in ['RGB', 'HSV']:
+    if not args['filter'].upper() in ['RGB', 'HSV', 'LAB']:
         ap.error("Please speciy a correct filter.")
 
     return args
@@ -69,10 +69,13 @@ def main():
 
         if range_filter == 'RGB':
             frame_to_thresh = image.copy()
-        else:
+        elif range_filter == 'HSV':
             frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        else:
+            frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
     else:
-        camera = cv2.VideoCapture(1)
+
+        camera = cv2.VideoCapture(0)
         camera.set(cv2.CAP_PROP_AUTOFOCUS, 0)
         camera.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
         camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -91,9 +94,10 @@ def main():
 
             if range_filter == 'RGB':
                 frame_to_thresh = image.copy()
-            else:
+            elif range_filter == 'HSV':
                 frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
+            else:
+                frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
         v1_min, v2_min, v3_min, v1_max, v2_max, v3_max = get_trackbar_values(range_filter)
 
         thresh = cv2.inRange(frame_to_thresh, (v1_min, v2_min, v3_min), (v1_max, v2_max, v3_max))
