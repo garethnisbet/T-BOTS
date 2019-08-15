@@ -1,12 +1,15 @@
-import pygame, sys, pygame.mixer
+#!/usr/bin/python
+import pygame, sys, pygame.mixer, os
 from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
+dirpath = os.path.dirname(os.path.realpath(__file__))
 timestart = time()
 speedfactor = 0.6
 speedlimit = 70
 turnspeedlimit = 60
 cmdwrite = 0
+logo = pygame.image.load(dirpath+'/logo.png')
 ###################  Connection #############################
 oldkps, oldkp, oldtrim, oldgyro, toggle = 0,0,0,0,0
 search = False
@@ -114,9 +117,9 @@ def parse():
 pygame.init()
 
 # Set the width and height of the screen (width, height).
-screen = pygame.display.set_mode((500, 700))
+screen = pygame.display.set_mode((350, 550))
 
-pygame.display.set_caption("My Game")
+pygame.display.set_caption("T-Bot Joystick")
 
 # Loop until the user clicks the close button.
 done = False
@@ -153,6 +156,7 @@ while not done:
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
     screen.fill(GRAY)
+    
     textPrint.reset()
 
     # Get count of joysticks.
@@ -261,8 +265,10 @@ while not done:
             buttonstring = '200200T' # kps -ve
             send(buttonstring)
 
+
         
     # Go ahead and update the screen with what we've drawn.
+    screen.blit(logo,(230,420))
     pygame.display.flip()
 
     # Limit to 20 frames per second.
