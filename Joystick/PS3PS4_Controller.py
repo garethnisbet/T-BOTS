@@ -29,8 +29,8 @@ if search == True:
 
     bd_addr = nearby_devices[selection]
 else:
-    #bd_addr = '98:D3:51:FD:81:AC'
-    bd_addr = '98:D3:51:FD:82:95'
+    bd_addr = '98:D3:51:FD:81:AC'
+    #bd_addr = '98:D3:91:FD:46:C9'
     print('connecting...')
 error = 1
 port = 1
@@ -117,7 +117,7 @@ def parse():
 pygame.init()
 
 # Set the width and height of the screen (width, height).
-screen = pygame.display.set_mode((350, 550))
+screen = pygame.display.set_mode((360, 550))
 
 pygame.display.set_caption("T-Bot Joystick")
 
@@ -165,105 +165,107 @@ while not done:
     textPrint.tprint(screen, "Number of joysticks: {}".format(joystick_count))
     textPrint.indent()
 
-    # For second joystick:
-    i = 1
-    joystick = pygame.joystick.Joystick(i)
-    joystick.init()
+    # For each joystick:
+    for i in range(1):
+        joystick = pygame.joystick.Joystick(i)
+        joystick.init()
 
-    textPrint.tprint(screen, "Joystick {}".format(i))
-    textPrint.indent()
+        textPrint.tprint(screen, "Joystick {}".format(i))
+        textPrint.indent()
 
-    # Get the name from the OS for the controller/joystick.
-    name = joystick.get_name()
-    textPrint.tprint(screen, "Joystick name: {}".format(name))
+        # Get the name from the OS for the controller/joystick.
+        name = joystick.get_name()
+        textPrint.tprint(screen, "Joystick name: {}".format(name))
 
-    # Usually axis run in pairs, up/down for one, and left/right for
-    # the other.
-    axes = joystick.get_numaxes()
-    textPrint.tprint(screen, "")
-    textPrint.tprint(screen, "Number of axes: {}".format(axes))
-    textPrint.indent()
+        # Usually axis run in pairs, up/down for one, and left/right for
+        # the other.
+        axes = joystick.get_numaxes()
+        textPrint.tprint(screen, "")
+        textPrint.tprint(screen, "Number of axes: {}".format(axes))
+        textPrint.indent()
 
-    for i in range(axes):
-        axis = joystick.get_axis(i)
-        textPrint.tprint(screen, "Axis {} value: {:>6.3f}".format(i, axis))
-    axis0 = joystick.get_axis(0)
-    axis1 = joystick.get_axis(1)
-    axis2 = joystick.get_axis(2)
-    axis3 = joystick.get_axis(3)
-    textPrint.unindent()
-    textPrint.tprint(screen, "")
-    buttons = joystick.get_numbuttons()
-    textPrint.tprint(screen, "Number of buttons: {}".format(buttons))
-    textPrint.indent()
+        for i in range(axes):
+            axis = joystick.get_axis(i)
+            textPrint.tprint(screen, "Axis {} value: {:>6.3f}".format(i, axis))
+        axis0 = joystick.get_axis(0)
+        axis1 = joystick.get_axis(1)
+        axis2 = joystick.get_axis(2)
+        axis3 = joystick.get_axis(3)
+        axis4 = joystick.get_axis(4)
+        axis5 = joystick.get_axis(5)
+        textPrint.unindent()
+        textPrint.tprint(screen, "")
+        buttons = joystick.get_numbuttons()
+        textPrint.tprint(screen, "Number of buttons: {}".format(buttons))
+        textPrint.indent()
 
-    for i in range(buttons):
-        button = joystick.get_button(i)
-        textPrint.tprint(screen,
-                         "Button {:>2} value: {}".format(i, button))
-    textPrint.unindent()
+        for i in range(buttons):
+            button = joystick.get_button(i)
+            textPrint.tprint(screen,
+                             "Button {:>2} value: {}".format(i, button))
+        textPrint.unindent()
 
-    hats = joystick.get_numhats()
-    textPrint.tprint(screen, "")
-    textPrint.tprint(screen, "Number of hats: {}".format(hats))
-    textPrint.indent()
+        hats = joystick.get_numhats()
+        textPrint.tprint(screen, "")
+        textPrint.tprint(screen, "Number of hats: {}".format(hats))
+        textPrint.indent()
 
-    # Hat position. All or nothing for direction, not a float like
-    # get_axis(). Position is a tuple of int values (x, y).
-    for i in range(hats):
-        hat = joystick.get_hat(i)
-        textPrint.tprint(screen, "Hat {} value: {}".format(i, str(hat)))
-    textPrint.unindent()
-    textPrint.tprint(screen, "")
-    textPrint.tprint(screen, "T-Bot Data")
-    textPrint.indent()
-            
-    kps, kp, trim, gyrodata = parse()
-    textPrint.tprint(screen, "gyrodata: {}".format(str(gyrodata)))
-    textPrint.tprint(screen, "kps: {}".format(str(kps)))
-    textPrint.tprint(screen, "kp: {}".format(str(kp)))
-    textPrint.tprint(screen, "trim: {}".format(str(trim)))
+        # Hat position. All or nothing for direction, not a float like
+        # get_axis(). Position is a tuple of int values (x, y).
+        for i in range(hats):
+            hat = joystick.get_hat(i)
+            textPrint.tprint(screen, "Hat {} value: {}".format(i, str(hat)))
+        textPrint.unindent()
+        textPrint.tprint(screen, "")
+        textPrint.tprint(screen, "T-Bot Data")
+        textPrint.indent()
+                
+        kps, kp, trim, gyrodata = parse()
+        textPrint.tprint(screen, "gyrodata: {}".format(str(gyrodata)))
+        textPrint.tprint(screen, "kps: {}".format(str(kps)))
+        textPrint.tprint(screen, "kp: {}".format(str(kp)))
+        textPrint.tprint(screen, "trim: {}".format(str(trim)))
 
-    textPrint.unindent()
+        textPrint.unindent()
 
-#
-# #############   Send data   #################################
-#
-    if abs(axis0)+abs(axis1)+abs(axis2)+abs(axis3) != 0:
-        slowfactor = 1+joystick.get_button(7)
-        turn = 200+int(((axis0+(axis2*0.5))*speedfactor*100/slowfactor))
-        speed = 200-int(((axis1+(axis3*0.5))*speedfactor*100/slowfactor))
-        if speed > 200+speedlimit:
-            speed = 200+speedlimit
-        if speed < 200-speedlimit:
-            speed = 200-speedlimit
+    #
+    # #############   Send data   #################################
+    #
+        if abs(axis0)+abs(axis1)+abs(axis3)+abs(axis4) != 0:
+            slowfactor = 1+joystick.get_button(7)
+            turn = 200+int(((axis0+(axis3*0.5))*speedfactor*100/slowfactor))
+            speed = 200-int(((axis1+(axis4*0.5))*speedfactor*100/slowfactor))
+            if speed > 200+speedlimit:
+                speed = 200+speedlimit
+            if speed < 200-speedlimit:
+                speed = 200-speedlimit
 
-        if turn > 200+turnspeedlimit:
-            turn = 200+turnspeedlimit
-        if turn < 200-turnspeedlimit:
-            turn = 200-turnspeedlimit
-        cmdwrite = 1       
-        sendstring = str(turn)+str(speed)+'Z'
-        send(sendstring)
-    else:
-        sendstring = '200200Z'
-        send(sendstring)
-    if joystick.get_button(0):
-        buttonstring = '200200F' # trim +ve
-        send(buttonstring)
-    elif joystick.get_button(2):
-        buttonstring = '200200E' # trim -ve
-        send(buttonstring)
+            if turn > 200+turnspeedlimit:
+                turn = 200+turnspeedlimit
+            if turn < 200-turnspeedlimit:
+                turn = 200-turnspeedlimit
+            cmdwrite = 1       
+            sendstring = str(turn)+str(speed)+'Z'
+            send(sendstring)
+        else:
+            sendstring = '200200Z'
+            send(sendstring)
+        if joystick.get_button(2):
+            buttonstring = '200200F' # trim +ve
+            send(buttonstring)
+        elif joystick.get_button(0):
+            buttonstring = '200200E' # trim -ve
+            send(buttonstring)
 
-    elif joystick.get_button(1):
-        buttonstring = '200200B' # kps +ve
-        send(buttonstring)
-    elif joystick.get_button(3):
-        buttonstring = '200200A' # kps -ve
-        send(buttonstring)
-    elif joystick.get_button(9):
-        buttonstring = '200200T' # kps -ve
-        send(buttonstring)
+        elif joystick.get_button(1):
+            buttonstring = '200200B' # kps +ve
+            send(buttonstring)
+        elif joystick.get_button(3):
+            buttonstring = '200200A' # kps -ve
+            send(buttonstring)
+        elif joystick.get_button(9):
+            buttonstring = '200200T' # kps -ve
+            send(buttonstring)
 
 
         

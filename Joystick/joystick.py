@@ -166,7 +166,7 @@ while not done:
     textPrint.indent()
 
     # For each joystick:
-    for i in range(joystick_count):
+    for i in range(1):
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
 
