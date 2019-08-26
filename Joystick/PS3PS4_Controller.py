@@ -117,7 +117,7 @@ def parse():
 pygame.init()
 
 # Set the width and height of the screen (width, height).
-screen = pygame.display.set_mode((360, 550))
+screen = pygame.display.set_mode((380, 550))
 
 pygame.display.set_caption("T-Bot Joystick")
 
@@ -175,7 +175,7 @@ while not done:
 
         # Get the name from the OS for the controller/joystick.
         name = joystick.get_name()
-        textPrint.tprint(screen, "Joystick name: {}".format(name))
+        textPrint.tprint(screen, "{}".format(name))
 
         # Usually axis run in pairs, up/down for one, and left/right for
         # the other.
