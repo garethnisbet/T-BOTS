@@ -9,7 +9,7 @@ speedfactor = 0.6
 speedlimit = 70
 turnspeedlimit = 60
 cmdwrite = 0
-logo = pygame.image.load(dirpath+'/logo.png')
+
 ###################  Connection #############################
 oldkps, oldkp, oldtrim, oldgyro, toggle = 0,0,0,0,0
 search = False
@@ -118,8 +118,11 @@ pygame.init()
 
 # Set the width and height of the screen (width, height).
 screen = pygame.display.set_mode((350, 550))
+logo = pygame.image.load(dirpath+'/logo.png')
+bg = pygame.image.load(dirpath+'/hex.jpg').convert()
 
-pygame.display.set_caption("T-Bot Joystick")
+
+pygame.display.set_caption("T-Bot Joystick Bridge")
 
 # Loop until the user clicks the close button.
 done = False
@@ -155,7 +158,8 @@ while not done:
     #
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
-    screen.fill(GRAY)
+    screen.blit(bg, [0, 0])
+
     
     textPrint.reset()
 
@@ -213,6 +217,23 @@ while not done:
         for i in range(hats):
             hat = joystick.get_hat(i)
             textPrint.tprint(screen, "Hat {} value: {}".format(i, str(hat)))
+            if hat[1] == 1:
+                speedfactor += 0.1
+            elif hat[1] == -1:
+                speedfactor -= 0.1
+            elif hat[0] == -1:
+                speedlimit -= 5
+            elif hat[0] == +1:
+                speedlimit += 5
+            if speedlimit >= 100:
+                speedlimit = 100
+            if speedlimit <= 0:
+                speedlimit = 0
+            if speedfactor >= 5:
+                speedfactor = 5
+            if speedfactor <= 0:
+                speedfactor = 0
+                
         textPrint.unindent()
         textPrint.tprint(screen, "")
         textPrint.tprint(screen, "T-Bot Data")
@@ -223,6 +244,8 @@ while not done:
         textPrint.tprint(screen, "kps: {}".format(str(kps)))
         textPrint.tprint(screen, "kp: {}".format(str(kp)))
         textPrint.tprint(screen, "trim: {}".format(str(trim)))
+        textPrint.tprint(screen, "Speed Factor: {}".format(str(speedfactor)))
+        textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
 
         textPrint.unindent()
 
@@ -264,6 +287,7 @@ while not done:
         elif joystick.get_button(9):
             buttonstring = '200200T' # kps -ve
             send(buttonstring)
+
 
 
         

@@ -1,0 +1,19 @@
+#read images
+calibration_paths = glob.glob('./calibration_images/*')
+#Iterate over images to find intrinsic matrix
+for image_path in tqdm(calibration_paths):
+#Load image
+ image = cv2.imread(image_path)
+ gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+ print("Image loaded, Analizying...")
+ #find chessboard corners
+ ret,corners = cv2.findChessboardCorners(gray_image, chessboard_size, None)
+if ret == True:
+  print("Chessboard detected!")
+  print(image_path)
+  #define criteria for subpixel accuracy
+  criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+  #refine corner location (to subpixel accuracy) based on criteria.
+  cv2.cornerSubPix(gray_image, corners, (5,5), (-1,-1), criteria)
+  obj_points.append(objp)
+  img_points.append(corners)

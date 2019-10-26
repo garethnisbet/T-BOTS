@@ -100,6 +100,7 @@ pygame.init()
 clock = pygame.time.Clock()
 size = width, height = 1200, 500
 screen=pygame.display.set_mode(size)
+pygame.display.set_caption("T-Bot Joystick")
 
 ############   Load art work    ##############################
 joytop = pygame.image.load('images/joytopglow.png')
@@ -240,9 +241,7 @@ while True: # Continuous Pygame loop,
             button9 = 0
             button10 = 0
             button11 = 0
-            button12 = 0
-
-            
+            button12 = 0   
 
 
         if event.type == KEYDOWN and event.key == K_c:

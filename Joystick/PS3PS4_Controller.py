@@ -215,6 +215,23 @@ while not done:
         for i in range(hats):
             hat = joystick.get_hat(i)
             textPrint.tprint(screen, "Hat {} value: {}".format(i, str(hat)))
+            if hat[1] == 1:
+                speedfactor += 0.1
+            elif hat[1] == -1:
+                speedfactor -= 0.1
+            elif hat[0] == -1:
+                speedlimit -= 5
+            elif hat[0] == +1:
+                speedlimit += 5
+            if speedlimit >= 100:
+                speedlimit = 100
+            if speedlimit <= 0:
+                speedlimit = 0
+            if speedfactor >= 5:
+                speedfactor = 5
+            if speedfactor <= 0:
+                speedfactor = 0
+                
         textPrint.unindent()
         textPrint.tprint(screen, "")
         textPrint.tprint(screen, "T-Bot Data")
@@ -225,6 +242,8 @@ while not done:
         textPrint.tprint(screen, "kps: {}".format(str(kps)))
         textPrint.tprint(screen, "kp: {}".format(str(kp)))
         textPrint.tprint(screen, "trim: {}".format(str(trim)))
+        textPrint.tprint(screen, "Speed Factor: {}".format(str(speedfactor)))
+        textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
 
         textPrint.unindent()
 
