@@ -26,16 +26,24 @@ except:
     sock.connect((bd_addr,port))
 sock.settimeout(1)
 print('Connected to '+name)
-
+sendonce = 0
 
 ##########################  functions  #####################################
 
 
 def send(sendstr):
     global timestart
+    global sendonce
     try:
-        builtstr = chr(0X02)+sendstr+chr(0X03)
-        sock.send(builtstr.encode(encoding='utf-8'))
+        if sendstr == '200200Z':
+            if sendonce == 0:
+                builtstr = chr(0X02)+sendstr+chr(0X03)
+                sock.send(builtstr.encode(encoding='utf-8'))
+                sendonce = 1
+        else:
+            builtstr = chr(0X02)+sendstr+chr(0X03)
+            sock.send(builtstr.encode(encoding='utf-8'))
+            sendonce = 0
         if cmdwrite:
             f2.write(str(time()-timestart)+','+sendstr+'\n')
     except:
@@ -140,7 +148,7 @@ pygame.draw.lines(screen, (255,255,255), False, ((800,100), (1160,100), (1160,40
 f= open('plot.csv','w')
 Play = 0
 cmdindex = 0
-
+sendonce = 0
 
 ##############  Start main loop ###################################
 
@@ -174,12 +182,12 @@ while True: # Continuous Pygame loop,
     jy = int(((250-my)*0.43)+200)
 
     if mxnew != mx or mynew != my:   
-        sendstring = chr(0X02)+str(jx)+str(jy)+chr(0X03)
+        sendstring = str(jx)+str(jy)+'Z'
         
         if c1==1:
             send(sendstring)
         else:
-            send(chr(0X02)+'200200Z'+chr(0X03))         
+            send('200200Z')
         mxnew = mx
         mynew = my
     
