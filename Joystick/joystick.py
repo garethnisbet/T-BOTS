@@ -53,15 +53,24 @@ GRAY = pygame.Color('gray')
 
 
 ################### Functions  ###########################
+      
+sendonce = 0
 def send(sendstr):
+    global sendonce
     try:
-        builtstr = chr(0X02)+sendstr+chr(0X03)
-        sock.send(builtstr.encode(encoding='utf-8'))
+        if sendstr == '200200Z':
+            if sendonce == 0:
+                builtstr = chr(0X02)+sendstr+chr(0X03)
+                sock.send(builtstr.encode(encoding='utf-8'))
+                sendonce = 1
+        else:
+            builtstr = chr(0X02)+sendstr+chr(0X03)
+            sock.send(builtstr.encode(encoding='utf-8'))
+            sendonce = 0
     except:
         sock.close()
         pygame.display.quit()
         sys.exit()
-        pass
 
 
 # This is a simple class that will help us print to the screen.
