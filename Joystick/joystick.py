@@ -54,19 +54,21 @@ GRAY = pygame.Color('gray')
 
 ################### Functions  ###########################
       
-sendonce = 0
+sendtwice = 0
 def send(sendstr):
-    global sendonce
+    global sendtwice
     try:
         if sendstr == '200200Z':
-            if sendonce == 0:
+            if sendtwice < 2:
                 builtstr = chr(0X02)+sendstr+chr(0X03)
                 sock.send(builtstr.encode(encoding='utf-8'))
-                sendonce = 1
+                sendtwice += 1
+                print(sendstr)
         else:
             builtstr = chr(0X02)+sendstr+chr(0X03)
             sock.send(builtstr.encode(encoding='utf-8'))
-            sendonce = 0
+            sendtwice = 0
+            print(sendstr)
     except:
         sock.close()
         pygame.display.quit()
