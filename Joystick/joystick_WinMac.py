@@ -35,12 +35,12 @@ def send(sendstr):
                 builtstr = chr(0X02)+sendstr+chr(0X03)
                 sock.write(builtstr.encode(encoding='utf-8'))
                 sendtwice += 1
-                print(sendstr)
+
         else:
             builtstr = chr(0X02)+sendstr+chr(0X03)
             sock.write(builtstr.encode(encoding='utf-8'))
             sendtwice = 0
-            print(sendstr)
+
     except:
         sock.close()
         pygame.display.quit()

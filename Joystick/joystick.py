@@ -62,12 +62,12 @@ def send(sendstr):
                 builtstr = chr(0X02)+sendstr+chr(0X03)
                 sock.send(builtstr.encode(encoding='utf-8'))
                 sendtwice += 1
-                print(sendstr)
+
         else:
             builtstr = chr(0X02)+sendstr+chr(0X03)
             sock.send(builtstr.encode(encoding='utf-8'))
             sendtwice = 0
-            print(sendstr)
+
     except:
         sock.close()
         pygame.display.quit()
@@ -163,6 +163,7 @@ while not done:
         pygame.display.quit()
         sys.exit()
         print('Connection Closed')
+        pass
     #
     # DRAWING STEP
     #
