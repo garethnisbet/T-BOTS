@@ -134,6 +134,7 @@ while not done:
         pygame.display.quit()
         sys.exit()
         print('Connection Closed')
+        pass
     #
     # DRAWING STEP
     #
