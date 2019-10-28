@@ -9,8 +9,11 @@ from time import time
 K = np.load("./camera_params/K.npy")
 dist = np.load("./camera_params/dist.npy")
 
-img = cv2.imread('./frames/00023.png')
-h,  w = img.shape[:2]
+#img = cv2.imread('./frames/00023.png')
+cap = cv2.VideoCapture(0)
+w = int(cap.get(3))
+h = int(cap.get(4))
+
 newcameramtx, roi=cv2.getOptimalNewCameraMatrix(K,dist,(w,h),1,(w,h))
 
 src = np.array([[176,394],[251,297],[379,297],[450,394]],np.float32)
@@ -27,7 +30,7 @@ high_threshold = 150
 #-------        Grab frames from webcam      -----------#
 #########################################################
 
-cap = cv2.VideoCapture(0)
+
 record = 0
 
 sleeptime = 0.001

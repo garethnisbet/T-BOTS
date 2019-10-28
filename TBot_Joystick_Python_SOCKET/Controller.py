@@ -26,32 +26,33 @@ except:
     sock.connect((bd_addr,port))
 sock.settimeout(1)
 print('Connected to '+name)
-sendonce = 0
+sendtwice = 0
 
 ##########################  functions  #####################################
 
 
 def send(sendstr):
     global timestart
-    global sendonce
+    global sendtwice
     try:
         if sendstr == '200200Z':
-            if sendonce == 0:
+            if sendonce < 2:
                 builtstr = chr(0X02)+sendstr+chr(0X03)
                 sock.send(builtstr.encode(encoding='utf-8'))
-                sendonce = 1
+                sendtwice += 1
+                if cmdwrite:
+                    f2.write(str(time()-timestart)+','+sendstr+'\n')
         else:
             builtstr = chr(0X02)+sendstr+chr(0X03)
             sock.send(builtstr.encode(encoding='utf-8'))
-            sendonce = 0
-        if cmdwrite:
-            f2.write(str(time()-timestart)+','+sendstr+'\n')
+            sendtwice = 0
+            if cmdwrite:
+                f2.write(str(time()-timestart)+','+sendstr+'\n')
     except:
         sock.close()
         pygame.display.quit()
         sys.exit()
     timestart = time()
-
 
 
 
@@ -429,6 +430,7 @@ while True: # Continuous Pygame loop,
             screen.fill(colour,(860,40,900,44))
             screen.blit(play,(860,40))
             Play = 0
+
 
 #####################  Command record logic  ###########################
 

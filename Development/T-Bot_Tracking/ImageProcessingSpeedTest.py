@@ -8,9 +8,10 @@ from time import time
 
 K = np.load("./camera_params/K.npy")
 dist = np.load("./camera_params/dist.npy")
+cap = cv2.VideoCapture(0)
+w = int(cap.get(3))
+h = int(cap.get(4))
 
-img = cv2.imread('./frames/00023.png')
-h,  w = img.shape[:2]
 newcameramtx, roi=cv2.getOptimalNewCameraMatrix(K,dist,(w,h),1,(w,h))
 
 src = np.array([[176,394],[251,297],[379,297],[450,394]],np.float32)
@@ -30,7 +31,7 @@ beta = 0 # Brightness control (0-100)
 #-------        Grab frames from webcam      -----------#
 #########################################################
 
-cap = cv2.VideoCapture(0)
+
 record = 0
 
 sleeptime = 0.001
@@ -62,12 +63,13 @@ if __name__ == '__main__':
         success, frame = cap.read()
         if not success:
             break
-        '''    
+            
         #adjusted = cv2.convertScaleAbs(frame, alpha=alpha, beta=beta)
-        canny_edges = cv2.Canny(frame,low_threshold,high_threshold)
-        canny_edges = (canny_edges*mask).astype('uint8')
+        #canny_edges = cv2.Canny(frame,low_threshold,high_threshold)
+        #canny_edges = (canny_edges*mask).astype('uint8')
         #dst = cv2.undistort(frame, K, dist, None, newcameramtx)
-        #wim1 = cv2.warpPerspective(dist, M, (635,480))
+        wim1 = cv2.warpPerspective(frame, M, (635,480))
+        '''
         lines = cv2.HoughLinesP(canny_edges, rho = 1, theta = 1*np.pi/90, threshold = 40, minLineLength = 60,maxLineGap = 100)
         if lines is not None:
             N = lines.shape[0]
@@ -89,7 +91,8 @@ if __name__ == '__main__':
         '''
         
         cv2.imshow('Frames', frame)
-        #cv2.imshow('Canny Edges',canny_edges)
+        #cv2.imshow('Corrected',adjusted)
+        cv2.imshow('Birds Eye',wim1)
         
         if record:
             cv2.imwrite(template % iii, frame) 
