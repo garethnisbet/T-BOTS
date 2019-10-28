@@ -9,7 +9,7 @@ speedfactor = 0.6
 speedlimit = 70
 turnspeedlimit = 60
 cmdwrite = 0
-logo = pygame.image.load(dirpath+'/logo.png')
+
 ###################  Connection #############################
 oldkps, oldkp, oldtrim, oldgyro, toggle = 0,0,0,0,0
 search = False
@@ -24,16 +24,28 @@ GRAY = pygame.Color('gray')
 
 
 ################### Functions  ###########################
-
+  
+        
+sendtwice = 0
 def send(sendstr):
+    global sendtwice
     try:
-        builtstr = chr(0X02)+sendstr+chr(0X03)
-        sock.write(builtstr.encode(encoding='utf-8'))
+        if sendstr == '200200Z':
+            if sendtwice < 2:
+                builtstr = chr(0X02)+sendstr+chr(0X03)
+                sock.write(builtstr.encode(encoding='utf-8'))
+                sendtwice += 1
+                print(sendstr)
+        else:
+            builtstr = chr(0X02)+sendstr+chr(0X03)
+            sock.write(builtstr.encode(encoding='utf-8'))
+            sendtwice = 0
+            print(sendstr)
     except:
         sock.close()
         pygame.display.quit()
         sys.exit()
-        pass
+
 
 # This is a simple class that will help us print to the screen.
 # It has nothing to do with the joysticks, just outputting the
@@ -88,6 +100,8 @@ pygame.init()
 
 # Set the width and height of the screen (width, height).
 screen = pygame.display.set_mode((350, 550))
+logo = pygame.image.load(dirpath+'/logo.png')
+bg = pygame.image.load(dirpath+'/hex.jpg').convert()
 
 pygame.display.set_caption("T-Bot Joystick")
 
@@ -125,7 +139,8 @@ while not done:
     #
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
-    screen.fill(GRAY)
+    # screen.fill(GRAY)
+    screen.blit(bg, [0, 0])
     
     textPrint.reset()
 

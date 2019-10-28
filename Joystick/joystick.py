@@ -8,7 +8,7 @@ timestart = time()
 speedfactor = 0.6
 speedlimit = 70
 turnspeedlimit = 60
-cmdwrite = 0
+
 
 ###################  Connection #############################
 oldkps, oldkp, oldtrim, oldgyro, toggle = 0,0,0,0,0
@@ -30,7 +30,6 @@ if search == True:
     bd_addr = nearby_devices[selection]
 else:
     bd_addr = '98:D3:51:FD:81:AC' # you can use > hcitool scan > from the command line to discover the T-Bot Mac address
-    #bd_addr = '98:D3:91:FD:46:C9'
     print('connecting...')
 error = 1
 port = 1
