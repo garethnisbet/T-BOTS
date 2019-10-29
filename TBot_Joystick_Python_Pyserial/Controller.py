@@ -12,7 +12,7 @@ print('-----------------------------------------------------------------\n\n\n')
 
 baudrate = 38400
 #port = 'COM5'
-port = '/dev/tty.T-Bot-DevB'
+port = '/dev/tty.George-DevB'
 sock = serial.Serial(port, baudrate)
 
 
@@ -47,6 +47,7 @@ def playmacro(filename):
         print('The cmd.csv file does not exist. Try recording a macro first.')
 
 
+
 def parse():
     global oldkps
     global oldkp
@@ -54,7 +55,7 @@ def parse():
     global oldgyro
     global toggle
     try:
-        data = sock.recv(32).decode(encoding='utf-8')
+        data = sock.read(32).decode(encoding='utf-8')
         data = data.split('\x02')
         ministring = data[0]
         splitstr = ministring.split(',')
@@ -63,7 +64,6 @@ def parse():
         if toggle == 1:
             print('writing...')
             f.write(oldkps+','+oldkp+','+oldtrim+','+oldgyro+'\n')
-
         return oldkps, oldkp, oldtrim, float(oldgyro)
     except:
         try:
