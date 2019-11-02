@@ -14,8 +14,6 @@
 
 [TBotLibraries.zip](/TBotLibraries.zip) - Libraries required to run the T-Bot. These can be extracted directly into the Arduino libraries folder.
 
-[T-BotLibPi.tar](/T-BotLibPi.tar) - Libraries required to run the T-Bot. These can be extracted directly into the Arduino sketchbook folder on the Raspberry Pi.
-
 [Ultrasound](/Ultrasound) - Simple example to interrogate the HC-SR04 ultrasound module.
 
 [ReadGyro](/ReadGyro) - Simple example to interrogate MPU-6050 sensor.
