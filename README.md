@@ -36,4 +36,7 @@
 3. You will need to select ```Tools -> Board -> Arduino Nano```.
 4. Open TBot.ino and click on the upload button to send the code to your T-Bot.
 
+
 💡 **Note:** Windows users need to use the old boot loader. In the Arduino IDE select ```TOOLS > PROCESSOR > in the pull down menu change ATmega328P to ATmega328P (Old Bootloader)```.
+
+Raspberry Pi users should use [arduino-1.8.3](https://www.arduino.cc/en/Main/OldSoftwareReleases#previous). 
