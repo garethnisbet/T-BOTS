@@ -8,11 +8,11 @@ timestart = time()
 speedfactor = 0.6
 speedlimit = 70
 turnspeedlimit = 60
-cmdwrite = 0
-logo = pygame.image.load(dirpath+'/logo.png')
+
+
 ###################  Connection #############################
 oldkps, oldkp, oldtrim, oldgyro, toggle = 0,0,0,0,0
-search = False
+search = False # Chance to True if you want to search for devices. 
 if search == True:
     print('Searching for devices...')
     print("")
@@ -29,8 +29,7 @@ if search == True:
 
     bd_addr = nearby_devices[selection]
 else:
-    bd_addr = '98:D3:51:FD:81:AC'
-    #bd_addr = '98:D3:91:FD:46:C9'
+    bd_addr = '98:D3:51:FD:81:AC' # you can use > hcitool scan > from the command line to discover the T-Bot Mac address
     print('connecting...')
 error = 1
 port = 1
@@ -53,15 +52,26 @@ GRAY = pygame.Color('gray')
 
 
 ################### Functions  ###########################
+      
+sendtwice = 0
 def send(sendstr):
+    global sendtwice
     try:
-        builtstr = chr(0X02)+sendstr+chr(0X03)
-        sock.send(builtstr.encode(encoding='utf-8'))
+        if sendstr == '200200Z':
+            if sendtwice < 2:
+                builtstr = chr(0X02)+sendstr+chr(0X03)
+                sock.send(builtstr.encode(encoding='utf-8'))
+                sendtwice += 1
+
+        else:
+            builtstr = chr(0X02)+sendstr+chr(0X03)
+            sock.send(builtstr.encode(encoding='utf-8'))
+            sendtwice = 0
+
     except:
         sock.close()
         pygame.display.quit()
         sys.exit()
-        pass
 
 
 # This is a simple class that will help us print to the screen.
@@ -117,9 +127,12 @@ def parse():
 pygame.init()
 
 # Set the width and height of the screen (width, height).
-screen = pygame.display.set_mode((380, 550))
+screen = pygame.display.set_mode((460, 700))
+logo = pygame.image.load(dirpath+'/logo.png')
+bg = pygame.image.load(dirpath+'/hexL.jpg').convert()
 
-pygame.display.set_caption("T-Bot Joystick")
+
+pygame.display.set_caption("T-Bot Joystick Bridge")
 
 # Loop until the user clicks the close button.
 done = False
@@ -150,12 +163,14 @@ while not done:
         pygame.display.quit()
         sys.exit()
         print('Connection Closed')
+        pass
     #
     # DRAWING STEP
     #
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
-    screen.fill(GRAY)
+    screen.blit(bg, [0, 0])
+    #screen.fill(GRAY)
     
     textPrint.reset()
 
@@ -175,7 +190,7 @@ while not done:
 
         # Get the name from the OS for the controller/joystick.
         name = joystick.get_name()
-        textPrint.tprint(screen, "{}".format(name))
+        textPrint.tprint(screen, "Joystick name: {}".format(name))
 
         # Usually axis run in pairs, up/down for one, and left/right for
         # the other.
@@ -250,10 +265,10 @@ while not done:
     #
     # #############   Send data   #################################
     #
-        if abs(axis0)+abs(axis1)+abs(axis3)+abs(axis4) != 0:
+        if abs(axis0)+abs(axis1)+abs(axis2)+abs(axis5) != 0:
             slowfactor = 1+joystick.get_button(7)
-            turn = 200+int(((axis0+(axis3*0.5))*speedfactor*100/slowfactor))
-            speed = 200-int(((axis1+(axis4*0.5))*speedfactor*100/slowfactor))
+            turn = 200+int(((axis0+(axis2*0.5))*speedfactor*100/slowfactor))
+            speed = 200-int(((axis1+(axis5*0.5))*speedfactor*100/slowfactor))
             if speed > 200+speedlimit:
                 speed = 200+speedlimit
             if speed < 200-speedlimit:
@@ -269,22 +284,23 @@ while not done:
         else:
             sendstring = '200200Z'
             send(sendstring)
-        if joystick.get_button(2):
+        if joystick.get_button(3):
             buttonstring = '200200F' # trim +ve
             send(buttonstring)
-        elif joystick.get_button(0):
+        elif joystick.get_button(1):
             buttonstring = '200200E' # trim -ve
             send(buttonstring)
 
-        elif joystick.get_button(1):
+        elif joystick.get_button(2):
             buttonstring = '200200B' # kps +ve
             send(buttonstring)
-        elif joystick.get_button(3):
+        elif joystick.get_button(0):
             buttonstring = '200200A' # kps -ve
             send(buttonstring)
         elif joystick.get_button(9):
-            buttonstring = '200200T' # kps -ve
+            buttonstring = '200200T' # 
             send(buttonstring)
+
 
 
         
