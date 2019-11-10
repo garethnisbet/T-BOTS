@@ -113,13 +113,31 @@ minus = pygame.image.load('images/minus.png')
 plus = pygame.image.load('images/plus.png')
 pluslight = pygame.image.load('images/pluslight.png')
 minuslight = pygame.image.load('images/minuslight.png')
+
+arrowkeys = pygame.image.load('images/arrowkeys.png')
+arrowkeysL = pygame.image.load('images/arrowkeysL.png')
+arrowkeysR = pygame.image.load('images/arrowkeysR.png')
+arrowkeysUp = pygame.image.load('images/arrowkeysUp.png')
+arrowkeysDown = pygame.image.load('images/arrowkeysDown.png')
+
+arrowkeysUL = pygame.image.load('images/arrowkeysUL.png')
+arrowkeysUR = pygame.image.load('images/arrowkeysUR.png')
+arrowkeysDL = pygame.image.load('images/arrowkeysDL.png')
+arrowkeysDR = pygame.image.load('images/arrowkeysDR.png')
+
+
+
 gTrim = pygame.image.load('images/Trim.png')
 gTrimlight = pygame.image.load('images/Trimlight.png')
 record = pygame.image.load('images/record.png')
+
+
 pause = pygame.image.load('images/pause.png')
+
 
 stop = pygame.image.load('images/stop.png')
 play = pygame.image.load('images/play.png')
+
 cmdpause = pygame.image.load('images/cmdpause.png')
 cmdrecord = pygame.image.load('images/cmdrecord.png')
 trash = pygame.image.load('images/trash.png')
@@ -196,25 +214,25 @@ while True: # Continuous Pygame loop,
  #           if p2x > 0 and p2x < 500 and p2y > 0 and p2y < 500:
  #               mx, my = 250,250
 
-            if p2x > 680 and p2x < 706 and p2y > 100 and p2y < 123:
+            if p2x > 680 and p2x < 706 and p2y > 50 and p2y < 73:
                 button1 = 1
 
-            if p2x > 680 and p2x < 706 and p2y > 130 and p2y < 153:
+            if p2x > 680 and p2x < 706 and p2y > 70 and p2y < 103:
                 button2 = 1
 
-            if p2x > 680 and p2x < 706 and p2y > 230 and p2y < 253:
+            if p2x > 680 and p2x < 706 and p2y > 180 and p2y < 203:
                 button3 = 1
 
-            if p2x > 680 and p2x < 706 and p2y > 260 and p2y < 283:
+            if p2x > 680 and p2x < 706 and p2y > 210 and p2y < 233:
                 button4 = 1
 
-            if p2x > 580 and p2x < 706 and p2y > 360 and p2y < 383:
+            if p2x > 580 and p2x < 706 and p2y > 310 and p2y < 333:
                 button5 = 1
 
-            if p2x > 680 and p2x < 706 and p2y > 390 and p2y < 413:
+            if p2x > 680 and p2x < 706 and p2y > 340 and p2y < 363:
                 button6 = 1
 
-            if p2x > 720 and p2x < 740 and p2y > 375 and p2y < 395:
+            if p2x > 720 and p2x < 740 and p2y > 325 and p2y < 345:
                 button7 = 1
                 
             if p2x > 800 and p2x < 1200 and p2y > 100 and p2y < 400:
@@ -245,7 +263,7 @@ while True: # Continuous Pygame loop,
             button9 = 0
             button10 = 0
             button11 = 0
-            button12 = 0   
+            button12 = 0  
 
 
         if event.type == KEYDOWN and event.key == K_c:
@@ -256,32 +274,59 @@ while True: # Continuous Pygame loop,
         keys = pygame.key.get_pressed()
 
 
+
+    
+        screen.fill(colour,(0,0,800,500))           # Joystick
+        screen.fill(colour,(1116,410,1146,440))
+        screen.fill(colour,(800,420,1146,500))
+        screen.blit(joybase,(250-230,250-230))
+        screen.blit(joytop,(mx-75,my-75))
+        screen.blit(plus,(680,50))
+        screen.blit(minus,(680,80))
+        screen.blit(plus,(680,180))
+        screen.blit(minus,(680,210))
+        screen.blit(plus,(680,310))
+        screen.blit(minus,(680,340))
+        screen.blit(gTrim,(720,325))
+        screen.blit(arrowkeys,(600,410))
+        
+        # Images for arrow keys 
+
         if keys[K_RIGHT] and keys[K_UP]:
+            screen.blit(arrowkeysUR,(600,410))
             send('%03d%03dZ'%(240,200+(speedfactor*100)))
 
         elif keys[K_LEFT] and keys[K_UP]:
+            screen.blit(arrowkeysUL,(600,410))
             send('%03d%03dZ'%(160,200+(speedfactor*100)))
 
         elif keys[K_RIGHT] and keys[K_DOWN]:
+            screen.blit(arrowkeysDR,(600,410))
             send('%03d%03dZ'%(260,200-(speedfactor*100)))
 
         elif keys[K_LEFT] and keys[K_DOWN]:
+            screen.blit(arrowkeysDL,(600,410))
             send('%03d%03dZ'%(140,200-(speedfactor*100)))
 
 
         elif keys[K_DOWN]:
+            screen.blit(arrowkeysDown,(600,410))
             send('%03d%03dZ'%(200,200-(speedfactor*100)))
 
         elif keys[K_UP]:
+            screen.blit(arrowkeysUp,(600,410))
             send('%03d%03dZ'%(200,200+(speedfactor*100)))
 
 
         elif keys[K_RIGHT]:
+            screen.blit(arrowkeysR,(600,410))
             send('260200Z')
 
 
         elif keys[K_LEFT]:
+            screen.blit(arrowkeysL,(600,410))
             send('140200Z')
+        
 
         elif keys[K_w]:
             
@@ -297,6 +342,7 @@ while True: # Continuous Pygame loop,
 
 
         else:
+
             if c1==0:
                 send('200200Z')
         
@@ -315,49 +361,39 @@ while True: # Continuous Pygame loop,
             f.close()
             print('Your now disconnected.')
             sys.exit()
-    
-        screen.fill(colour,(0,0,800,500))           # Joystick
-        screen.fill(colour,(1116,410,1146,440))
-        screen.fill(colour,(800,420,1146,500))
-        screen.blit(joybase,(250-230,250-230))
-        screen.blit(joytop,(mx-75,my-75))
-        screen.blit(plus,(680,100))
-        screen.blit(minus,(680,130))
-        screen.blit(plus,(680,230))
-        screen.blit(minus,(680,260))
-        screen.blit(plus,(680,360))
-        screen.blit(minus,(680,390))
-        screen.blit(gTrim,(720,375))
+
+
+
         
 
 
 
         if button1:
-            screen.blit(pluslight,(680-3,100-3))
+            screen.blit(pluslight,(680-3,50-3))
             buttonstring = '200200B'
             send(buttonstring)
         if button2:
-            screen.blit(minuslight,(680-3,130-3))
+            screen.blit(minuslight,(680-3,80-3))
             buttonstring2 = '200200A'
             send(buttonstring2)
         if button3:
-            screen.blit(pluslight,(680-3,230-3))
+            screen.blit(pluslight,(680-3,180-3))
             buttonstring3 = '200200D'
             send(buttonstring3)
         if button4:
-            screen.blit(minuslight,(680-3,260-3))
+            screen.blit(minuslight,(680-3,210-3))
             buttonstring4 = '200200C'
             send(buttonstring4)
         if button5:
-            screen.blit(pluslight,(680-3,360-3))
+            screen.blit(pluslight,(680-3,310-3))
             buttonstring5 = '200200F'
             send(buttonstring5)
         if button6:
-            screen.blit(minuslight,(680-3,390-3))
+            screen.blit(minuslight,(680-3,340-3))
             buttonstring6 = '200200E'
             send(buttonstring6)
         if button7:
-            screen.blit(gTrimlight,(720-2,375-2))
+            screen.blit(gTrimlight,(720-2,325-2))
             buttonstring7 = '200200T'
             send(buttonstring7)
         if button8:
@@ -467,9 +503,9 @@ while True: # Continuous Pygame loop,
        
 
 
-        screen.blit(kpstext,(560,115))
-        screen.blit(kptext,(560,245))
-        screen.blit(trimtext,(560,375))
+        screen.blit(kpstext,(560,65))
+        screen.blit(kptext,(560,195))
+        screen.blit(trimtext,(560,325))
         screen.blit(joytop,(mx-75,my-75))
         screen.blit(speedfactortext,(800,420))
         
