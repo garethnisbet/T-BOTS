@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=T-Bot Player 1
+Icon=/home/pi/GitHub/T-BOTS/Joystick/Player1.png
+Exec = python /home/pi/GitHub/T-BOTS/Joystick/joystick_p1.py
+Terminal=false
+

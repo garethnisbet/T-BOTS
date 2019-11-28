@@ -8,11 +8,11 @@ timestart = time()
 speedfactor = 0.6
 speedlimit = 70
 turnspeedlimit = 60
-cmdwrite = 0
+
 
 ###################  Connection #############################
 oldkps, oldkp, oldtrim, oldgyro, toggle = 0,0,0,0,0
-search = False
+search = False # Chance to True if you want to search for devices. 
 if search == True:
     print('Searching for devices...')
     print("")
@@ -29,8 +29,8 @@ if search == True:
 
     bd_addr = nearby_devices[selection]
 else:
-    bd_addr = '98:D3:51:FD:81:AC'
-    #bd_addr = '98:D3:91:FD:46:C9'
+    bd_addr = '98:D3:91:FD:46:C9'
+    #bd_addr = '98:D3:32:21:3D:77' # you can use > hcitool scan > from the command line to discover the T-Bot Mac address
     print('connecting...')
 error = 1
 port = 1
@@ -53,15 +53,26 @@ GRAY = pygame.Color('gray')
 
 
 ################### Functions  ###########################
+      
+sendtwice = 0
 def send(sendstr):
+    global sendtwice
     try:
-        builtstr = chr(0X02)+sendstr+chr(0X03)
-        sock.send(builtstr.encode(encoding='utf-8'))
+        if sendstr == '200200Z':
+            if sendtwice < 2:
+                builtstr = chr(0X02)+sendstr+chr(0X03)
+                sock.send(builtstr.encode(encoding='utf-8'))
+                sendtwice += 1
+
+        else:
+            builtstr = chr(0X02)+sendstr+chr(0X03)
+            sock.send(builtstr.encode(encoding='utf-8'))
+            sendtwice = 0
+
     except:
         sock.close()
         pygame.display.quit()
         sys.exit()
-        pass
 
 
 # This is a simple class that will help us print to the screen.
@@ -70,7 +81,7 @@ def send(sendstr):
 class TextPrint(object):
     def __init__(self):
         self.reset()
-        self.font = pygame.font.Font(None, 30)
+        self.font = pygame.font.Font(None, 20)
 
     def tprint(self, screen, textString):
         textBitmap = self.font.render(textString, True, WHITE)
@@ -78,15 +89,15 @@ class TextPrint(object):
         self.y += self.line_height
 
     def reset(self):
-        self.x = 20
-        self.y = 20
-        self.line_height = 25
+        self.x = 10
+        self.y = 10
+        self.line_height = 15
 
     def indent(self):
-        self.x += 20
+        self.x += 10
 
     def unindent(self):
-        self.x -= 20
+        self.x -= 10
 
 def parse():
     global oldkps
@@ -117,9 +128,10 @@ def parse():
 pygame.init()
 
 # Set the width and height of the screen (width, height).
-screen = pygame.display.set_mode((600, 1000))
-logo = pygame.image.load(dirpath+'/LogoLarge.png')
-bg = pygame.image.load(dirpath+'/hexL.jpg').convert()
+screen = pygame.display.set_mode((350, 550))
+logo = pygame.image.load(dirpath+'/logo.png')
+bg = pygame.image.load(dirpath+'/hex.jpg').convert()
+
 
 pygame.display.set_caption("T-Bot Joystick Bridge")
 
@@ -152,12 +164,14 @@ while not done:
         pygame.display.quit()
         sys.exit()
         print('Connection Closed')
+        pass
     #
     # DRAWING STEP
     #
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
     screen.blit(bg, [0, 0])
+
     
     textPrint.reset()
 
@@ -168,7 +182,7 @@ while not done:
     textPrint.indent()
 
     # For each joystick:
-    for i in range(1):
+    for i in [1]:
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
 
@@ -177,7 +191,7 @@ while not done:
 
         # Get the name from the OS for the controller/joystick.
         name = joystick.get_name()
-        textPrint.tprint(screen, "Joystick name: {}".format('Generic Wireless Controller'))
+        textPrint.tprint(screen, "Joystick name: {}".format(name))
 
         # Usually axis run in pairs, up/down for one, and left/right for
         # the other.
@@ -231,6 +245,7 @@ while not done:
                 speedfactor = 5
             if speedfactor <= 0:
                 speedfactor = 0
+                
         textPrint.unindent()
         textPrint.tprint(screen, "")
         textPrint.tprint(screen, "T-Bot Data")
@@ -286,9 +301,10 @@ while not done:
             send(buttonstring)
 
 
+
         
     # Go ahead and update the screen with what we've drawn.
-    screen.blit(logo,(330,670))
+    screen.blit(logo,(230,420))
     pygame.display.flip()
 
     # Limit to 20 frames per second.

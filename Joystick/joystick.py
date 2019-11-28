@@ -83,7 +83,7 @@ class TextPrint(object):
         self.font = pygame.font.Font(None, 20)
 
     def tprint(self, screen, textString):
-        textBitmap = self.font.render(textString, True, BLACK)
+        textBitmap = self.font.render(textString, True, WHITE)
         screen.blit(textBitmap, (self.x, self.y))
         self.y += self.line_height
 
