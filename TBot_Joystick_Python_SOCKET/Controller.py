@@ -98,7 +98,7 @@ def parse():
 ###################    Setup Pygame   ########################
 
 pygame.font.init()
-basicfont = pygame.font.SysFont(None, 30)
+basicfont = pygame.font.SysFont(None, 25)
 oldkps, oldkp, oldtrim, oldgyro = str(0),str(0),str(0), str(0)
 pygame.init()
 clock = pygame.time.Clock()
@@ -113,31 +113,21 @@ minus = pygame.image.load('images/minus.png')
 plus = pygame.image.load('images/plus.png')
 pluslight = pygame.image.load('images/pluslight.png')
 minuslight = pygame.image.load('images/minuslight.png')
-
 arrowkeys = pygame.image.load('images/arrowkeys.png')
 arrowkeysL = pygame.image.load('images/arrowkeysL.png')
 arrowkeysR = pygame.image.load('images/arrowkeysR.png')
 arrowkeysUp = pygame.image.load('images/arrowkeysUp.png')
 arrowkeysDown = pygame.image.load('images/arrowkeysDown.png')
-
 arrowkeysUL = pygame.image.load('images/arrowkeysUL.png')
 arrowkeysUR = pygame.image.load('images/arrowkeysUR.png')
 arrowkeysDL = pygame.image.load('images/arrowkeysDL.png')
 arrowkeysDR = pygame.image.load('images/arrowkeysDR.png')
-
-
-
 gTrim = pygame.image.load('images/Trim.png')
 gTrimlight = pygame.image.load('images/Trimlight.png')
 record = pygame.image.load('images/record.png')
-
-
 pause = pygame.image.load('images/pause.png')
-
-
 stop = pygame.image.load('images/stop.png')
 play = pygame.image.load('images/play.png')
-
 cmdpause = pygame.image.load('images/cmdpause.png')
 cmdrecord = pygame.image.load('images/cmdrecord.png')
 trash = pygame.image.load('images/trash.png')
@@ -211,8 +201,6 @@ while True: # Continuous Pygame loop,
             sys.exit()
         elif event.type == MOUSEBUTTONDOWN:
             kps, kp, trim, gyrodata = parse()
- #           if p2x > 0 and p2x < 500 and p2y > 0 and p2y < 500:
- #               mx, my = 250,250
 
             if p2x > 680 and p2x < 706 and p2y > 50 and p2y < 73:
                 button1 = 1
@@ -288,43 +276,43 @@ while True: # Continuous Pygame loop,
         screen.blit(plus,(680,310))
         screen.blit(minus,(680,340))
         screen.blit(gTrim,(720,325))
-        screen.blit(arrowkeys,(600,410))
+        screen.blit(arrowkeys,(560,410))
         
         # Images for arrow keys 
 
         if keys[K_RIGHT] and keys[K_UP]:
-            screen.blit(arrowkeysUR,(600,410))
+            screen.blit(arrowkeysUR,(560,410))
             send('%03d%03dZ'%(240,200+(speedfactor*100)))
 
         elif keys[K_LEFT] and keys[K_UP]:
-            screen.blit(arrowkeysUL,(600,410))
+            screen.blit(arrowkeysUL,(560,410))
             send('%03d%03dZ'%(160,200+(speedfactor*100)))
 
         elif keys[K_RIGHT] and keys[K_DOWN]:
-            screen.blit(arrowkeysDR,(600,410))
+            screen.blit(arrowkeysDR,(560,410))
             send('%03d%03dZ'%(260,200-(speedfactor*100)))
 
         elif keys[K_LEFT] and keys[K_DOWN]:
-            screen.blit(arrowkeysDL,(600,410))
+            screen.blit(arrowkeysDL,(560,410))
             send('%03d%03dZ'%(140,200-(speedfactor*100)))
 
 
         elif keys[K_DOWN]:
-            screen.blit(arrowkeysDown,(600,410))
+            screen.blit(arrowkeysDown,(560,410))
             send('%03d%03dZ'%(200,200-(speedfactor*100)))
 
         elif keys[K_UP]:
-            screen.blit(arrowkeysUp,(600,410))
+            screen.blit(arrowkeysUp,(560,410))
             send('%03d%03dZ'%(200,200+(speedfactor*100)))
 
 
         elif keys[K_RIGHT]:
-            screen.blit(arrowkeysR,(600,410))
+            screen.blit(arrowkeysR,(560,410))
             send('260200Z')
 
 
         elif keys[K_LEFT]:
-            screen.blit(arrowkeysL,(600,410))
+            screen.blit(arrowkeysL,(560,410))
             send('140200Z')
         
 

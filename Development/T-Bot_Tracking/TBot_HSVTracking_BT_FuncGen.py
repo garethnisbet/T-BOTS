@@ -22,6 +22,9 @@ pathindex = 0
 blueLower = (89,214,139)
 blueUpper = (255,255,255)
 
+pinkLower = (133,97,83)
+pinkUpper = (255,255,255)
+
 
 
 greenLower = (37,64,0)
@@ -36,10 +39,11 @@ pts2 = deque(maxlen=200)
 
 pathindex = 0
 rotspeed = 200
-speedfactor = 0.26
+speedfactor = 0.15
 turnspeedfactor = 0.2
-turntimefactor = 0.02
-bendscalefactor = 6
+turntimefactor = 0.03
+bendscalefactor = 4
+tolerance = 30
 
 #--------------  Define functions  ------------------#
 
@@ -136,7 +140,7 @@ while error:
 #---------  Get or set destination points  ------------#
 
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -149,10 +153,11 @@ cap.release()
 amplitude = 70
 frequency = 2
 phase = 0
+stepsize = 1
 border = 70
 bg = frame.shape[0]/2
 #----------   Create mask for coordinates   ------------#
-xdata =  np.arange(border, frame.shape[1]-border, 1)
+xdata =  np.arange(border, frame.shape[1]-border, stepsize)
 aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
 maskdx, maskdy = 2,2
 mask = buildmask(aa,frame,maskdx,maskdy)
@@ -161,7 +166,7 @@ mask = buildmask(aa,frame,maskdx,maskdy)
 #----------------   Start main loop --------------------#
 #########################################################
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -194,7 +199,7 @@ if __name__ == '__main__':
             pass
             
         try:
-            x2, y2, center2, radius2, M2, cents2 = tracker(frame, blueLower, blueUpper)
+            x2, y2, center2, radius2, M2, cents2 = tracker(frame, pinkLower, pinkUpper)
 
             if radius2 > 1:
                 cv2.circle(frame, (int(x2), int(y2)), int(radius2),(113,212,198), 2)
@@ -226,7 +231,7 @@ if __name__ == '__main__':
             
             cv2.line(frame, pts2[ii - 1], pts2[ii], (113,212,198), 1)
 
-        frame[:,:,1]=frame[:,:,1]*mask
+        frame[:,:,2]=frame[:,:,2]*mask
         cv2.imshow('MultiTracker', frame)
 
 
@@ -242,7 +247,7 @@ if __name__ == '__main__':
                 pass
             _distance = distance((x,y),(x2,y2),vto)
 
-            if _distance < 30:
+            if _distance < tolerance:
                 pathindex += 1
                 vto = aa[pathindex]          
 

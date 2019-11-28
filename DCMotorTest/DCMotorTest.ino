@@ -1,7 +1,7 @@
 #include <Motor.h>
 // Setup Motors
 // Set motor deadbands
-// m1 is the right motor m2 is the left
+// m1 is the right motor and m2 is the left
 const int m1ndb = 0 , m1pdb = 0, m2ndb = 0 , m2pdb = 0;
 //const int m1ndb = 34 , m1pdb = 34, m2ndb = 30 , m2pdb = 30; // T-Bot
 
