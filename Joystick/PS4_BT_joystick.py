@@ -3,7 +3,7 @@ import pygame, sys, pygame.mixer, os
 from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
-dirpath = os.path.dirname(os.path.realpath(__file__))
+dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 timestart = time()
 speedfactor = 0.6
 speedlimit = 70
