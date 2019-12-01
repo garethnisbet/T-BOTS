@@ -13,7 +13,8 @@ oldvals = [0,0,0,0]
 
 sendcount = 0
 #bd_addr = '98:D3:51:FD:81:AC'
-bd_addr = '98:D3:91:FD:46:C9'
+bd_addr = '98:D3:91:FD:46:C9' # Brenda
+#bd_addr = '98:D3:32:21:3D:77' # Lola
 
 
 class bt_connect(object):
@@ -302,23 +303,23 @@ while not done:
             sendcount = btcom.send_data(sendstring,sendcount)
         else:
             sendstring = '200200Z'
-            sendcount = btcom.send_data(sendstring,sendcount)
+            sendcount = btcom.send_data(buttonstring,sendcount)
         if joystick.get_button(0):
             buttonstring = '200200F' # trim +ve
-            sendcount = btcom.send_data(sendstring,sendcount)
+            sendcount = btcom.send_data(buttonstring,sendcount)
         elif joystick.get_button(2):
             buttonstring = '200200E' # trim -ve
-            sendcount = btcom.send_data(sendstring,sendcount)
+            sendcount = btcom.send_data(buttonstring,sendcount)
 
         elif joystick.get_button(1):
             buttonstring = '200200B' # kps +ve
-            sendcount = btcom.send_data(sendstring,sendcount)
+            sendcount = btcom.send_data(buttonstring,sendcount)
         elif joystick.get_button(3):
             buttonstring = '200200A' # kps -ve
-            sendcount = btcom.send_data(sendstring,sendcount)
+            sendcount = btcom.send_data(buttonstring,sendcount)
         elif joystick.get_button(9):
             buttonstring = '200200T' # kps -ve
-            sendcount = btcom.send_data(sendstring,sendcount)
+            sendcount = btcom.send_data(buttonstring,sendcount)
 
 
 

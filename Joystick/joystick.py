@@ -301,23 +301,23 @@ while not done:
             sendcount = btcom.send_data(sendstring,sendcount)
         else:
             sendstring = '200200Z'
-            sendcount = btcom.send_data(sendstring,sendcount)
+            sendcount = btcom.send_data(buttonstring,sendcount)
         if joystick.get_button(0):
             buttonstring = '200200F' # trim +ve
-            sendcount = btcom.send_data(sendstring,sendcount)
+            sendcount = btcom.send_data(buttonstring,sendcount)
         elif joystick.get_button(2):
             buttonstring = '200200E' # trim -ve
-            sendcount = btcom.send_data(sendstring,sendcount)
+            sendcount = btcom.send_data(buttonstring,sendcount)
 
         elif joystick.get_button(1):
             buttonstring = '200200B' # kps +ve
-            sendcount = btcom.send_data(sendstring,sendcount)
+            sendcount = btcom.send_data(buttonstring,sendcount)
         elif joystick.get_button(3):
             buttonstring = '200200A' # kps -ve
-            sendcount = btcom.send_data(sendstring,sendcount)
+            sendcount = btcom.send_data(buttonstring,sendcount)
         elif joystick.get_button(9):
             buttonstring = '200200T' # kps -ve
-            sendcount = btcom.send_data(sendstring,sendcount)
+            sendcount = btcom.send_data(buttonstring,sendcount)
 
 
 
