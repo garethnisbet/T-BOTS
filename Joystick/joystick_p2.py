@@ -4,6 +4,23 @@ from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
 from Classes import tbt
+from collections import deque
+import numpy as np
+starttime = time()
+
+# setup for plotting
+xdatarange = [200,320]
+y_origin = 270
+yscale = 50
+pts = deque(maxlen=xdatarange[1]-xdatarange[0])
+for ii in range(xdatarange[0],xdatarange[1]):
+    pts.appendleft((ii,np.random.rand(1)))
+iii = 200
+aa = np.zeros((len(pts),2))
+aa[:,1]=np.array(pts)[:,1]
+aa[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
+bb=np.copy(aa)
+    
 
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 timestart = time()
@@ -16,11 +33,10 @@ turnspeedlimit = 60
 
 oldvals = [0,0,0,0]
 sendcount = 0
-#bd_addr = '98:D3:51:FD:81:AC'
-bd_addr = '98:D3:91:FD:46:C9' # Brenda
-#bd_addr = '98:D3:32:21:3D:77' # Lola
-
+bd_addr = '98:D3:91:FD:46:C9'  # check with: hcitool scan 
+#bd_addr = '98:D3:51:FD:81:AC' 
 btcom = tbt.bt_connect(bd_addr,1)
+
 
 ###################  Screen Text Class #############################
 
@@ -44,9 +60,16 @@ class TextPrint(object):
 
     def unindent(self):
         self.x -= 10
-
+    def abspos(self,screen, textString, pos):
+        textBitmap = self.font.render(textString, True, WHITE)
+        screen.blit(textBitmap, pos)
+    
+ 
 
 ###################  Instantiate BT Class #############################    
+
+
+      
         
 # Define some colors.
 BLACK = pygame.Color('black')
@@ -63,7 +86,7 @@ bg = pygame.image.load(dirpath+'/hexP2.jpg').convert()
 bgG = pygame.image.load(dirpath+'/hexG.jpg').convert()
 
 
-pygame.display.set_caption("Player 2")
+pygame.display.set_caption("Player 1")
 
 # Loop until the user clicks the close button.
 done = False
@@ -78,6 +101,7 @@ pygame.joystick.init()
 textPrint = TextPrint()
 
 # -------- Main Program Loop -----------
+
 while not done:
         
     #
@@ -203,6 +227,30 @@ while not done:
         textPrint.indent()
                 
         oldvals = btcom.get_data(oldvals)
+        #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
+        g_angle = oldvals[3]
+        pts.appendleft((iii,g_angle))
+        iii+=1
+        iii+=1
+        pygame.draw.lines(screen, (100,100,100), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
+        pygame.draw.lines(screen, (100,100,100), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
+        if iii > xdatarange[1]:
+            iii = xdatarange[0]
+        aa[:,1]=np.array(pts)[:,1]
+        try:  
+            bb[:,1] = (yscale/((aa[:,1]-aa[:,1].min()).max())*(aa[:,1]-aa[:,1].min()))+y_origin
+            gdata = tuple(map(tuple, tuple(bb)))
+            pygame.draw.lines(screen, (255,255,255), False, (gdata),1)
+            
+        except:
+            b=1
+            
+ 
+        textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
+        textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
+        
+         
+            
         textPrint.tprint(screen, "gyrodata: {}".format(str(oldvals[3])))
         textPrint.tprint(screen, "kps: {}".format(str(oldvals[0])))
         textPrint.tprint(screen, "kp: {}".format(str(oldvals[1])))
@@ -240,7 +288,6 @@ while not done:
         elif joystick.get_button(2):
             buttonstring = '200200E' # trim -ve
             sendcount = btcom.send_data(buttonstring,sendcount)
-
         elif joystick.get_button(1):
             buttonstring = '200200B' # kps +ve
             sendcount = btcom.send_data(buttonstring,sendcount)

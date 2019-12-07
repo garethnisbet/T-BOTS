@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=T-Bot Player 2
-Icon=images/Player2.png
-Exec = python joystick_p2.py
-Terminal=false
-

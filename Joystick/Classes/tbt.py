@@ -41,11 +41,13 @@ class bt_connect(object):
                 if sendtwice <= 2:
                     builtstr = chr(0X02)+sendstr+chr(0X03)
                     self.sock.send(builtstr.encode(encoding='utf-8'))
-                    sendtwice += 1                   
+                    sendtwice += 1
+                  
             else:
                 builtstr = chr(0X02)+sendstr+chr(0X03)
                 self.sock.send(builtstr.encode(encoding='utf-8'))
                 sendtwice = 0
+
         except:
             print('Error sending data...')
         return sendtwice
