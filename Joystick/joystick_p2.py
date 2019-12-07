@@ -86,7 +86,7 @@ bg = pygame.image.load(dirpath+'/hexP2.jpg').convert()
 bgG = pygame.image.load(dirpath+'/hexG.jpg').convert()
 
 
-pygame.display.set_caption("Player 1")
+pygame.display.set_caption("Player 2")
 
 # Loop until the user clicks the close button.
 done = False
