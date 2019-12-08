@@ -51,7 +51,7 @@ btcom = tbt.bt_connect(bd_addr,port,'Socket')
 class TextPrint(object):
     def __init__(self):
         self.reset()
-        self.font = pygame.font.Font(None, 20)
+        self.font = pygame.font.Font(None, 15)
 
     def tprint(self, screen, textString):
         textBitmap = self.font.render(textString, True, WHITE)

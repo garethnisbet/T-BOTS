@@ -1,8 +1,17 @@
 This software allows you to use a wireless USB controller to control the T-Bot. The controller commands are converted to T-Bot commands and sent over Bluetooth.
 
-Trim:   Triangle/X
-KPS:    Square/Circle
+Trim:   		Triangle/X
+KPS:    		Square/Circle
+Speed Factor:		D-Pad	Up/Down
+Max Speed Limit:	D-Pad	Left/Right
+
 Slow:   R2
+
 
 You can control the T-Bot with both left and right joysticks. The right stick gives slower finer control. Using the left stick for speed and the right stick for steering works very well.
 Using the left stick for speed and the right for steering works very well.
+
+
+💡 **Note:** The USB version for the PS4 is more responsive than the Bluetooth version.
+
+💡 **Note:** For best performance, use a generic wireless joystick.
