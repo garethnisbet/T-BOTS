@@ -33,7 +33,7 @@ turnspeedlimit = 60
 
 oldvals = [0,0,0,0]
 sendcount = 0
-bd_addr = '98:D3:51:FD:81:AC' 
+bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address 
 btcom = tbt.bt_connect(bd_addr,1)
 
 
@@ -156,7 +156,7 @@ while not done:
     textPrint.indent()
 
     # For each joystick:
-    for i in [0]:
+    for i in [0]: # If you have multiple joysticks connected, set this index for the one you want to use.
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
 
