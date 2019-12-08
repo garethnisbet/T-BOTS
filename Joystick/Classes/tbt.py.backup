@@ -20,7 +20,7 @@ class bt_connect(object):
                     self.sock.connect((self.bt_addr,self.port))
                     self.sock.settimeout(5)
                     print('connected to '+self.bt_addr)
-                    return self.sock.getpeername()
+                    
                 elif self.lib == 'Socket':
                     try:
                         import socket
@@ -30,7 +30,7 @@ class bt_connect(object):
                     self.sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
                     self.sock.connect((self.bt_addr,self.port))
                     print('connected to '+self.bt_addr)
-                    return self.sock.getpeername()
+                    
                 elif self.lib == 'PySerial':
                     try:
                         import serial
@@ -39,8 +39,9 @@ class bt_connect(object):
                     print('connecting to '+self.port+' with a baud rate of '+ str(self.baudrate))
                     self.sock = serial.Serial(self.port, self.baudrate)
                     print('connected to '+self.port+' with a baud rate of '+ str(self.baudrate))               
-                    return self.port
-
+                
+                
+                return self.sock.getpeername()
             except:
                 print('Connection Failed')
                 
@@ -54,12 +55,8 @@ class bt_connect(object):
                 
     def connected(self):
         try:
-            if self.lib == 'PySerial':
-                self.sock.in_waiting
-                status = 1 # Connection checking not exposed in API
-            else:
-                self.sock.getpeername()
-                status = 1
+            self.sock.getpeername()
+            status = 1
         except:
             status = 0
         return status
@@ -74,13 +71,10 @@ class bt_connect(object):
                     else:
                         self.sock.send(builtstr.encode(encoding='utf-8'))
                     sendtwice += 1
-                      
+                  
             else:
                 builtstr = chr(0X02)+sendstr+chr(0X03)
-                if self.lib == 'PySerial':
-                    self.sock.write(builtstr.encode(encoding='utf-8'))
-                else:
-                    self.sock.send(builtstr.encode(encoding='utf-8'))
+                self.sock.send(builtstr.encode(encoding='utf-8'))
                 sendtwice = 0
 
         except:
@@ -114,7 +108,6 @@ class bt_connect(object):
             return oldvalues[0], oldvalues[1],oldvalues[2],oldvalues[3]
             
     def get_name(self):
-	
         try:
             return self.sock.getpeername()
         except:
