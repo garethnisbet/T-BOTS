@@ -2,7 +2,7 @@
 from time import sleep, time
 
 class bt_connect(object):
-    def __init__(self,bt_addr,port,lib,baudrate=[]):
+    def __init__(self,bt_addr,port,lib,baudrate=38400):
         self.bt_addr = bt_addr
         self.port = port
         self.lib = lib
@@ -82,13 +82,22 @@ class bt_connect(object):
         return sendtwice
 
     def get_data(self,oldvalues = [0,0,0,0]):
-        try:
-            data = self.sock.recv(32).decode(encoding='utf-8')
-            data = data.split('\x02')
-            ministring = data[0]
-            splitstr = ministring.split(',')
-        except:
-            splitstr = []
+        if self.lib == 'PySerial':
+            try:
+                data = self.sock.read(32).decode(encoding='utf-8')
+                data = data.split('\x02')
+                ministring = data[0]
+                splitstr = ministring.split(',')
+            except:
+                splitstr = []
+        else:
+            try:
+                data = self.sock.recv(32).decode(encoding='utf-8')
+                data = data.split('\x02')
+                ministring = data[0]
+                splitstr = ministring.split(',')
+            except:
+                splitstr = []
         
         if len(splitstr) == 4:
             oldkps, oldkp, oldtrim, oldgyro = splitstr[0], splitstr[1], splitstr[2], splitstr[3]
