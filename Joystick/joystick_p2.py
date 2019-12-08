@@ -33,9 +33,17 @@ turnspeedlimit = 60
 
 oldvals = [0,0,0,0]
 sendcount = 0
-bd_addr = '98:D3:91:FD:46:C9'  # check with: hcitool scan 
-#bd_addr = '98:D3:51:FD:81:AC' 
-btcom = tbt.bt_connect(bd_addr,1)
+bd_addr = '98:D3:91:FD:46:C9' # use: 'hcitool scan' to scan for your T-Bot address 
+port = 1
+
+
+#btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
+btcom = tbt.bt_connect(bd_addr,port,'Socket')
+
+#port = 'COM5'
+#port = '/dev/tty.George-DevB'
+#baudrate = 38400
+#btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
 
 ###################  Screen Text Class #############################
@@ -86,7 +94,7 @@ bg = pygame.image.load(dirpath+'/hexP2.jpg').convert()
 bgG = pygame.image.load(dirpath+'/hexG.jpg').convert()
 
 
-pygame.display.set_caption("Player 2")
+pygame.display.set_caption("Player 1")
 
 # Loop until the user clicks the close button.
 done = False
@@ -157,7 +165,7 @@ while not done:
     textPrint.indent()
 
     # For each joystick:
-    for i in [1]:
+    for i in [0]: # If you have multiple joysticks connected, set this index for the one you want to use.
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
 
@@ -288,6 +296,7 @@ while not done:
         elif joystick.get_button(2):
             buttonstring = '200200E' # trim -ve
             sendcount = btcom.send_data(buttonstring,sendcount)
+
         elif joystick.get_button(1):
             buttonstring = '200200B' # kps +ve
             sendcount = btcom.send_data(buttonstring,sendcount)

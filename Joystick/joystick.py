@@ -34,7 +34,16 @@ turnspeedlimit = 60
 oldvals = [0,0,0,0]
 sendcount = 0
 bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address 
-btcom = tbt.bt_connect(bd_addr,1)
+port = 1
+
+
+#btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
+btcom = tbt.bt_connect(bd_addr,port,'Socket')
+
+#port = 'COM5'
+#port = '/dev/tty.George-DevB'
+#baudrate = 38400
+#btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
 
 ###################  Screen Text Class #############################

@@ -3,6 +3,25 @@ import pygame, sys, pygame.mixer, os
 from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
+from Classes import tbt
+from collections import deque
+import numpy as np
+starttime = time()
+
+# setup for plotting
+xdatarange = [200,320]
+y_origin = 270
+yscale = 50
+pts = deque(maxlen=xdatarange[1]-xdatarange[0])
+for ii in range(xdatarange[0],xdatarange[1]):
+    pts.appendleft((ii,np.random.rand(1)))
+iii = 200
+aa = np.zeros((len(pts),2))
+aa[:,1]=np.array(pts)[:,1]
+aa[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
+bb=np.copy(aa)
+    
+
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 timestart = time()
 speedfactor = 0.6
@@ -10,80 +29,32 @@ speedlimit = 70
 turnspeedlimit = 60
 
 
-###################  Connection #############################
-oldkps, oldkp, oldtrim, oldgyro, toggle = 0,0,0,0,0
-search = False # Chance to True if you want to search for devices. 
-if search == True:
-    print('Searching for devices...')
-    print("")
-    nearby_devices = bt.discover_devices()
-    #Run through all the devices found and list their name
-    num = 0
-    
-    for i in nearby_devices:
-	    num+=1
-	    print(num , ": " , bt.lookup_name( i ))
-    print('Select your device by entering its coresponding number...')
-    selection = input("> ") - 1
-    print('You have selected - '+bt.lookup_name(nearby_devices[selection]))
+###################  Setup Bluetooth   #############################
 
-    bd_addr = nearby_devices[selection]
-else:
-    bd_addr = '98:D3:51:FD:81:AC' # you can use > hcitool scan > from the command line to discover the T-Bot Mac address
-    print('connecting...')
-error = 1
+oldvals = [0,0,0,0]
+sendcount = 0
+bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address 
 port = 1
-while error:
-    try:
-        sock = bt.BluetoothSocket( bt.RFCOMM )
-        sock.connect((bd_addr,1))
-        sock.settimeout(5)
-        error = 0
-        print('connected to '+bd_addr)
-    except:
-        print('Trying again...')
-        sock.close()
-        error = 1
-        sleep(2)
-# Define some colors.
-BLACK = pygame.Color('black')
-WHITE = pygame.Color('white')
-GRAY = pygame.Color('gray')
 
 
-################### Functions  ###########################
-      
-sendtwice = 0
-def send(sendstr):
-    global sendtwice
-    try:
-        if sendstr == '200200Z':
-            if sendtwice < 2:
-                builtstr = chr(0X02)+sendstr+chr(0X03)
-                sock.send(builtstr.encode(encoding='utf-8'))
-                sendtwice += 1
+#btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
+btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
-        else:
-            builtstr = chr(0X02)+sendstr+chr(0X03)
-            sock.send(builtstr.encode(encoding='utf-8'))
-            sendtwice = 0
-
-    except:
-        sock.close()
-        pygame.display.quit()
-        sys.exit()
+#port = 'COM5'
+#port = '/dev/tty.George-DevB'
+#baudrate = 38400
+#btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
 
-# This is a simple class that will help us print to the screen.
-# It has nothing to do with the joysticks, just outputting the
-# information.
+###################  Screen Text Class #############################
+
 class TextPrint(object):
     def __init__(self):
         self.reset()
-        self.font = pygame.font.Font(None, 20)
+        self.font = pygame.font.Font(None, 15)
 
     def tprint(self, screen, textString):
-        textBitmap = self.font.render(textString, True, BLACK)
+        textBitmap = self.font.render(textString, True, WHITE)
         screen.blit(textBitmap, (self.x, self.y))
         self.y += self.line_height
 
@@ -97,42 +68,33 @@ class TextPrint(object):
 
     def unindent(self):
         self.x -= 10
+    def abspos(self,screen, textString, pos):
+        textBitmap = self.font.render(textString, True, WHITE)
+        screen.blit(textBitmap, pos)
+    
+ 
 
-def parse():
-    global oldkps
-    global oldkp
-    global oldtrim
-    global oldgyro
-    global toggle
-    try:
-        data = sock.recv(32).decode(encoding='utf-8')
-        data = data.split('\x02')
-        ministring = data[0]
-        splitstr = ministring.split(',')
-        oldkps, oldkp, oldtrim, oldgyro = splitstr[0], splitstr[1], splitstr[2], splitstr[3]
-        oldgyro = oldgyro[:-2]
-
-        return oldkps, oldkp, oldtrim, float(oldgyro)
-    except:
-        try:
-            return oldkps, oldkp, oldtrim, float(oldgyro)
-        except:
-            return oldkps, oldkp, oldtrim, 0
-
-##################################################################
+###################  Instantiate BT Class #############################    
 
 
+      
+        
+# Define some colors.
+BLACK = pygame.Color('black')
+WHITE = pygame.Color('white')
+GRAY = pygame.Color('gray')
 
 
 pygame.init()
 
 # Set the width and height of the screen (width, height).
-screen = pygame.display.set_mode((460, 700))
+screen = pygame.display.set_mode((350, 680))
 logo = pygame.image.load(dirpath+'/logo.png')
 bg = pygame.image.load(dirpath+'/hexL.jpg').convert()
+bgG = pygame.image.load(dirpath+'/hexG.jpg').convert()
 
 
-pygame.display.set_caption("T-Bot Joystick Bridge")
+pygame.display.set_caption("Player 1")
 
 # Loop until the user clicks the close button.
 done = False
@@ -147,7 +109,9 @@ pygame.joystick.init()
 textPrint = TextPrint()
 
 # -------- Main Program Loop -----------
+
 while not done:
+        
     #
     # EVENT PROCESSING STEP
     #
@@ -156,21 +120,41 @@ while not done:
     for event in pygame.event.get(): # User did something.
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
-            sock.close()
+            btcom.connect(0)
             print('Connection Closed')
     if event.type == KEYDOWN and event.key == K_q:
-        sock.close()
+        btcom.connect(0)
         pygame.display.quit()
         sys.exit()
         print('Connection Closed')
         pass
-    #
-    # DRAWING STEP
-    #
-    # First, clear the screen to white. Don't put other drawing commands
-    # above this, or they will be erased with this command.
-    screen.blit(bg, [0, 0])
-    #screen.fill(GRAY)
+    
+
+    if btcom.connected():
+        screen.blit(bg, [0, 0])
+    else:
+        tries = 0
+        while btcom.connected() < 1 and tries < 10:
+            print('Connecting ...')
+            screen.blit(bgG, [0, 0])
+            pygame.display.flip()
+            try:
+                print('Try '+str(tries+1)+' of 10')
+                btcom.connect(0)
+                btcom.connect(1)
+                tries+=1
+            except:
+                print('Something went wrong')
+                
+        if btcom.connected() < 1:
+            print('Exiting Program')
+            pygame.display.quit()
+            sys.exit()
+        else:
+            tries = 0
+            
+            
+
     
     textPrint.reset()
 
@@ -181,7 +165,7 @@ while not done:
     textPrint.indent()
 
     # For each joystick:
-    for i in range(1):
+    for i in [0]: # If you have multiple joysticks connected, set this index for the one you want to use.
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
 
@@ -190,7 +174,7 @@ while not done:
 
         # Get the name from the OS for the controller/joystick.
         name = joystick.get_name()
-        textPrint.tprint(screen, "Joystick name: {}".format(name))
+        textPrint.tprint(screen, "{}".format(name))
 
         # Usually axis run in pairs, up/down for one, and left/right for
         # the other.
@@ -252,11 +236,35 @@ while not done:
         textPrint.tprint(screen, "T-Bot Data")
         textPrint.indent()
                 
-        kps, kp, trim, gyrodata = parse()
-        textPrint.tprint(screen, "gyrodata: {}".format(str(gyrodata)))
-        textPrint.tprint(screen, "kps: {}".format(str(kps)))
-        textPrint.tprint(screen, "kp: {}".format(str(kp)))
-        textPrint.tprint(screen, "trim: {}".format(str(trim)))
+        oldvals = btcom.get_data(oldvals)
+        #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
+        g_angle = oldvals[3]
+        pts.appendleft((iii,g_angle))
+        iii+=1
+        iii+=1
+        pygame.draw.lines(screen, (4,150,7), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
+        pygame.draw.lines(screen, (5,150,7), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
+        if iii > xdatarange[1]:
+            iii = xdatarange[0]
+        aa[:,1]=np.array(pts)[:,1]
+        try:  
+            bb[:,1] = (yscale/((aa[:,1]-aa[:,1].min()).max())*(aa[:,1]-aa[:,1].min()))+y_origin
+            gdata = tuple(map(tuple, tuple(bb)))
+            pygame.draw.lines(screen, (255,255,255), False, (gdata),1)
+            
+        except:
+            b=1
+            
+ 
+        textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
+        textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
+        
+         
+            
+        textPrint.tprint(screen, "gyrodata: {}".format(str(oldvals[3])))
+        textPrint.tprint(screen, "kps: {}".format(str(oldvals[0])))
+        textPrint.tprint(screen, "kp: {}".format(str(oldvals[1])))
+        textPrint.tprint(screen, "trim: {}".format(str(oldvals[2])))
         textPrint.tprint(screen, "Speed Factor: {}".format(str(speedfactor)))
         textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
 
@@ -265,10 +273,10 @@ while not done:
     #
     # #############   Send data   #################################
     #
-        if abs(axis0)+abs(axis1)+abs(axis3)+abs(axis4) != 0:
+        if abs(axis0)+abs(axis1)+abs(axis2)+abs(axis5) != 0:
             slowfactor = 1+joystick.get_button(7)
-            turn = 200+int(((axis0+(axis3*0.5))*speedfactor*100/slowfactor))
-            speed = 200-int(((axis1+(axis4*0.5))*speedfactor*100/slowfactor))
+            turn = 200+int(((axis0+(axis2*0.5))*speedfactor*100/slowfactor))
+            speed = 200-int(((axis1+(axis5*0.5))*speedfactor*100/slowfactor))
             if speed > 200+speedlimit:
                 speed = 200+speedlimit
             if speed < 200-speedlimit:
@@ -280,26 +288,26 @@ while not done:
                 turn = 200-turnspeedlimit
             cmdwrite = 1       
             sendstring = str(turn)+str(speed)+'Z'
-            send(sendstring)
+            sendcount = btcom.send_data(sendstring,sendcount)
         else:
             sendstring = '200200Z'
-            send(sendstring)
-        if joystick.get_button(2):
+            sendcount = btcom.send_data(sendstring,sendcount)
+        if joystick.get_button(3):
             buttonstring = '200200F' # trim +ve
-            send(buttonstring)
-        elif joystick.get_button(0):
-            buttonstring = '200200E' # trim -ve
-            send(buttonstring)
-
+            sendcount = btcom.send_data(buttonstring,sendcount)
         elif joystick.get_button(1):
+            buttonstring = '200200E' # trim -ve
+            sendcount = btcom.send_data(buttonstring,sendcount)
+
+        elif joystick.get_button(2):
             buttonstring = '200200B' # kps +ve
-            send(buttonstring)
-        elif joystick.get_button(3):
+            sendcount = btcom.send_data(buttonstring,sendcount)
+        elif joystick.get_button(0):
             buttonstring = '200200A' # kps -ve
-            send(buttonstring)
+            sendcount = btcom.send_data(buttonstring,sendcount)
         elif joystick.get_button(9):
-            buttonstring = '200200T' # 
-            send(buttonstring)
+            buttonstring = '200200T' # kps -ve
+            sendcount = btcom.send_data(buttonstring,sendcount)
 
 
 
