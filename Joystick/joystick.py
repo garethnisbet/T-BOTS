@@ -298,6 +298,8 @@ while not done:
         else:
             sendstring = '200200Z'
             sendcount = btcom.send_data(sendstring,sendcount)
+            
+            
         if joystick.get_button(0):
             buttonstring = '200200F' # trim +ve
             sendcount = btcom.send_data(buttonstring,sendcount)
