@@ -167,7 +167,7 @@ while True: # Continuous Pygame loop,
     if gyrodata < 0:
         gyrodata = 0
 
-    pygame.draw.lines(screen, plotcolours[iicolour], False, ((ii,oldgyrodata+101), (ii+1,gyrodata+101)),1)
+    pygame.draw.lines(screen, plotcolours[iicolour], False, ((ii,oldgyrodata*10+250), (ii+1,gyrodata*10+250)),1)
     oldgyrodata = gyrodata
     kpstext = basicfont.render('KPS '+kps, True, textcolour)
     kptext = basicfont.render('KP ' +kp, True, textcolour)
