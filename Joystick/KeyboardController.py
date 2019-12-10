@@ -97,7 +97,7 @@ GRAY = pygame.Color('gray')
 pygame.init()
 
 # Set the width and height of the screen (width, height).
-screen = pygame.display.set_mode((350, 250))
+screen = pygame.display.set_mode((350, 230))
 logo = pygame.image.load(dirpath+'/logo.png')
 bg = pygame.image.load(dirpath+'/hexMini.jpg').convert()
 bgG = pygame.image.load(dirpath+'/hexGMini.jpg').convert()
@@ -188,7 +188,7 @@ while not done:
         iii = xdatarange[0]
     aa[:,1]=np.array(pts)[:,1]
     try:  
-        bb[:,1] = (yscale/((aa[:,1]-aa[:,1].min()).max())*(aa[:,1]-aa[:,1].min()))+y_origin
+        bb[:,1] = (yscale/((aa[:,1]-aa[:,1].max()).min())*(aa[:,1]-aa[:,1].max()))+y_origin
         gdata = tuple(map(tuple, tuple(bb)))
         pygame.draw.lines(screen, (255,255,255), False, (gdata),1)
         
