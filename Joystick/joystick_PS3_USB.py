@@ -226,7 +226,6 @@ while not done:
         g_angle = oldvals[3]
         pts.appendleft((iii,g_angle))
         iii+=1
-        iii+=1
         pygame.draw.lines(screen, (139,5,139), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
         pygame.draw.lines(screen, (139,5,139), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
         if iii > xdatarange[1]:

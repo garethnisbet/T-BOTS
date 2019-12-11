@@ -33,7 +33,8 @@ turnspeedlimit = 60
 
 oldvals = [0,0,0,0]
 sendcount = 0
-bd_addr = '98:D3:91:FD:46:C9' # use: 'hcitool scan' to scan for your T-Bot address 
+#bd_addr = '98:D3:91:FD:46:C9' # use: 'hcitool scan' to scan for your T-Bot address
+bd_addr = '98:D3:32:21:3D:77'
 port = 1
 
 
@@ -94,7 +95,7 @@ bg = pygame.image.load(dirpath+'/hexP2.jpg').convert()
 bgG = pygame.image.load(dirpath+'/hexG.jpg').convert()
 
 
-pygame.display.set_caption("Player 1")
+pygame.display.set_caption("Player 2")
 
 # Loop until the user clicks the close button.
 done = False
@@ -165,7 +166,7 @@ while not done:
     textPrint.indent()
 
     # For each joystick:
-    for i in [0]: # If you have multiple joysticks connected, set this index for the one you want to use.
+    for i in [1]: # If you have multiple joysticks connected, set this index for the one you want to use.
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
 
@@ -238,7 +239,6 @@ while not done:
         #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
         g_angle = oldvals[3]
         pts.appendleft((iii,g_angle))
-        iii+=1
         iii+=1
         pygame.draw.lines(screen, (139,5,139), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
         pygame.draw.lines(screen, (139,5,139), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)

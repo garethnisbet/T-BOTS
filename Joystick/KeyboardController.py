@@ -11,7 +11,7 @@ starttime = time()
 # setup for plotting
 xdatarange = [200,320]
 y_origin = 30
-posarrows = (20, 150)
+posarrows = (30, 150)
 yscale = 50
 pts = deque(maxlen=xdatarange[1]-xdatarange[0])
 for ii in range(xdatarange[0],xdatarange[1]):
@@ -40,7 +40,8 @@ sendcount = 0
 #------------------------------------------------------------------
 #               For Linux / Raspberry Pi
 #------------------------------------------------------------------
-bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address 
+#bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
+bd_addr = '98:D3:32:21:3D:77'
 port = 1
 #btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -181,7 +182,6 @@ while not done:
     g_angle = oldvals[3]
     pts.appendleft((iii,g_angle))
     iii+=1
-    iii+=1
     pygame.draw.lines(screen, (4,150,7), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
     pygame.draw.lines(screen, (5,150,7), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
     if iii > xdatarange[1]:
@@ -312,7 +312,7 @@ while not done:
 
         
     # Go ahead and update the screen with what we've drawn.
-    screen.blit(logo,(210,120))
+    screen.blit(logo,(215,120))
     pygame.display.flip()
 
     # Limit to 20 frames per second.

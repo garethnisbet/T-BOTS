@@ -39,7 +39,8 @@ sendcount = 0
 #------------------------------------------------------------------
 #               For Linux / Raspberry Pi
 #------------------------------------------------------------------
-bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address 
+bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
+#bd_addr = '98:D3:32:21:3D:77'
 port = 1
 #btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -54,7 +55,7 @@ btcom = tbt.bt_connect(bd_addr,port,'Socket')
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
 
-###################  Screen Text Class #############################
+#######################  Screen Text Class #############################
 
 class TextPrint(object):
     def __init__(self):
@@ -246,7 +247,6 @@ while not done:
         #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
         g_angle = oldvals[3]
         pts.appendleft((iii,g_angle))
-        iii+=1
         iii+=1
         pygame.draw.lines(screen, (4,150,7), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
         pygame.draw.lines(screen, (5,150,7), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
