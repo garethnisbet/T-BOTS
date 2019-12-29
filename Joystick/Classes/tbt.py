@@ -18,9 +18,9 @@ class bt_connect(object):
                     print('connecting to '+self.bt_addr)
                     self.sock = bt.BluetoothSocket( bt.RFCOMM )
                     self.sock.connect((self.bt_addr,self.port))
-                    self.sock.settimeout(5)
+                    self.sock.settimeout(1)
                     print('connected to '+self.bt_addr)
-                    return self.sock.getpeername()
+                    return 1
                 elif self.lib == 'Socket':
                     try:
                         import socket
@@ -30,7 +30,7 @@ class bt_connect(object):
                     self.sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
                     self.sock.connect((self.bt_addr,self.port))
                     print('connected to '+self.bt_addr)
-                    return self.sock.getpeername()
+                    return 1
                 elif self.lib == 'PySerial':
                     try:
                         import serial
@@ -39,18 +39,18 @@ class bt_connect(object):
                     print('connecting to '+self.port+' with a baud rate of '+ str(self.baudrate))
                     self.sock = serial.Serial(self.port, self.baudrate)
                     print('connected to '+self.port+' with a baud rate of '+ str(self.baudrate))               
-                    return self.port
+                    return 1
 
             except:
                 print('Connection Failed')
-                
+                return 0
         else:
             try:
                 print('Closing connection to '+self.bt_addr)
                 self.sock.close()
-                return 'Disconnected'
+                return 0
             except:
-                return 'Not connected'
+                return 0
                 
     def connected(self):
         try:

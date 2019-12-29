@@ -32,7 +32,7 @@ int incflag;
 char character;
 ///////   Tuning ////////////////////////////////////////////
 
-float gtrim = 1.76, rtrim = 0.0;
+float gtrim = -0.63 , rtrim = 0.0;
 
 
 float controller_sensitivity = 1.5, spinval, spinfactor = 0.8;
@@ -64,7 +64,7 @@ CFilter CFilterY; // Create the CFilter instances
 double gyroX, gyroY, gyroZ;
 int16_t tempRaw;
 double  gyroYangle; // Angle calculate using the gyro only
-double CFilteredlAngleY; // Calculated angle using a CFilter
+float CFilteredlAngleY; // Calculated angle using a CFilter
 double pitch,roll,gyroYrate, gyroangle;
 uint32_t timer;
 uint8_t i2cData[14]; // Buffer for I2C data
@@ -94,7 +94,7 @@ const int m1ndb = 28 , m1pdb = 28, m2ndb = 28 , m2pdb = 28; // note the values a
 //const int m1ndb = 33 , m1pdb = 33, m2ndb = 33 , m2pdb = 33; // note the values are always positive good for B
 //const int m1ndb = 40 , m1pdb = 42, m2ndb = 22 , m2pdb = 21; // good for T-Bot
 //const int m1ndb = 22 , m1pdb = 25, m2ndb = 22 , m2pdb = 23; // good fot Foxy
-const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 250, mpsfactor2 = 260;
+const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 250, mpsfactor2 = 265;
 
 Motor m1 = Motor(m2ain1, m2ain2, m2stby, m2pwmpin, m1ndb, m1pdb, mpsfactor);
 

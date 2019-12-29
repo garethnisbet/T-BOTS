@@ -40,8 +40,8 @@ sendcount = 0
 #------------------------------------------------------------------
 #               For Linux / Raspberry Pi
 #------------------------------------------------------------------
-#bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
-bd_addr = '98:D3:32:21:3D:77'
+bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
+#bd_addr = '98:D3:32:21:3D:77'
 port = 1
 #btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 btcom = tbt.bt_connect(bd_addr,port,'Socket')
