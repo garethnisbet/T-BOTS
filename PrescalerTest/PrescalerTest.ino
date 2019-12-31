@@ -27,15 +27,15 @@ void loop() {
 //  m2.speed(-0.3);
 //  delay(2000);
   
-  m1.speed(0); // Right Motor
-  m2.speed(0);  // Left Motor
+  m1.speed(50); // Right Motor
+  m2.speed(50);  // Left Motor
   
   timer1=millis();
   ////////////////// to show millis is still valid /////////////
   digitalWrite(3, HIGH);       // sets the digital pin 2 on
-  delay(100);                  // waits 10 milliseconds
+  delay(10);                  // waits 10 milliseconds
   digitalWrite(3, LOW);        // sets the digital pin 2 off
-  delay(100);                  // waits 10 milliseconds
+  delay(10);                  // waits 10 milliseconds
   timer2=millis();
   
 //  Serial.print(timer2-timer1); Serial.print("\t");
