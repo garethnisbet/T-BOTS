@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import xlim, ylim
-#plt.ion()
+plt.ion()
 
 v1 = np.loadtxt('T-Bot_Raw_Data.dat')
 
