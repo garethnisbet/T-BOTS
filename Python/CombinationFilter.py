@@ -12,15 +12,23 @@ A filter_weighting of 0 zero will be equivalent to using
 the gyro only. A value of 1 will be equivalent to using the accelerometer  
 only. You can use serial_GetData.py to collect the data from the T-BOT
 to see how effective your filter is.
+
+This is not an efficient way of writing this in Python but the 
+structure is matched to the C code on the T-Bot for illustration.  
 '''
 
 angle = 0
 filter_weighting = 0.06
-
+'''
 def getAngleCFilter(pitch, gyro_rate, dt):
     global angle
     angle += gyro_rate * dt
     angle += filter_weighting * (pitch - angle)
+    return angle
+'''
+def getAngleCFilter(pitch, gyro_rate, dt):
+    global angle
+    angle += filter_weighting * (pitch - (angle + gyro_rate * dt))
     return angle
 
 
@@ -87,8 +95,8 @@ plt.figure(figsize=(10, 8))
 
 ax = plt.subplot(211)
 plt.title('On-board Processing')
-ax.plot(t, v1[:,1], c=(91/255.,111/255.,189/255.),label = 'Measured Pitch')
-ax.plot(t, v1[:,4], c=(56/255.,192/255.,255/255.),label = 'Unfiltered Gyro Angle from T-Bot')
+ax.plot(t, v1[:,1], c=(91/255.,111/255.,189/255.),label = 'Measured angle from accelerometer')
+ax.plot(t, v1[:,4], c=(56/255.,192/255.,255/255.),label = 'Unfiltered Gyro Angle from T-Bot (integrated angular velocity)')
 ax.plot(t, v1[:,3], c=(255/255.,0/255.,0/255.),label = 'Filtered Angle by T-Bot')
 ax.legend(loc = 'best',prop={ 'size': 8})
 plt.xlabel('t (s)')
@@ -96,8 +104,8 @@ plt.ylabel('angle (deg)')
 plt.axis('tight')
 ax = plt.subplot(212)
 plt.title('From Python Code')
-ax.plot(t, v1[:,1],  c=(91/255.,111/255.,189/255.),label = 'Measured Pitch')
-ax.plot(t, gyroangle, c=(56/255.,192/255.,255/255.),label = 'Unfiltered Gyro Angle')
+ax.plot(t, v1[:,1],  c=(91/255.,111/255.,189/255.),label = 'Measured angle from accelerometer')
+ax.plot(t, gyroangle, c=(56/255.,192/255.,255/255.),label = 'Unfiltered Gyro Angle (integrated angular velocity)')
 ax.plot(t, angleKF, 'g',label = 'Kalman Filter',linewidth=2)
 ax.plot(t, angleCF, 'r--',label = 'Combination Filter',linewidth=2)
 
@@ -107,4 +115,5 @@ plt.ylabel('angle (deg)')
 plt.axis('tight')
 plt.subplots_adjust(hspace=0.3)
 plt.show()
+plt.savefig('Filtering.svg')
 
