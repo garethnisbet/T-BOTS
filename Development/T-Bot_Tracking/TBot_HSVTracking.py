@@ -17,7 +17,7 @@ y2 = []
 
 
 folder = 'RecordedImages/'
-record = 0
+record = 1
 
 #folder = 'SpeedTest/'
 if record:
@@ -38,9 +38,9 @@ bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
-feedforward = 1
-pos_pid = pid.pid(0.1,2.1,0,[-15,15],[5,30],turntime)
-angle_pid = pid.pid(0.4,0.8,0.02,[-15,15],[-60,60],turntime)
+feedforward = 0
+pos_pid = pid.pid(0.05,0.4,0,[-15,15],[0,30],turntime)
+angle_pid = pid.pid(0.4,2.4,0.04,[-15,15],[-60,60],turntime)
 #----------------- set variables --------------------#
 
 #blueLower = (96,205,185)
@@ -61,8 +61,8 @@ pinkUpper = (11,255,255)
 #greenUpper = (100,255,211)
 greenLower = (49,64,18)
 greenUpper = (97,255,255)
-greenLower = (37,39,131)
-greenUpper = (87,255,255)
+greenLower = (36,40,76)
+greenUpper = (95,255,255)
 
 
 # sets the length of the trail
@@ -289,8 +289,8 @@ if __name__ == '__main__':
             if _distance < tolerance:
                 pathindex += 1  # if close enough to target coordinate, get next coordinate
                 vto = aa[pathindex]
-                pos_pid.clear()  
-                angle_pid.clear()  
+                #pos_pid.clear()  
+                #angle_pid.clear()  
 
             if pathindex == len(aa)-1:
                 sendcount = btcom.send_data('200200Z',sendcount)
@@ -299,8 +299,8 @@ if __name__ == '__main__':
                 pathindex = 0
 
             angle = turn((x,y),(x2,y2),vto)
-            rotspeed = 200-angle_pid.output(0,angle)
-            forwardspeed = 200+pos_pid.output(0,_distance)+feedforward
+            rotspeed = 200+angle_pid.output(0,-angle)
+            forwardspeed = 200+pos_pid.output(0,-_distance)+feedforward
 
 
             #------------  build data string  ------------#
