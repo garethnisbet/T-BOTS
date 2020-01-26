@@ -1,9 +1,12 @@
 import sys
 import cv2
+import os
 import imutils
+sys.path.append('/home/pi/GitHub/T-BOTS/Joystick')
 from collections import deque
 import numpy as np
 import matplotlib.pyplot as plt
+from Classes import tbt, pid
 from time import time
 plt.ion()
 import bluetooth as bt
@@ -11,9 +14,33 @@ x = []
 y = []
 x2 = []
 y2 = []
+
+
+folder = 'RecordedImages/'
+record = 0
+
+#folder = 'SpeedTest/'
+if record:
+    if os.path.isdir(folder) is not True:
+        os.mkdir(folder)
+template = folder + '%05d.png'
+tii = 0 # counter to prevent recording every frame and slowing the Pi
+iii = 1
 loopcount = 0
 pathindex = 0
 
+pathindex = 0
+rotspeed = 200
+speedfactor = 0.3
+turnspeedfactor = 0.3
+turntime = 0.01
+bendscalefactor = 10
+rdeadban = 2
+tolerance = 30
+
+feedforward = 1
+pos_pid = pid.pid(0.1,2.1,0,[-15,15],[5,30],turntime)
+angle_pid = pid.pid(0.4,0.8,0.02,[-15,15],[-60,60],turntime)
 #----------------- set variables --------------------#
 
 #blueLower = (96,205,185)
@@ -24,26 +51,31 @@ blueUpper = (255,255,255)
 
 #pinkLower = (133,97,83)
 #pinkUpper = (255,255,255)
-pinkLower = (153,191,65)
-pinkUpper = (192,255,129)
+#pinkLower = (149,147,31)
+#pinkUpper = (255,255,255)
 
+pinkLower = (0,74,53)
+pinkUpper = (11,255,255)
 
 #greenLower = (37,64,0)
 #greenUpper = (100,255,211)
-greenLower = (39,45,58)
-greenUpper = (101,255,255)
+greenLower = (49,64,18)
+greenUpper = (97,255,255)
+greenLower = (37,39,131)
+greenUpper = (87,255,255)
 
 
-
-pts = deque(maxlen=200)
-pts2 = deque(maxlen=200)
+# sets the length of the trail
+pts = deque(maxlen=10)
+pts2 = deque(maxlen=10)
 
 pathindex = 0
 rotspeed = 200
-speedfactor = 0.10
-turnspeedfactor = 0.2
-turntimefactor = 0.03
-bendscalefactor = 4
+speedfactor = 0.3
+turnspeedfactor = 0.3
+turntime = 0.01
+bendscalefactor = 2
+rdeadban = 2
 tolerance = 30
 
 #--------------  Define functions  ------------------#
@@ -53,23 +85,15 @@ def turn(v0,v1,vto):
     ang = -(np.arctan2(vto[0]-vm[0],vto[1]-vm[1])-(np.arctan2(v1[0]-v0[0],v1[1]-v0[1])+np.pi/2))*180/np.pi
     return (np.mod(ang+180.0,360.0)-180.0)
 
-
 def distance(v0,v1,vto):
     vm = (np.array(v0)+np.array(v1))/2.0
     return np.linalg.norm([vto[0]-vm[0],vto[1]-vm[1]])
     
 
-def send(sendstr):
-    try:
-        builtstr = chr(0X02)+sendstr+chr(0X03)
-        sock.send(builtstr.encode(encoding='utf-8'))
-    except:
-        sock.close()
-        sys.exit()
 
-def tracker(image, lowthresh, highthresh):
-    blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-    hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
+
+def tracker(hsv, lowthresh, highthresh):
+
     mask = cv2.inRange(hsv, lowthresh, highthresh)
     #mask = cv2.erode(mask, None, iterations=2)
     #mask = cv2.dilate(mask, None, iterations=2)
@@ -80,8 +104,6 @@ def tracker(image, lowthresh, highthresh):
     M = cv2.moments(c)   
     center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
     return x, y, center, radius, M, cnts
-oldkps, oldkp, oldtrim, oldgyro, toggle = 0,0,0,0,0
-
 
 def buildmask(inputarray,frame,maskdx,maskdy):
     inputarray= inputarray.astype(int)
@@ -101,46 +123,35 @@ def bend(array_in,pathindex):
     v1,v2 = array_in[pathindex+1]-array_in[pathindex], array_in[pathindex+2]-array_in[pathindex+1]
     return np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
 
-#######################################################
-#------------- Bluetooth  Connection -----------------#
-#######################################################
 
-search = False
-if search == True:
-    print('Searching for devices...')
-    print("")
-    nearby_devices = bt.discover_devices()
-    #Run through all the devices found and list their name
-    num = 0
-    
-    for i in nearby_devices:
-	    num+=1
-	    print(num , ": " , bt.lookup_name( i ))
-    print('Select your device by entering its coresponding number...')
-    selection = input("> ") - 1
-    print('You have selected - '+bt.lookup_name(nearby_devices[selection]))
 
-    bd_addr = nearby_devices[selection]
-else:
-    #bd_addr = '98:D3:51:FD:81:AC' # T-Bot-Demo
-    #bd_addr = '98:D3:91:FD:46:C9' # Brenda
-    bd_addr = '98:D3:51:FD:82:95' # George
-    print('connecting...')
-error = 1
+###################  Setup Bluetooth   #############################
+
+data = [0,0,0,0]
+sendcount = 0
+
+#------------------------------------------------------------------
+#               For Linux / Raspberry Pi
+#------------------------------------------------------------------
+bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
+#bd_addr = '98:D3:51:FD:82:95' # George
+#bd_addr = '98:D3:91:FD:46:C9' # Brenda
+#bd_addr = '98:D3:32:21:3D:77'
 port = 1
-while error:
-    try:
-        sock = bt.BluetoothSocket( bt.RFCOMM )
-        sock.connect((bd_addr,1))
-        sock.settimeout(5)
-        error = 0
-        print('connected to '+bd_addr)
-    except:
-        print('Trying again...')
-        sock.close()
-        error = 1
+#btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
+btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
+#------------------------------------------------------------------
+#               For Windows and Mac
+#------------------------------------------------------------------
+#port = 'COM5'
+#port = '/dev/tty.George-DevB'
+#baudrate = 38400
+#bd_addr = 'Empty'
+#btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 #---------  Get or set destination points  ------------#
+
+
 
 
 cap = cv2.VideoCapture(0)
@@ -153,16 +164,18 @@ success, frame = cap.read()
 cap.release()
 
 #---------  Generate target function  ------------#
-amplitude = 70
-frequency = 2
+
+amplitude = 80
+frequency = 1
 phase = 0
-stepsize = 1
-border = 70
-bg = frame.shape[0]/2
+stepsize = 5
+border = 80 # sets the number of pixels from the edge.
+bg = frame.shape[0]/2 # the is is the background of the sin function
+
 #----------   Create mask for coordinates   ------------#
 xdata =  np.arange(border, frame.shape[1]-border, stepsize)
 aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
-maskdx, maskdy = 2,2
+maskdx, maskdy = 2,2 # these define the marker size
 mask = buildmask(aa,frame,maskdx,maskdy)
 
 #########################################################
@@ -190,8 +203,33 @@ if __name__ == '__main__':
         success, frame = cap.read()
         if not success:
             break
+
+        if ~btcom.connected():
+
+            tries = 0
+            while btcom.connected() < 1 and tries < 10:
+                print('Connecting ...')
+                try:
+                    print('Try '+str(tries+1)+' of 10')
+                    btcom.connect(0)
+                    btcom.connect(1)
+                    tries+=1
+                except:
+                    print('Something went wrong')
+                    
+            if btcom.connected() < 1:
+                print('Exiting Program')
+                sys.exit()
+            else:
+                tries = 0
+                data = btcom.get_data(data)       
+
+
+        blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+        hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV) # do this outside function so is is not done twice
+
         try:         
-            x, y, center, radius, M, cents = tracker(frame, greenLower, greenUpper)
+            x, y, center, radius, M, cents = tracker(hsv, greenLower, greenUpper)
 
             if radius > 1:
                 cv2.circle(frame, (int(x), int(y)), int(radius),(0, 255, 0), 2)
@@ -202,7 +240,7 @@ if __name__ == '__main__':
             pass
             
         try:
-            x2, y2, center2, radius2, M2, cents2 = tracker(frame, pinkLower, pinkUpper)
+            x2, y2, center2, radius2, M2, cents2 = tracker(hsv, pinkLower, pinkUpper)
 
             if radius2 > 1:
                 cv2.circle(frame, (int(x2), int(y2)), int(radius2),(113,212,198), 2)
@@ -214,7 +252,7 @@ if __name__ == '__main__':
             pass
 
                
-        #------------- Plot tracking overlay -----------#
+        #------------- Plot trail overlay -------------#
 
         for i in range(1, len(pts)):
             # if either of the tracked points are None, ignore
@@ -223,17 +261,14 @@ if __name__ == '__main__':
      
             cv2.line(frame, pts[i - 1], pts[i], (0, 255, 0), 1)
 
-
         for ii in range(1, len(pts2)):
             # if either of the tracked points are None, ignore
             if pts2[ii - 1] is None or pts2[ii] is None:
                 continue
      
-
-            # draw the connecting lines
-            
             cv2.line(frame, pts2[ii - 1], pts2[ii], (113,212,198), 1)
 
+        cv2.circle(frame, tuple(aa[pathindex,:].astype(int)), 8, (250,150,10), -1)
         frame[:,:,2]=frame[:,:,2]*mask
         frame[:,:,1]=frame[:,:,1]*mask
         cv2.imshow('MultiTracker', frame)
@@ -244,61 +279,28 @@ if __name__ == '__main__':
         ###################################################
         
         if x != [] and x2 !=[]:
-            vto = aa[pathindex]
+            vto = aa[pathindex] # target coordinate
             try:
-                vto_next = aa[pathindex+3]
+                vto_next = aa[pathindex+3] # next target coordinate
             except:
                 pass
-            _distance = distance((x,y),(x2,y2),vto)
+            _distance = distance((x,y),(x2,y2),vto) # distance to target coordinate
 
             if _distance < tolerance:
-                pathindex += 1
-                vto = aa[pathindex]          
+                pathindex += 1  # if close enough to target coordinate, get next coordinate
+                vto = aa[pathindex]
+                pos_pid.clear()  
+                angle_pid.clear()  
 
             if pathindex == len(aa)-1:
-                send('200200Z')
-                print('Done')
+                sendcount = btcom.send_data('200200Z',sendcount)
+                print('Done, reached end of path...')
                 aa = np.flipud(aa)
                 pathindex = 0
-                data = sock.recv(10000).decode(encoding='utf-8')
-                data = []
-
-
 
             angle = turn((x,y),(x2,y2),vto)
-            angle2 = turn((x,y),(x2,y2),vto_next)
-            turnduration = np.abs(turntimefactor * angle)
-            elapsedtime = time()-starttime
-
-            if elapsedtime < turnduration:
-                if angle > 0:
-                    rotspeed = 200+(turnspeedfactor*100)
-                    if np.abs(angle) < 5:
-                        rotspeed = 200
-                else:
-                    rotspeed = 200-(turnspeedfactor*100)
-                    if np.abs(angle) < 5:
-                        rotspeed = 200
-            else:
-                rotspeed = 200             
-                starttime = time()
-            if np.abs(angle) < 40:
-                if _distance > 100:
-                    forwardspeed = 260
-                else:
-                    if pathindex < len(aa)-2:
-                        bendangle = bend(aa,pathindex)
-                    else:
-                        bendangle = 0
-
-                    straightspeedfactor = 1-np.sin(bendangle*bendscalefactor)
-       
-                    forwardspeed = 200+(straightspeedfactor*speedfactor*100)
-                    #forwardspeed = 200+(speedfactor*100)
-
-            else: 
-                forwardspeed = 200
-
+            rotspeed = 200-angle_pid.output(0,angle)
+            forwardspeed = 200+pos_pid.output(0,_distance)+feedforward
 
 
             #------------  build data string  ------------#
@@ -307,11 +309,12 @@ if __name__ == '__main__':
         
             forwardspeed = '%03d' % forwardspeed
 
-
+            print('forward speed '+forwardspeed+' turn speed '+rotspeed)
             #--------------   Send data    ---------------#
-
-            send(rotspeed+forwardspeed+'Z')
-           
+            sendstr = str(rotspeed)+str(forwardspeed)+'Z'
+            sendcount = btcom.send_data(sendstr,sendcount)
+            
+            
 
         key = cv2.waitKey(1) & 0xFF
         if key == ord("x"):
@@ -360,8 +363,16 @@ if __name__ == '__main__':
         if key == ord("q"):
 
             cap.release()
-            send('200200Z')
+            sendcount = btcom.send_data('200200Z',sendcount)
+
             break
+        if record:
+            if tii == 3:
+                cv2.imwrite(template % iii, frame)
+                tii = 0
+            else:
+                tii += 1
+            iii += 1
 
 cv2.destroyAllWindows()
 
