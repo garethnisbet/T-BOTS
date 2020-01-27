@@ -2,7 +2,7 @@ import sys
 import cv2
 import os
 import imutils
-sys.path.append('/home/pi/GitHub/T-BOTS/Joystick')
+sys.path.append('/home/gareth/GitHub/T-BOTS/Joystick')
 from collections import deque
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +14,10 @@ x = []
 y = []
 x2 = []
 y2 = []
-
+starttime = []
+endtime = []
+laptime = 1000
+oldlaptime = 500
 
 folder = 'RecordedImages/'
 record = 1
@@ -24,11 +27,26 @@ if record:
     if os.path.isdir(folder) is not True:
         os.mkdir(folder)
 template = folder + '%05d.png'
+font = cv2.FONT_HERSHEY_SIMPLEX 
+
+#---------------- Setup text writing  -----------------#
+# org 
+org = (50, 50)  
+# fontScale 
+fontScale = 0.5   
+# Blue color in BGR 
+color = (255, 0, 0) 
+# Line thickness of 2 px 
+thickness = 1
+textstr = ''
+
+
+
 tii = 0 # counter to prevent recording every frame and slowing the Pi
 iii = 1
 loopcount = 0
 pathindex = 0
-
+timeflag = 0
 pathindex = 0
 rotspeed = 200
 speedfactor = 0.3
@@ -38,9 +56,9 @@ bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
-feedforward = 0
-pos_pid = pid.pid(0.05,0.4,0,[-15,15],[0,30],turntime)
-angle_pid = pid.pid(0.4,2.4,0.04,[-15,15],[-60,60],turntime)
+feedforward = 7
+pos_pid = pid.pid(0.05,0.6,0,[-15,15],[0,30],turntime)
+angle_pid = pid.pid(0.4,2.4,0.02,[-15,15],[-60,60],turntime)
 #----------------- set variables --------------------#
 
 #blueLower = (96,205,185)
@@ -138,8 +156,8 @@ bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot addre
 #bd_addr = '98:D3:91:FD:46:C9' # Brenda
 #bd_addr = '98:D3:32:21:3D:77'
 port = 1
-#btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
-btcom = tbt.bt_connect(bd_addr,port,'Socket')
+btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
+#btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
 #------------------------------------------------------------------
 #               For Windows and Mac
@@ -154,7 +172,7 @@ btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
 
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -182,12 +200,12 @@ mask = buildmask(aa,frame,maskdx,maskdy)
 #----------------   Start main loop --------------------#
 #########################################################
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 #cap.set(0,1280)
-starttime = time()
+
 if __name__ == '__main__':
     
     success, frame = cap.read()
@@ -271,6 +289,13 @@ if __name__ == '__main__':
         cv2.circle(frame, tuple(aa[pathindex,:].astype(int)), 8, (250,150,10), -1)
         frame[:,:,2]=frame[:,:,2]*mask
         frame[:,:,1]=frame[:,:,1]*mask
+        if laptime < oldlaptime:
+            if laptime < 1000:
+                textstr = 'Best time is: '+"{:6.4f}".format(laptime)
+                oldlaptime = laptime
+        cv2.putText(frame, textstr, org, font,fontScale, color, thickness, cv2.LINE_AA)
+
+
         cv2.imshow('MultiTracker', frame)
 
 
@@ -289,18 +314,27 @@ if __name__ == '__main__':
             if _distance < tolerance:
                 pathindex += 1  # if close enough to target coordinate, get next coordinate
                 vto = aa[pathindex]
+                if timeflag == 0:
+                    starttime = time()
+                    timeflag = 1
+                    
                 #pos_pid.clear()  
-                #angle_pid.clear()  
+                #angle_pid.clear()
+            
 
             if pathindex == len(aa)-1:
                 sendcount = btcom.send_data('200200Z',sendcount)
                 print('Done, reached end of path...')
                 aa = np.flipud(aa)
+                laptime = time()-starttime
                 pathindex = 0
+                timeflag = 0
 
             angle = turn((x,y),(x2,y2),vto)
             rotspeed = 200+angle_pid.output(0,-angle)
-            forwardspeed = 200+pos_pid.output(0,-_distance)+feedforward
+
+            straightspeedfactor = 1-np.sin(abs(angle))
+            forwardspeed = 200+straightspeedfactor*(pos_pid.output(0,-_distance)+feedforward)
 
 
             #------------  build data string  ------------#
@@ -367,12 +401,13 @@ if __name__ == '__main__':
 
             break
         if record:
-            if tii == 3:
+            if tii == 1:
                 cv2.imwrite(template % iii, frame)
+                iii += 1
                 tii = 0
             else:
                 tii += 1
-            iii += 1
+
 
 cv2.destroyAllWindows()
 
