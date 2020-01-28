@@ -2,7 +2,7 @@ import sys
 import cv2
 import os
 import imutils
-sys.path.append('/home/gareth/GitHub/T-BOTS/Joystick')
+sys.path.append('/home/pi/GitHub/T-BOTS/Joystick')
 from collections import deque
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,7 +20,7 @@ laptime = 1000
 oldlaptime = 500
 
 folder = 'RecordedImages/'
-record = 1
+record = 0
 
 #folder = 'SpeedTest/'
 if record:
@@ -403,7 +403,7 @@ if __name__ == '__main__':
         if record:
             if tii == 1:
                 cv2.imwrite(template % iii, frame)
-                iii += 1
+                iii += 5
                 tii = 0
             else:
                 tii += 1
