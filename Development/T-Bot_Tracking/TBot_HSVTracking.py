@@ -172,13 +172,16 @@ btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 
 
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 
 
 success, frame = cap.read()
+if not success:
+    sys.exit(1)
+
 cap.release()
 
 #---------  Generate target function  ------------#
@@ -200,7 +203,7 @@ mask = buildmask(aa,frame,maskdx,maskdy)
 #----------------   Start main loop --------------------#
 #########################################################
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
