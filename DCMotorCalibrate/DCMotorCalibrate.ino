@@ -26,8 +26,8 @@ void loop() {
 //  m2.speed(-0.3);
 //  delay(2000);
   
-  m1.speed(23); // Right Motor
-  m2.speed(23);  // Left Motor
+  m1.speed(-28); // Right Motor
+  m2.speed(-25);  // Left Motor
  
 
 }

@@ -6,7 +6,7 @@ sys.path.append('/home/pi/GitHub/T-BOTS/Joystick')
 from collections import deque
 import numpy as np
 import matplotlib.pyplot as plt
-from Classes import tbt, pid
+from TBotClasses import tbt, pid
 from time import time
 plt.ion()
 import bluetooth as bt
@@ -35,7 +35,8 @@ org = (50, 50)
 # fontScale 
 fontScale = 0.5   
 # Blue color in BGR 
-color = (255, 0, 0) 
+color = (255, 0, 0)
+color2 = (255, 255, 255)  
 # Line thickness of 2 px 
 thickness = 1
 textstr = ''
@@ -51,14 +52,14 @@ pathindex = 0
 rotspeed = 200
 speedfactor = 0.3
 turnspeedfactor = 0.3
-turntime = 0.01
+turntime = 0.005
 bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
-feedforward = 7
-pos_pid = pid.pid(0.05,0.6,0,[-15,15],[0,30],turntime)
-angle_pid = pid.pid(0.4,2.4,0.02,[-15,15],[-60,60],turntime)
+feedforward = 12
+pos_pid = pid.pid(0.2,0.4,0,[-15,15],[0,40],turntime)
+angle_pid = pid.pid(0.4,2.4,0.01,[-15,15],[-60,60],turntime)
 #----------------- set variables --------------------#
 
 #blueLower = (96,205,185)
@@ -297,7 +298,8 @@ if __name__ == '__main__':
                 textstr = 'Best time is: '+"{:6.4f}".format(laptime)
                 oldlaptime = laptime
         cv2.putText(frame, textstr, org, font,fontScale, color, thickness, cv2.LINE_AA)
-
+        textstr2 = 'Last lap time: '+"{:6.4f}".format(laptime)
+        cv2.putText(frame, textstr2, (org[0],org[1]+20), font,fontScale, color2, thickness, cv2.LINE_AA)
 
         cv2.imshow('MultiTracker', frame)
 
@@ -317,12 +319,13 @@ if __name__ == '__main__':
             if _distance < tolerance:
                 pathindex += 1  # if close enough to target coordinate, get next coordinate
                 vto = aa[pathindex]
+                
                 if timeflag == 0:
                     starttime = time()
                     timeflag = 1
                     
-                #pos_pid.clear()  
-                #angle_pid.clear()
+                pos_pid.clear()  
+                angle_pid.clear()
             
 
             if pathindex == len(aa)-1:
@@ -330,13 +333,15 @@ if __name__ == '__main__':
                 print('Done, reached end of path...')
                 aa = np.flipud(aa)
                 laptime = time()-starttime
+                #feedforward += 1
                 pathindex = 0
                 timeflag = 0
 
             angle = turn((x,y),(x2,y2),vto)
             rotspeed = 200+angle_pid.output(0,-angle)
 
-            straightspeedfactor = 1-np.sin(abs(angle))
+            #straightspeedfactor = 1-np.sin(abs(angle))
+            straightspeedfactor = 1
             forwardspeed = 200+straightspeedfactor*(pos_pid.output(0,-_distance)+feedforward)
 
 
@@ -350,7 +355,7 @@ if __name__ == '__main__':
             #--------------   Send data    ---------------#
             sendstr = str(rotspeed)+str(forwardspeed)+'Z'
             sendcount = btcom.send_data(sendstr,sendcount)
-            
+
             
 
         key = cv2.waitKey(1) & 0xFF
@@ -397,6 +402,9 @@ if __name__ == '__main__':
             turnspeedfactor -= 0.01
             print('turnspeedfactor = '+str(turnspeedfactor))
             # if the 'q' key is pressed, stop the loop
+        if key == ord("t"):
+            sendcount = btcom.send_data('200200T',sendcount)
+
         if key == ord("q"):
 
             cap.release()
@@ -404,9 +412,9 @@ if __name__ == '__main__':
 
             break
         if record:
-            if tii == 1:
+            if tii == 5:
                 cv2.imwrite(template % iii, frame)
-                iii += 5
+                iii += 1
                 tii = 0
             else:
                 tii += 1

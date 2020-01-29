@@ -3,7 +3,7 @@ import pygame, sys, pygame.mixer, os
 from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
-from Classes import tbt
+from TBotClasses import tbt
 from collections import deque
 import numpy as np
 starttime = time()
@@ -40,11 +40,16 @@ sendcount = 0
 #------------------------------------------------------------------
 #               For Linux / Raspberry Pi
 #------------------------------------------------------------------
-bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
+#bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 #bd_addr = '98:D3:32:21:3D:77'
+#bd_addr = '98:D3:91:FD:46:C9' # B
+#bd_addr = '98:D3:32:21:3D:A2' # Foxy
+#bd_addr = '98:D3:91:FD:46:9C' # T-Bot
+#bd_addr = '98:D3:32:21:3D:77' # Cinemon
+bd_addr = '98:D3:51:FD:82:95' # 	George
 port = 1
-#btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
-btcom = tbt.bt_connect(bd_addr,port,'Socket')
+btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
+#btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
 #------------------------------------------------------------------
 #               For Windows and Mac

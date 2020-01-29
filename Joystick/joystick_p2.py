@@ -3,7 +3,7 @@ import pygame, sys, pygame.mixer, os
 from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
-from Classes import tbt
+from TBotClasses import tbt
 from collections import deque
 import numpy as np
 starttime = time()
@@ -34,7 +34,11 @@ turnspeedlimit = 60
 oldvals = [0,0,0,0]
 sendcount = 0
 #bd_addr = '98:D3:91:FD:46:C9' # use: 'hcitool scan' to scan for your T-Bot address
-bd_addr = '98:D3:32:21:3D:77'
+#bd_addr = '98:D3:32:21:3D:77'
+bd_addr = '98:D3:91:FD:46:9C'
+
+bd_addr = '98:D3:51:FD:82:95'#	George
+
 port = 1
 
 

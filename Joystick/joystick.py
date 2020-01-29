@@ -3,7 +3,7 @@ import pygame, sys, pygame.mixer, os
 from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
-from Classes import tbt
+from TBotClasses import tbt
 from collections import deque
 import numpy as np
 starttime = time()

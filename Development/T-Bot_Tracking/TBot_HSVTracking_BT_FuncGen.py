@@ -26,13 +26,15 @@ blueUpper = (255,255,255)
 #pinkUpper = (255,255,255)
 pinkLower = (153,191,65)
 pinkUpper = (192,255,129)
-
+pinkLower = (0,74,53)
+pinkUpper = (11,255,255)
 
 #greenLower = (37,64,0)
 #greenUpper = (100,255,211)
 greenLower = (39,45,58)
 greenUpper = (101,255,255)
-
+greenLower = (36,40,76)
+greenUpper = (95,255,255)
 
 
 pts = deque(maxlen=200)
@@ -40,7 +42,7 @@ pts2 = deque(maxlen=200)
 
 pathindex = 0
 rotspeed = 200
-speedfactor = 0.10
+speedfactor = 0.15
 turnspeedfactor = 0.2
 turntimefactor = 0.03
 bendscalefactor = 4
@@ -122,9 +124,9 @@ if search == True:
 
     bd_addr = nearby_devices[selection]
 else:
-    #bd_addr = '98:D3:51:FD:81:AC' # T-Bot-Demo
+    bd_addr = '98:D3:51:FD:81:AC' # T-Bot-Demo
     #bd_addr = '98:D3:91:FD:46:C9' # Brenda
-    bd_addr = '98:D3:51:FD:82:95' # George
+    #bd_addr = '98:D3:51:FD:82:95' # George
     print('connecting...')
 error = 1
 port = 1
