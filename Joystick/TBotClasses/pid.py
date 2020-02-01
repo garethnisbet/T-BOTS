@@ -39,7 +39,9 @@ class pid(object):
         self.d_term = 0
         self.u = 0
 
-    def output(self,setpoint,currentvalue):
+    def output(self,setpoint,currentvalue,dt_real=[]):
+        if dt_real != []:
+            self.dt = dt_real
         error = setpoint - currentvalue
         delta_error = error - self.last_error
         self.p_term = error
