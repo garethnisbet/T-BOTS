@@ -6,7 +6,7 @@ sys.path.append('/home/pi/GitHub/T-BOTS/Joystick')
 from collections import deque
 import numpy as np
 import matplotlib.pyplot as plt
-from TBotClasses import tbt, pid
+from TBotClasses import tbt, pid, geometry
 from time import time
 plt.ion()
 import bluetooth as bt
@@ -57,31 +57,28 @@ bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
-feedforward = 12
+feedforward = 25
 pos_pid = pid.pid(0.2,0.4,0,[-15,15],[0,40],turntime)
-angle_pid = pid.pid(0.4,2.4,0.01,[-15,15],[-60,60],turntime)
+angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 #----------------- set variables --------------------#
-
-#blueLower = (96,205,185)
-#blueUpper = (152,255,255)
 
 blueLower = (89,214,139)
 blueUpper = (255,255,255)
 
-#pinkLower = (133,97,83)
-#pinkUpper = (255,255,255)
+pinkLower = (124,76,99)
+pinkUpper = (255,255,255)
 #pinkLower = (149,147,31)
 #pinkUpper = (255,255,255)
 
-pinkLower = (0,74,53)
-pinkUpper = (11,255,255)
+#pinkLower = (0,74,53)
+#pinkUpper = (11,255,255)
 
 #greenLower = (37,64,0)
 #greenUpper = (100,255,211)
 greenLower = (49,64,18)
 greenUpper = (97,255,255)
-greenLower = (36,40,76)
-greenUpper = (95,255,255)
+greenLower = (52,54,98)
+greenUpper = (104,162,224)
 
 
 # sets the length of the trail
@@ -98,49 +95,9 @@ rdeadban = 2
 tolerance = 30
 
 #--------------  Define functions  ------------------#
-
-def turn(v0,v1,vto):
-    vm = (np.array(v0)+np.array(v1))/2.0
-    ang = -(np.arctan2(vto[0]-vm[0],vto[1]-vm[1])-(np.arctan2(v1[0]-v0[0],v1[1]-v0[1])+np.pi/2))*180/np.pi
-    return (np.mod(ang+180.0,360.0)-180.0)
-
-def distance(v0,v1,vto):
-    vm = (np.array(v0)+np.array(v1))/2.0
-    return np.linalg.norm([vto[0]-vm[0],vto[1]-vm[1]])
-    
+geom = geometry.geometry(1)
 
 
-
-def tracker(hsv, lowthresh, highthresh):
-
-    mask = cv2.inRange(hsv, lowthresh, highthresh)
-    #mask = cv2.erode(mask, None, iterations=2)
-    #mask = cv2.dilate(mask, None, iterations=2)
-    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-    cnts = imutils.grab_contours(cnts)
-    c = max(cnts, key=cv2.contourArea)
-    ((x, y), radius) = cv2.minEnclosingCircle(c)
-    M = cv2.moments(c)   
-    center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-    return x, y, center, radius, M, cnts
-
-def buildmask(inputarray,frame,maskdx,maskdy):
-    inputarray= inputarray.astype(int)
-    mask = np.ones(frame.shape)[:,:,0]
-    for ii in range(len(inputarray)):
-        mask[tuple(np.meshgrid(np.r_[inputarray[ii][1]-maskdx:inputarray[ii][1]+maskdx],np.r_[inputarray[ii][0]-maskdy:inputarray[ii][0]+maskdy]))]=0
-    return mask
-
-def sinfunc(xdata,border,bg,amplitude,frequency,phase):
-    scaledx = ((xdata-border)*2*np.pi)/(xdata.max()-border)
-    xdata = np.array([xdata]).T
-    ydata = np.array([bg+(amplitude*np.sin((frequency*scaledx)+phase))]).T
-    return np.concatenate((xdata,ydata),1)
-
-def bend(array_in,pathindex):
-    array_in = array_in.astype(float)
-    v1,v2 = array_in[pathindex+1]-array_in[pathindex], array_in[pathindex+2]-array_in[pathindex+1]
-    return np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
 
 
 
@@ -157,7 +114,7 @@ bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot addre
 #bd_addr = '98:D3:91:FD:46:C9' # Brenda
 #bd_addr = '98:D3:32:21:3D:77'
 port = 1
-btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
+btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Raspberry Pi
 #btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
 #------------------------------------------------------------------
@@ -196,9 +153,9 @@ bg = frame.shape[0]/2 # the is is the background of the sin function
 
 #----------   Create mask for coordinates   ------------#
 xdata =  np.arange(border, frame.shape[1]-border, stepsize)
-aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
+aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
 maskdx, maskdy = 2,2 # these define the marker size
-mask = buildmask(aa,frame,maskdx,maskdy)
+mask = geom.buildmask(aa,frame,maskdx,maskdy)
 
 #########################################################
 #----------------   Start main loop --------------------#
@@ -210,6 +167,7 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 #cap.set(0,1280)
 
+oldtime = time()
 if __name__ == '__main__':
     
     success, frame = cap.read()
@@ -251,7 +209,7 @@ if __name__ == '__main__':
         hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV) # do this outside function so is is not done twice
 
         try:         
-            x, y, center, radius, M, cents = tracker(hsv, greenLower, greenUpper)
+            x, y, center, radius, M, cents = geom.tracker(hsv, greenLower, greenUpper)
 
             if radius > 1:
                 cv2.circle(frame, (int(x), int(y)), int(radius),(0, 255, 0), 2)
@@ -262,7 +220,7 @@ if __name__ == '__main__':
             pass
             
         try:
-            x2, y2, center2, radius2, M2, cents2 = tracker(hsv, pinkLower, pinkUpper)
+            x2, y2, center2, radius2, M2, cents2 = geom.tracker(hsv, pinkLower, pinkUpper)
 
             if radius2 > 1:
                 cv2.circle(frame, (int(x2), int(y2)), int(radius2),(113,212,198), 2)
@@ -314,7 +272,7 @@ if __name__ == '__main__':
                 vto_next = aa[pathindex+3] # next target coordinate
             except:
                 pass
-            _distance = distance((x,y),(x2,y2),vto) # distance to target coordinate
+            _distance = geom.distance((x,y),(x2,y2),vto) # distance to target coordinate
 
             if _distance < tolerance:
                 pathindex += 1  # if close enough to target coordinate, get next coordinate
@@ -334,14 +292,18 @@ if __name__ == '__main__':
                 aa = np.flipud(aa)
                 laptime = time()-starttime
                 #feedforward += 1
+                #print(feedforward)
                 pathindex = 0
                 timeflag = 0
 
-            angle = turn((x,y),(x2,y2),vto)
+            angle = geom.turn((x,y),(x2,y2),vto)
+            #dt = time()-oldtime
+            #rotspeed = 200+angle_pid.output(0,-angle,dt)
             rotspeed = 200+angle_pid.output(0,-angle)
-
+            oldtime = time()
             #straightspeedfactor = 1-np.sin(abs(angle))
             straightspeedfactor = 1
+            #forwardspeed = 200+straightspeedfactor*(pos_pid.output(0,-_distance,dt)+feedforward)
             forwardspeed = 200+straightspeedfactor*(pos_pid.output(0,-_distance)+feedforward)
 
 
@@ -362,7 +324,7 @@ if __name__ == '__main__':
         if key == ord("x"):
             stepsize += 1
             xdata =  np.arange(border, frame.shape[1]-border, stepsize)
-            aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
             mask = buildmask(aa,frame,maskdx,maskdy)
         if key == ord("z"):
             
