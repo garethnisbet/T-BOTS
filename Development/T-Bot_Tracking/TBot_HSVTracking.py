@@ -62,24 +62,17 @@ pos_pid = pid.pid(0.2,0.4,0,[-15,15],[0,40],turntime)
 angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 #----------------- set variables --------------------#
 
-blueLower = (89,214,139)
-blueUpper = (255,255,255)
+pinkLower = (124,76,99)     # Sunny
+pinkUpper = (255,255,255)   # Sunny
 
-pinkLower = (124,76,99)
-pinkUpper = (255,255,255)
-#pinkLower = (149,147,31)
-#pinkUpper = (255,255,255)
+#pinkLower = (0,74,53)       # Artificial Lighting
+#pinkUpper = (11,255,255)    # Artificial Lighting
 
-#pinkLower = (0,74,53)
-#pinkUpper = (11,255,255)
 
-#greenLower = (37,64,0)
-#greenUpper = (100,255,211)
-greenLower = (49,64,18)
-greenUpper = (97,255,255)
-greenLower = (52,54,98)
-greenUpper = (104,162,224)
-
+greenUpper = (104,162,224)  # Sunny
+greenLower = (36,40,76)	 # Sunny
+#greenLower = (52,54,98)     # Artificial Lighting
+#greenUpper = (95,255,255)   # Artificial Lighting
 
 # sets the length of the trail
 pts = deque(maxlen=10)
@@ -94,15 +87,14 @@ bendscalefactor = 2
 rdeadban = 2
 tolerance = 30
 
-#--------------  Define functions  ------------------#
-geom = geometry.geometry(1)
+#--------------------  Define functions  ------------------------------#
+geom = geometry.geometry(1) # scale factor to convert pixels to mm
 
 
 
 
 
-###################  Setup Bluetooth   #############################
-
+#--------------------- Setup Bluetooth --------------------------------#
 data = [0,0,0,0]
 sendcount = 0
 
@@ -325,31 +317,31 @@ if __name__ == '__main__':
             stepsize += 1
             xdata =  np.arange(border, frame.shape[1]-border, stepsize)
             aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
-            mask = buildmask(aa,frame,maskdx,maskdy)
+            mask = geom.buildmask(aa,frame,maskdx,maskdy)
         if key == ord("z"):
             
             if stepsize > 1:
                 stepsize -= 1
                 xdata =  np.arange(border, frame.shape[1]-border, stepsize)
-                aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
-                mask = buildmask(aa,frame,maskdx,maskdy)
+                aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
+                mask = geom.buildmask(aa,frame,maskdx,maskdy)
 
         if key == ord("w"):
             amplitude += 5
-            aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
-            mask = buildmask(aa,frame,maskdx,maskdy)
+            aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            mask = geom.buildmask(aa,frame,maskdx,maskdy)
         if key == ord("s"):
             amplitude -= 5
-            aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
-            mask = buildmask(aa,frame,maskdx,maskdy)  
+            aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            mask = geom.buildmask(aa,frame,maskdx,maskdy)  
         if key == ord("d"):
             frequency += 0.5
-            aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
-            mask = buildmask(aa,frame,maskdx,maskdy)
+            aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            mask = geom.buildmask(aa,frame,maskdx,maskdy)
         if key == ord("a"):
             frequency -= 0.5
-            aa = sinfunc(xdata,border,bg,amplitude,frequency,phase)
-            mask = buildmask(aa,frame,maskdx,maskdy)
+            aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            mask = geom.buildmask(aa,frame,maskdx,maskdy)
         if key == ord("g"):
             speedfactor += 0.01
             print('speedfactor = '+str(speedfactor))
