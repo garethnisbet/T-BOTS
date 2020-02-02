@@ -57,10 +57,10 @@ bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
-feedforward = 25
+feedforward = 15
 pos_pid = pid.pid(0.2,0.4,0,[-15,15],[0,40],turntime)
 angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
-#----------------- set variables --------------------#
+#------------------------- set variables ------------------------------#
 
 pinkLower = (124,76,99)     # Sunny
 pinkUpper = (255,255,255)   # Sunny
@@ -90,10 +90,6 @@ tolerance = 30
 #--------------------  Define functions  ------------------------------#
 geom = geometry.geometry(1) # scale factor to convert pixels to mm
 
-
-
-
-
 #--------------------- Setup Bluetooth --------------------------------#
 data = [0,0,0,0]
 sendcount = 0
@@ -103,7 +99,7 @@ sendcount = 0
 #------------------------------------------------------------------
 bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 #bd_addr = '98:D3:51:FD:82:95' # George
-#bd_addr = '98:D3:91:FD:46:C9' # Brenda
+#bd_addr = '98:D3:91:FD:46:C9' # B
 #bd_addr = '98:D3:32:21:3D:77'
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Raspberry Pi
@@ -134,24 +130,27 @@ if not success:
 
 cap.release()
 
-#---------  Generate target function  ------------#
+#-----------------  Generate target function  -------------------------#
 
 amplitude = 80
 frequency = 1
 phase = 0
 stepsize = 5
 border = 80 # sets the number of pixels from the edge.
-bg = frame.shape[0]/2 # the is is the background of the sin function
+bg = frame.shape[0]/2 # this is the background of the sin function
 
 #----------   Create mask for coordinates   ------------#
 xdata =  np.arange(border, frame.shape[1]-border, stepsize)
-aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
+aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
+
+#aa = geom.circlefunc([frame.shape[0]/2,frame.shape[1]/2],100,100)
+
 maskdx, maskdy = 2,2 # these define the marker size
 mask = geom.buildmask(aa,frame,maskdx,maskdy)
 
-#########################################################
-#----------------   Start main loop --------------------#
-#########################################################
+########################################################################
+#-----------------------   Start main loop ----------------------------#
+########################################################################
 
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
@@ -198,7 +197,7 @@ if __name__ == '__main__':
 
 
         blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-        hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV) # do this outside function so is is not done twice
+        hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV) # do this outside function so it is not done twice
 
         try:         
             x, y, center, radius, M, cents = geom.tracker(hsv, greenLower, greenUpper)
@@ -281,7 +280,7 @@ if __name__ == '__main__':
             if pathindex == len(aa)-1:
                 sendcount = btcom.send_data('200200Z',sendcount)
                 print('Done, reached end of path...')
-                aa = np.flipud(aa)
+                #aa = np.flipud(aa)
                 laptime = time()-starttime
                 #feedforward += 1
                 #print(feedforward)
@@ -316,31 +315,31 @@ if __name__ == '__main__':
         if key == ord("x"):
             stepsize += 1
             xdata =  np.arange(border, frame.shape[1]-border, stepsize)
-            aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
             mask = geom.buildmask(aa,frame,maskdx,maskdy)
         if key == ord("z"):
             
             if stepsize > 1:
                 stepsize -= 1
                 xdata =  np.arange(border, frame.shape[1]-border, stepsize)
-                aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
+                aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
                 mask = geom.buildmask(aa,frame,maskdx,maskdy)
 
         if key == ord("w"):
             amplitude += 5
-            aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
             mask = geom.buildmask(aa,frame,maskdx,maskdy)
         if key == ord("s"):
             amplitude -= 5
-            aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
             mask = geom.buildmask(aa,frame,maskdx,maskdy)  
         if key == ord("d"):
             frequency += 0.5
-            aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
             mask = geom.buildmask(aa,frame,maskdx,maskdy)
         if key == ord("a"):
             frequency -= 0.5
-            aa = geom.sinfunc(xdata,border,bg,amplitude,frequency,phase)
+            aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
             mask = geom.buildmask(aa,frame,maskdx,maskdy)
         if key == ord("g"):
             speedfactor += 0.01
