@@ -57,7 +57,7 @@ bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
-feedforward = 15
+feedforward = 5
 pos_pid = pid.pid(0.2,0.4,0,[-15,15],[0,40],turntime)
 angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 #------------------------- set variables ------------------------------#
@@ -143,6 +143,7 @@ bg = frame.shape[0]/2 # this is the background of the sin function
 xdata =  np.arange(border, frame.shape[1]-border, stepsize)
 aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
 
+#aa = np.loadtxt('pathpoints.dat') # Click2Path.py to create arbitrary path
 #aa = geom.circlefunc([frame.shape[0]/2,frame.shape[1]/2],100,100)
 
 maskdx, maskdy = 2,2 # these define the marker size
