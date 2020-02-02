@@ -37,6 +37,25 @@ class geometry(object):
         xdata = np.array([xdata]).T
         ydata = np.array([bg+(amplitude*np.sin((frequency*scaledx)+phase))]).T
         return np.concatenate((xdata,ydata),1)
+        
+    def sinfuncM(self,xdata,border,bg,amplitude,frequency,phase):
+        '''Generates a sine function'''
+        frequency = float(frequency)
+        scaledx = ((xdata-border)*2*np.pi)/(xdata.max()-border)
+        ydata = bg+(amplitude*np.sin((frequency*scaledx)+phase))
+        if frequency.is_integer():
+            ydata2 = bg+(amplitude*-np.sin((frequency*scaledx)+phase+np.pi))
+        else:
+            ydata2 = bg+(amplitude*-np.sin((frequency*scaledx)+phase))
+        xdata = np.concatenate((np.array([xdata]),np.fliplr(np.array([xdata]))),1).T
+        ydata = np.concatenate((np.array([ydata]),np.array([ydata2])),1).T
+        return np.concatenate((xdata,ydata),1)
+        
+    def circlefunc(self,origin,radius,n):
+        x = np.linspace(-np.pi,np.pi,n)
+        xdata = np.array([np.cos(x)*radius+origin[1]]).T
+        ydata = np.array([np.sin(x)*radius+origin[0]]).T
+        return np.concatenate((xdata,ydata),1)
 
     def turn(self,v0,v1,vto):
         '''Calculates the angle of the T-Bot with respect to a target coordinate'''
