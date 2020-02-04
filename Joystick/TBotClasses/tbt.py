@@ -2,12 +2,15 @@
 from time import sleep, time
 
 class bt_connect(object):
+    '''Sets up a Bluetoot connection. Usage: btcom = tbt.bt_connect(bd_addr,port,'PyBluez') on Linux\n
+       or btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate) on Windows or Mac.'''
     def __init__(self,bt_addr,port,lib,baudrate=38400):
         self.bt_addr = bt_addr
         self.port = port
         self.lib = lib
         self.baudrate = baudrate
     def connect(self,con):
+        '''Makes BLuetooth connection.'''
         if con == 1:
             try:
                 if self.lib == 'PyBluez':
@@ -53,6 +56,7 @@ class bt_connect(object):
                 return 0
                 
     def connected(self):
+        '''Checks status of BLuetooth connection.'''
         try:
             if self.lib == 'PySerial':
                 self.sock.in_waiting
@@ -65,6 +69,7 @@ class bt_connect(object):
         return status
 
     def send_data(self,sendstr,sendtwice):
+        '''Sends data of the form '200200Z' over Bluetooth''' 
         try:
             if sendstr == '200200Z':
                 if sendtwice <= 2:
@@ -88,6 +93,7 @@ class bt_connect(object):
         return sendtwice
 
     def get_data(self,oldvalues = [0,0,0,0]):
+        '''Receives data over Bluetooth from the T-Bot'''
         if self.lib == 'PySerial':
             try:
                 data = self.sock.read(32).decode(encoding='utf-8')
@@ -114,6 +120,7 @@ class bt_connect(object):
             return oldvalues[0], oldvalues[1],oldvalues[2],oldvalues[3]
             
     def get_name(self):
+        '''Returns the MAC address of the connected device.'''
 	
         try:
             return self.sock.getpeername()

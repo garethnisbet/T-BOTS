@@ -39,7 +39,7 @@ class geometry(object):
         return np.concatenate((xdata,ydata),1)
         
     def sinfuncM(self,xdata,border,bg,amplitude,frequency,phase):
-        '''Generates a sine function'''
+        '''Generates a sine function and it's reflection about the horizontal axis'''
         frequency = float(frequency)
         scaledx = ((xdata-border)*2*np.pi)/(xdata.max()-border)
         ydata = bg+(amplitude*np.sin((frequency*scaledx)+phase))

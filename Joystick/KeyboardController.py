@@ -40,13 +40,13 @@ sendcount = 0
 #------------------------------------------------------------------
 #               For Linux / Raspberry Pi
 #------------------------------------------------------------------
-#bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
+bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 #bd_addr = '98:D3:32:21:3D:77'
 #bd_addr = '98:D3:91:FD:46:C9' # B
 #bd_addr = '98:D3:32:21:3D:A2' # Foxy
 #bd_addr = '98:D3:91:FD:46:9C' # T-Bot
 #bd_addr = '98:D3:32:21:3D:77' # Cinemon
-bd_addr = '98:D3:51:FD:82:95' # 	George
+#bd_addr = '98:D3:51:FD:82:95' # 	George
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 #btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -267,7 +267,7 @@ while not done:
         buttonstring = '200200A' # kps -ve
         sendcount = btcom.send_data(buttonstring,sendcount)
     elif keys[K_y]:
-        buttonstring = '200200T' # kps -ve
+        buttonstring = '200200T' # Auto trim
         sendcount = btcom.send_data(buttonstring,sendcount)
 
     elif keys[K_w]:

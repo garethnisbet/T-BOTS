@@ -51,28 +51,37 @@ timeflag = 0
 pathindex = 0
 rotspeed = 200
 speedfactor = 0.3
+
 turnspeedfactor = 0.3
 turntime = 0.005
 bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
-feedforward = 5
-pos_pid = pid.pid(0.2,0.4,0,[-15,15],[0,40],turntime)
+feedforward = 28
+pos_pid = pid.pid(0.2,0.4,0,[-10,10],[0,40],turntime)
 angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 #------------------------- set variables ------------------------------#
 
-pinkLower = (124,76,99)     # Sunny
-pinkUpper = (255,255,255)   # Sunny
+#pinkLower = (124,76,99)     # Sunny
+#pinkUpper = (255,255,255)   # Sunny
 
-#pinkLower = (0,74,53)       # Artificial Lighting
-#pinkUpper = (11,255,255)    # Artificial Lighting
+pinkLower = (0,74,53)       # Artificial Lighting
+pinkUpper = (11,255,255)    # Artificial Lighting
+
+#pinkLower = (23,110,126)     # Yellow
+#pinkUpper = (39,193,210)   # Yellow
 
 
-greenUpper = (104,162,224)  # Sunny
-greenLower = (36,40,76)	 # Sunny
-#greenLower = (52,54,98)     # Artificial Lighting
-#greenUpper = (95,255,255)   # Artificial Lighting
+
+#greenLower = (36,40,76)	 # Sunny
+#greenUpper = (104,162,224)  # Sunny
+greenLower = (32,54,114)     # Artificial Lighting
+greenUpper = (76,255,255)   # Artificial Lighting
+
+
+#greenLower = (78,145,70)	 # Blue
+#greenUpper = (133,255,255)  # Blue
 
 # sets the length of the trail
 pts = deque(maxlen=10)
@@ -105,15 +114,15 @@ port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Raspberry Pi
 #btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
-#------------------------------------------------------------------
+#----------------------------------------------------------------------#
 #               For Windows and Mac
-#------------------------------------------------------------------
+#----------------------------------------------------------------------#
 #port = 'COM5'
 #port = '/dev/tty.George-DevB'
 #baudrate = 38400
 #bd_addr = 'Empty'
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
-#---------  Get or set destination points  ------------#
+#----------------------  Setup the Camera  ----------------------------#
 
 
 
@@ -136,14 +145,14 @@ amplitude = 80
 frequency = 1
 phase = 0
 stepsize = 5
-border = 80 # sets the number of pixels from the edge.
+border = 80 # sets the number of pixels from the edge which wont be occupied by the function.
 bg = frame.shape[0]/2 # this is the background of the sin function
 
 #----------   Create mask for coordinates   ------------#
 xdata =  np.arange(border, frame.shape[1]-border, stepsize)
 aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
 
-#aa = np.loadtxt('pathpoints.dat') # Click2Path.py to create arbitrary path
+#aa = np.loadtxt('pathpoints.dat') # Use Click2Path.py to create an arbitrary path
 #aa = geom.circlefunc([frame.shape[0]/2,frame.shape[1]/2],100,100)
 
 maskdx, maskdy = 2,2 # these define the marker size
@@ -196,7 +205,6 @@ if __name__ == '__main__':
                 tries = 0
                 data = btcom.get_data(data)       
 
-
         blurred = cv2.GaussianBlur(frame, (11, 11), 0)
         hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV) # do this outside function so it is not done twice
 
@@ -223,7 +231,6 @@ if __name__ == '__main__':
             
             pass
 
-               
         #------------- Plot trail overlay -------------#
 
         for i in range(1, len(pts)):
@@ -333,7 +340,17 @@ if __name__ == '__main__':
         if key == ord("s"):
             amplitude -= 5
             aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-            mask = geom.buildmask(aa,frame,maskdx,maskdy)  
+            mask = geom.buildmask(aa,frame,maskdx,maskdy)
+        if key == ord("t"):
+            buttonstring = '200200F' # Auto trim
+            sendcount = btcom.send_data(buttonstring,sendcount)
+        if key == ord("r"):
+            buttonstring = '200200E' # Auto trim
+            sendcount = btcom.send_data(buttonstring,sendcount)
+        if key == ord("y"):
+            buttonstring = '200200T' # Auto trim
+            sendcount = btcom.send_data(buttonstring,sendcount)
+            
         if key == ord("d"):
             frequency += 0.5
             aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
@@ -345,12 +362,11 @@ if __name__ == '__main__':
         if key == ord("g"):
             speedfactor += 0.01
             print('speedfactor = '+str(speedfactor))
-
         if key == ord("f"):
-            speedfactor -= 0.01
+            feedforward -= 1
             print('speedfactor = '+str(speedfactor))
-        if key == ord("t"):
-            turnspeedfactor += 0.01
+        if key == ord("g"):
+            feedforward += 1
             print('turnspeedfactor = '+str(turnspeedfactor))
         if key == ord("y"):
             turnspeedfactor -= 0.01

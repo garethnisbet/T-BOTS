@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 plt.ion()
 import numpy as np
 
-numpathpoints = 30
+numpathpoints = 80
 filename = 'pathpoints.dat'
 dontoverwrite = 0
 if dontoverwrite:
