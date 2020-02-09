@@ -72,5 +72,9 @@ class geometry(object):
         '''Calculates the magnitude of the bend angle over three cordinates'''
         array_in = array_in.astype(float)
         v1,v2 = array_in[pathindex+1]-array_in[pathindex], array_in[pathindex+2]-array_in[pathindex+1]
-        return np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
+        bendangle = np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
+        if np.isnan(bendangle):
+            return 0
+        else:
+            return np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
 
