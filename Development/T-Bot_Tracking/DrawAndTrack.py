@@ -10,6 +10,94 @@ from TBotClasses import tbt, pid, geometry
 from time import time
 plt.ion()
 import bluetooth as bt
+from datetime import datetime
+import pygame
+from pygame.locals import *
+from sys import exit
+scalefactor = 1
+origin =  0
+
+
+
+########################################################################
+#-----------------------   Draw            ----------------------------#
+########################################################################
+filename = 'pathpoints.dat'
+if os.path.isfile(filename):
+    aa = np.loadtxt(filename)
+    aa = aa*scalefactor+origin 
+    coordinate = list(tuple(map(tuple,aa.astype(int))))
+else:
+    coordinate = []
+
+cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
+
+success, frame = cap.read()
+cap.release()
+pygame.init()
+screen = pygame.display.set_mode((633, 359), 0, 0)
+canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
+ 
+
+drawplot = 1
+
+
+while drawplot:
+    keys = pygame.key.get_pressed()
+     
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            exit()
+        c1, c2, c3 =  pygame.mouse.get_pressed()
+
+        if event.type == MOUSEMOTION and c1:
+            if len(coordinate)>2:
+                if np.linalg.norm(np.array(event.pos)-np.array(coordinate[-1])) > 5:
+                    coordinate.append(event.pos)
+            else:
+                coordinate.append(event.pos)
+            
+
+        if c3:
+            if len(coordinate)>10:
+                coordinate = coordinate[0:len(coordinate)-10]
+            else:
+                coordinate  = []
+        if keys[K_c]:
+            coordinate  = []
+
+        if keys[K_q]:
+            pygame.display.quit()
+            exit()
+        if keys[K_s]:
+            aa = np.array(coordinate)
+            np.savetxt(filename,aa)
+        if keys[K_b]:
+            aa = np.array(coordinate)
+            timestampedname = 'Drawings/'+datetime.now().strftime('%d-%m-%y-%H%M%S')+'.dat'
+            np.savetxt(timestampedname,aa)
+            print('Backup created in '+timestampedname)
+
+
+        screen.blit(canvas,(0,0))
+     
+        if len(coordinate)>1:
+            pygame.draw.lines(screen, (0,255,0), False, coordinate, 3)
+
+        if event.type == KEYDOWN and event.key == K_ESCAPE:
+            pygame.display.quit()
+            exit()
+
+        pygame.display.update()
+        
+        if keys[K_r]:
+            drawplot = 0
+            pygame.display.quit()
+
+
 x = []
 y = []
 x2 = []
@@ -18,7 +106,6 @@ starttime = []
 endtime = []
 laptime = 1000
 oldlaptime = 500
-
 folder = 'RecordedImages/'
 record = 0
 
@@ -58,8 +145,8 @@ bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
-feedforward = 13
-pos_pid = pid.pid(0.2,0.4,0,[-10,10],[0,40],turntime)
+feedforward = 11
+pos_pid = pid.pid(0.2,0.8,0,[-15,15],[0,40],turntime)
 angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 #------------------------- set variables ------------------------------#
 
@@ -85,6 +172,7 @@ greenUpper = (74,255,255)   # Artificial Lighting
 
 #greenLower = (51,39,92)     # Day time dull
 #greenUpper = (90,255,255)   # Day time dull
+
 
 # sets the length of the trail
 pts = deque(maxlen=10)
@@ -127,9 +215,6 @@ btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Rasp
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 #----------------------  Setup the Camera  ----------------------------#
 
-
-
-
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
@@ -138,7 +223,6 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 
 success, frame = cap.read()
 if not success:
-    print('Check camera connection')
     sys.exit(1)
 
 cap.release()
@@ -154,13 +238,20 @@ bg = frame.shape[0]/2 # this is the background of the sin function
 
 #----------   Create mask for coordinates   ------------#
 xdata =  np.arange(border, frame.shape[1]-border, stepsize)
-aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
 
-#aa = np.loadtxt('pathpoints.dat') # Use Click2Path.py to create an arbitrary path
-#aa = geom.circlefunc([frame.shape[0]/2,frame.shape[1]/2],100,100)
+aa = np.loadtxt('pathpoints.dat') # Use Click2Path.py to create an arbitrary path
+
 
 maskdx, maskdy = 2,2 # these define the marker size
 mask = geom.buildmask(aa,frame,maskdx,maskdy)
+
+
+
+
+
+
+
+
 
 ########################################################################
 #-----------------------   Start main loop ----------------------------#
@@ -304,8 +395,10 @@ if __name__ == '__main__':
             #rotspeed = 200+angle_pid.output(0,-angle,dt)
             rotspeed = 200+angle_pid.output(0,-angle)
             oldtime = time()
-            #straightspeedfactor = 1-np.sin(abs(angle))
+            #bendangle = geom.bend(aa,pathindex)
+            #straightspeedfactor = 1-np.sin(bendangle)
             straightspeedfactor = 1
+            
             #forwardspeed = 200+straightspeedfactor*(pos_pid.output(0,-_distance,dt)+feedforward)
             forwardspeed = 200+straightspeedfactor*(pos_pid.output(0,-_distance)+feedforward)
 
@@ -315,6 +408,7 @@ if __name__ == '__main__':
             rotspeed = '%03d' % rotspeed
         
             forwardspeed = '%03d' % forwardspeed
+            
 
             print('forward speed '+forwardspeed+' turn speed '+rotspeed)
             #--------------   Send data    ---------------#
@@ -324,27 +418,8 @@ if __name__ == '__main__':
             
 
         key = cv2.waitKey(1) & 0xFF
-        if key == ord("x"):
-            stepsize += 1
-            xdata =  np.arange(border, frame.shape[1]-border, stepsize)
-            aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-            mask = geom.buildmask(aa,frame,maskdx,maskdy)
-        if key == ord("z"):
-            
-            if stepsize > 1:
-                stepsize -= 1
-                xdata =  np.arange(border, frame.shape[1]-border, stepsize)
-                aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-                mask = geom.buildmask(aa,frame,maskdx,maskdy)
 
-        if key == ord("w"):
-            amplitude += 5
-            aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-            mask = geom.buildmask(aa,frame,maskdx,maskdy)
-        if key == ord("s"):
-            amplitude -= 5
-            aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-            mask = geom.buildmask(aa,frame,maskdx,maskdy)
+
         if key == ord("t"):
             buttonstring = '200200F' # Auto trim
             sendcount = btcom.send_data(buttonstring,sendcount)
@@ -355,14 +430,7 @@ if __name__ == '__main__':
             buttonstring = '200200T' # Auto trim
             sendcount = btcom.send_data(buttonstring,sendcount)
             
-        if key == ord("d"):
-            frequency += 0.5
-            aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-            mask = geom.buildmask(aa,frame,maskdx,maskdy)
-        if key == ord("a"):
-            frequency -= 0.5
-            aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-            mask = geom.buildmask(aa,frame,maskdx,maskdy)
+
         if key == ord("g"):
             speedfactor += 0.01
             print('speedfactor = '+str(speedfactor))
