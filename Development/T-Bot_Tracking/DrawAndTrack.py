@@ -36,6 +36,7 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 
 success, frame = cap.read()
+frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 cap.release()
 pygame.init()
 screen = pygame.display.set_mode((633, 359), 0, 0)
