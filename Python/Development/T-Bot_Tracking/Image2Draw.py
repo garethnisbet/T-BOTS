@@ -2,12 +2,12 @@ import sys
 import cv2
 import os
 import imutils
-sys.path.append('/home/pi/GitHub/T-BOTS/Joystick')
+sys.path.append('/home/pi/GitHub/T-BOTS')
 from collections import deque
 import numpy as np
 import matplotlib.pyplot as plt
 plt.ion()
-from TBotClasses import tbt, pid, geometry
+from TBotTools import tbt, pid, geometry
 from time import time
 #imagepath = 'face.png'
 imagepath = '/home/pi/Desktop/Bot.png'

@@ -1,9 +1,10 @@
 #!/usr/bin/python
 import pygame, sys, pygame.mixer, os
+sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
-from TBotClasses import tbt
+from TBotTools import tbt
 from collections import deque
 import numpy as np
 starttime = time()

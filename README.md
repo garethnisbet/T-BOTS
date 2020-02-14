@@ -2,7 +2,7 @@
 
 [TBot](/TBot) - Main code to run T-Bot.
 
-[Development](/Development) - Check this folder regularly. This is where experimental software will show up first.
+[Development](/Python/Development) - Check this folder regularly. This is where experimental software will show up first.
 
 [DCMotorTest](/DCMotorTest) - Simple example to drive motors using the TB6612FNG driver board (used to calibrate motors).
 
@@ -20,13 +20,13 @@
 
 [SchedulerExample](/SchedulerExample) - A simple example to show you how to use a schedular instead of nested loops.
 
-[Joystick](/Joystick) - Wireless USB controller to Bluetooth bridge written in python - You can use a USB Joystick or PS3 / PS4 controller - python-bluez / socket  - works on Linux.
+[Joystick](/Python/Joystick) - Wireless USB controller to Bluetooth bridge written in python - You can use a USB Joystick or PS3 / PS4 controller - python-bluez / socket  - works on Linux.
 
-[TBot_Joystick_Python_PYBLUEZ](/TBot_Joystick_Python_PYBLUEZ) - Bluetooth joystick written in python - Requires python-bluez and Bluez - works on Linux.
+[TBot_Joystick_Python_PYBLUEZ](/Python/TBot_Joystick_Python_PYBLUEZ) - Bluetooth joystick written in python - Requires python-bluez and Bluez - works on Linux.
 
-[TBot_Joystick_Python_SOCKET](/TBot_Joystick_Python_SOCKET) - Bluetooth joystick written in python - Python3 - works on Linux.
+[TBot_Joystick_Python_SOCKET](/Python/TBot_Joystick_Python_SOCKET) - Bluetooth joystick written in python - Python3 - works on Linux.
 
-[TBot_Joystick_Python_Pyserial](/TBot_Joystick_Python_Pyserial) - Bluetooth joystick written in python - Works on Windows and Mac.
+[TBot_Joystick_Python_Pyserial](/Python/TBot_Joystick_Python_Pyserial) - Bluetooth joystick written in python - Works on Windows and Mac.
 
 ## Usage:
 1. Install the arduino IDE from https://www.arduino.cc.

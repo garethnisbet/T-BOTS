@@ -1,9 +1,10 @@
 #!/usr/bin/python
 import pygame, sys, pygame.mixer, os
+sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
-from TBotClasses import tbt
+from TBotTools import tbt
 from collections import deque
 import numpy as np
 starttime = time()
@@ -33,29 +34,20 @@ turnspeedlimit = 60
 
 oldvals = [0,0,0,0]
 sendcount = 0
-
-
-
-#------------------------------------------------------------------
-#               For Linux / Raspberry Pi
-#------------------------------------------------------------------
-bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
-#bd_addr = '98:D3:32:21:3D:77'
+bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address 
 port = 1
+
+
 #btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
-#------------------------------------------------------------------
-#               For Windows and Mac
-#------------------------------------------------------------------
 #port = 'COM5'
 #port = '/dev/tty.George-DevB'
 #baudrate = 38400
-#bd_addr = 'Empty'
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
 
-#######################  Screen Text Class #############################
+###################  Screen Text Class #############################
 
 class TextPrint(object):
     def __init__(self):
@@ -97,7 +89,7 @@ GRAY = pygame.Color('gray')
 pygame.init()
 
 # Set the width and height of the screen (width, height).
-screen = pygame.display.set_mode((350, 550))
+screen = pygame.display.set_mode((350, 570))
 logo = pygame.image.load(dirpath+'/logo.png')
 bg = pygame.image.load(dirpath+'/hex.jpg').convert()
 bgG = pygame.image.load(dirpath+'/hexG.jpg').convert()
@@ -183,7 +175,7 @@ while not done:
 
         # Get the name from the OS for the controller/joystick.
         name = joystick.get_name()
-        textPrint.tprint(screen, "Joystick name: {}".format(name))
+        textPrint.tprint(screen, "{}".format(name))
 
         # Usually axis run in pairs, up/down for one, and left/right for
         # the other.
@@ -199,6 +191,8 @@ while not done:
         axis1 = joystick.get_axis(1)
         axis2 = joystick.get_axis(2)
         axis3 = joystick.get_axis(3)
+        axis4 = joystick.get_axis(4)
+        axis5 = joystick.get_axis(5)
         textPrint.unindent()
         textPrint.tprint(screen, "")
         buttons = joystick.get_numbuttons()
@@ -279,10 +273,10 @@ while not done:
     #
     # #############   Send data   #################################
     #
-        if abs(axis0)+abs(axis1)+abs(axis2)+abs(axis3) != 0:
+        if abs(axis0)+abs(axis1)+abs(axis3)+abs(axis4) != 0:
             slowfactor = 1+joystick.get_button(7)
-            turn = 200+int(((axis0+(axis2*0.5))*speedfactor*100/slowfactor))
-            speed = 200-int(((axis1+(axis3*0.5))*speedfactor*100/slowfactor))
+            turn = 200+int(((axis0+(axis3*0.5))*speedfactor*100/slowfactor))
+            speed = 200-int(((axis1+(axis4*0.5))*speedfactor*100/slowfactor))
             if speed > 200+speedlimit:
                 speed = 200+speedlimit
             if speed < 200-speedlimit:
@@ -298,12 +292,10 @@ while not done:
         else:
             sendstring = '200200Z'
             sendcount = btcom.send_data(sendstring,sendcount)
-            
-            
-        if joystick.get_button(0):
+        if joystick.get_button(2):
             buttonstring = '200200F' # trim +ve
             sendcount = btcom.send_data(buttonstring,sendcount)
-        elif joystick.get_button(2):
+        elif joystick.get_button(0):
             buttonstring = '200200E' # trim -ve
             sendcount = btcom.send_data(buttonstring,sendcount)
 
