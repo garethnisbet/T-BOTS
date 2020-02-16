@@ -146,15 +146,15 @@ bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
-feedforward = 11
-pos_pid = pid.pid(0.2,0.8,0,[-15,15],[0,40],turntime)
-angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
+feedforward = 0
+pos_pid = pid.pid(5.9,10.8,0,[-55,55],[-90,90],turntime)
+angle_pid = pid.pid(5.8,3,0.01,[-15,15],[-40,40],turntime)
 #------------------------- set variables ------------------------------#
 
 #pinkLower = (124,76,99)     # Sunny
 #pinkUpper = (255,255,255)   # Sunny
 
-pinkLower = (136,121,71)       # Artificial Lighting
+pinkLower = (127,121,64)       # Artificial Lighting
 pinkUpper = (255,255,255)    # Artificial Lighting
 
 #pinkLower = (132,150,0)       # Day time dull
@@ -167,8 +167,8 @@ pinkUpper = (255,255,255)    # Artificial Lighting
 #greenUpper = (104,162,224)  # Sunny
 
 
-greenLower = (34,32,58)     # Artificial Lighting
-greenUpper = (74,255,255)   # Artificial Lighting
+greenLower = (47,58,88)     # Artificial Lighting
+greenUpper = (72,255,255)   # Artificial Lighting
 
 
 #greenLower = (51,39,92)     # Day time dull
@@ -241,16 +241,6 @@ bg = frame.shape[0]/2 # this is the background of the sin function
 xdata =  np.arange(border, frame.shape[1]-border, stepsize)
 
 aa = np.loadtxt('pathpoints.dat') # Use Click2Path.py to create an arbitrary path
-
-
-maskdx, maskdy = 2,2 # these define the marker size
-mask = geom.buildmask(aa,frame,maskdx,maskdy)
-
-
-
-
-
-
 
 
 
@@ -343,9 +333,9 @@ if __name__ == '__main__':
      
             cv2.line(frame, pts2[ii - 1], pts2[ii], (113,212,198), 1)
 
+        
+        cv2.polylines(frame, np.int32([aa]),True, (255,0,255),2)
         cv2.circle(frame, tuple(aa[pathindex,:].astype(int)), 8, (250,150,10), -1)
-        frame[:,:,2]=frame[:,:,2]*mask
-        frame[:,:,1]=frame[:,:,1]*mask
         if laptime < oldlaptime:
             if laptime < 1000:
                 textstr = 'Best time is: '+"{:6.4f}".format(laptime)

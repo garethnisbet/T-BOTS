@@ -152,15 +152,12 @@ stepsize = 5
 border = 80 # sets the number of pixels from the edge which wont be occupied by the function.
 bg = frame.shape[0]/2 # this is the background of the sin function
 
-#----------   Create mask for coordinates   ------------#
+#----------------   Create coordinates for path    --------------------#
 xdata =  np.arange(border, frame.shape[1]-border, stepsize)
 aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
 
 #aa = np.loadtxt('pathpoints.dat') # Use Click2Path.py to create an arbitrary path
 #aa = geom.circlefunc([frame.shape[0]/2,frame.shape[1]/2],100,100)
-
-maskdx, maskdy = 2,2 # these define the marker size
-mask = geom.buildmask(aa,frame,maskdx,maskdy)
 
 ########################################################################
 #-----------------------   Start main loop ----------------------------#
@@ -251,9 +248,10 @@ if __name__ == '__main__':
      
             cv2.line(frame, pts2[ii - 1], pts2[ii], (113,212,198), 1)
 
+        
+        cv2.polylines(frame, np.int32([aa]),True,(255,0,109),2)
         cv2.circle(frame, tuple(aa[pathindex,:].astype(int)), 8, (250,150,10), -1)
-        frame[:,:,2]=frame[:,:,2]*mask
-        frame[:,:,1]=frame[:,:,1]*mask
+
         if laptime < oldlaptime:
             if laptime < 1000:
                 textstr = 'Best time is: '+"{:6.4f}".format(laptime)
@@ -328,23 +326,23 @@ if __name__ == '__main__':
             stepsize += 1
             xdata =  np.arange(border, frame.shape[1]-border, stepsize)
             aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-            mask = geom.buildmask(aa,frame,maskdx,maskdy)
+
         if key == ord("z"):
             
             if stepsize > 1:
                 stepsize -= 1
                 xdata =  np.arange(border, frame.shape[1]-border, stepsize)
                 aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-                mask = geom.buildmask(aa,frame,maskdx,maskdy)
+
 
         if key == ord("w"):
             amplitude += 5
             aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-            mask = geom.buildmask(aa,frame,maskdx,maskdy)
+
         if key == ord("s"):
             amplitude -= 5
             aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-            mask = geom.buildmask(aa,frame,maskdx,maskdy)
+
         if key == ord("t"):
             buttonstring = '200200F' # Auto trim
             sendcount = btcom.send_data(buttonstring,sendcount)
@@ -358,11 +356,11 @@ if __name__ == '__main__':
         if key == ord("d"):
             frequency += 0.5
             aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-            mask = geom.buildmask(aa,frame,maskdx,maskdy)
+
         if key == ord("a"):
             frequency -= 0.5
             aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
-            mask = geom.buildmask(aa,frame,maskdx,maskdy)
+
         if key == ord("g"):
             speedfactor += 0.01
             print('speedfactor = '+str(speedfactor))
