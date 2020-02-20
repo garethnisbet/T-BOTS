@@ -2,27 +2,29 @@ import sys
 import cv2
 import os
 import imutils
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
+from TBotTools import tbt, pid, geometry
 import numpy as np
-import matplotlib.pyplot as plt
-plt.ion()
+#plt.ion()
 from time import time
 #imagepath = 'face.png'
 imagepath = 'TemplateImages/Elephant.png'
-
+import matplotlib.pyplot as plt
+plt.ion()
 filename = 'pathpoints.dat'
 low_threshold = 0
 high_threshold = 255
-
+geom = geometry.geometry()
 im = cv2.imread(imagepath)
+aa = geom.image2path(im)
+np.savetxt(filename,aa)
 
-im = cv2.bitwise_not(im)
-gim = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-cnts = cv2.findContours(gim, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-cnts = imutils.grab_contours(cnts)
-c = max(cnts, key=cv2.contourArea)
-
-np.savetxt(filename,c[:,0])
+zeroim = im*0
+cv2.polylines(zeroim, np.int32([aa]),True, (255,0,255),2)
+cv2.imshow('MultiTracker', zeroim)
 
 plt.figure()
-plt.imshow(gim)
+plt.imshow(im)
+plt.figure()
+plt.imshow(zeroim)
+
