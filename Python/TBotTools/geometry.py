@@ -77,4 +77,11 @@ class geometry(object):
             return 0
         else:
             return np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
+            
+    def image2path(self,im):
+		imi = cv2.bitwise_not(im)
+		gim = cv2.cvtColor(imi, cv2.COLOR_BGR2GRAY)
+		cnts = cv2.findContours(gim, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+		cnts = imutils.grab_contours(cnts)
+		return max(cnts, key=cv2.contourArea)[:,0]
 
