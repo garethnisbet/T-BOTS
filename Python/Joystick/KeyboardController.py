@@ -1,6 +1,9 @@
 #!/usr/bin/python
+
+#------------------------ Import Libraries ----------------------------#
+
 import pygame, sys, pygame.mixer, os
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
 from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
@@ -9,12 +12,14 @@ from collections import deque
 import numpy as np
 starttime = time()
 
-# setup for plotting
+#---------------------- Setup for rolling plot  -----------------------#
+
 xdatarange = [200,320]
 y_origin = 30
 posarrows = (30, 150)
 yscale = 50
 pts = deque(maxlen=xdatarange[1]-xdatarange[0])
+
 for ii in range(xdatarange[0],xdatarange[1]):
     pts.appendleft((ii,np.random.rand(1)))
 iii = 200
@@ -22,7 +27,8 @@ aa = np.zeros((len(pts),2))
 aa[:,1]=np.array(pts)[:,1]
 aa[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
 bb=np.copy(aa)
-    
+
+#----------------------------------------------------------------------#   
 
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 timestart = time()
@@ -30,17 +36,15 @@ speedfactor = 0.6
 speedlimit = 70
 turnspeedlimit = 60
 
-
-###################  Setup Bluetooth   #############################
+#-----------------------  Setup Bluetooth   ---------------------------#
 
 oldvals = [0,0,0,0]
 sendcount = 0
 
+#----------------------------------------------------------------------#
+#                     For Linux / Raspberry Pi
+#----------------------------------------------------------------------#
 
-
-#------------------------------------------------------------------
-#               For Linux / Raspberry Pi
-#------------------------------------------------------------------
 bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 #bd_addr = '98:D3:32:21:3D:77'
 #bd_addr = '98:D3:91:FD:46:C9' # B
@@ -48,21 +52,22 @@ bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot addre
 #bd_addr = '98:D3:91:FD:46:9C' # T-Bot
 #bd_addr = '98:D3:32:21:3D:77' # Cinemon
 #bd_addr = '98:D3:51:FD:82:95' # 	George
+
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 #btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
-#------------------------------------------------------------------
-#               For Windows and Mac
-#------------------------------------------------------------------
+#----------------------------------------------------------------------#
+#                       For Windows and Mac
+#----------------------------------------------------------------------#
+
 #port = 'COM5'
 #port = '/dev/tty.George-DevB'
 #baudrate = 38400
 #bd_addr = 'Empty'
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
-
-###################  Screen Text Class #############################
+#---------------------  Screen Text Class  ----------------------------#
 
 class TextPrint(object):
     def __init__(self):
@@ -87,29 +92,25 @@ class TextPrint(object):
     def abspos(self,screen, textString, pos):
         textBitmap = self.font.render(textString, True, WHITE)
         screen.blit(textBitmap, pos)
-    
- 
 
-###################  Instantiate BT Class #############################    
+   
+#------------------     Define some colors  ---------------------------#
 
-
-      
-        
-# Define some colors.
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
 
-
 pygame.init()
 
-# Set the width and height of the screen (width, height).
+#------- Set the width and height of the screen (width, height) -------#
+
 screen = pygame.display.set_mode((350, 230))
+
+#--------------------   Load Artwork  ---------------------------------#
+
 logo = pygame.image.load(dirpath+'/logo.png')
 bg = pygame.image.load(dirpath+'/hexMini.jpg').convert()
 bgG = pygame.image.load(dirpath+'/hexGMini.jpg').convert()
-
-
 arrowkeys = pygame.image.load(dirpath+'/arrowkeys.png')
 arrowkeysL = pygame.image.load(dirpath+'/arrowkeysL.png')
 arrowkeysR = pygame.image.load(dirpath+'/arrowkeysR.png')
@@ -122,23 +123,25 @@ arrowkeysDR = pygame.image.load(dirpath+'/arrowkeysDR.png')
 
 pygame.display.set_caption("Player 1")
 
-# Loop until the user clicks the close button.
+#---------- Loop until the user clicks the close button ---------------#
 done = False
 
-# Used to manage how fast the screen updates.
+#---------- Used to manage how fast the screen updates  ---------------#
+
 clock = pygame.time.Clock()
 
-# Initialize the joysticks.
+#------------------ Initialize the joysticks  -------------------------#
+
 pygame.joystick.init()
 
-# Get ready to print.
+#-----------------------  Print to Window -----------------------------#
+
 textPrint = TextPrint()
 
-# -------- Main Program Loop -----------
+# ---------------------- Main Program Loop ----------------------------#
 
 while not done:
         
-
     for event in pygame.event.get(): # User did something.
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
@@ -174,17 +177,10 @@ while not done:
             sys.exit()
         else:
             tries = 0
-            
-            
 
-    
     textPrint.reset()
-
-
-
-                
+         
     oldvals = btcom.get_data(oldvals)
-    #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
     g_angle = oldvals[3]
     pts.appendleft((iii,g_angle))
     iii+=1
@@ -193,27 +189,20 @@ while not done:
     if iii > xdatarange[1]:
         iii = xdatarange[0]
     aa[:,1]=np.array(pts)[:,1]
+
     try:  
         bb[:,1] = (yscale/((aa[:,1]-aa[:,1].max()).min())*(aa[:,1]-aa[:,1].max()))+y_origin
         gdata = tuple(map(tuple, tuple(bb)))
         pygame.draw.lines(screen, (255,255,255), False, (gdata),1)
-        
     except:
-        b=1
-        
-
+        print('Plotting Interupted')
     textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
     textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
     
-
-    
-
     keys = pygame.key.get_pressed()
 
     screen.blit(arrowkeys,posarrows)
     
-    # Images for arrow keys 
-
     if keys[K_RIGHT] and keys[K_UP]:
         screen.blit(arrowkeysUR,posarrows)
         sendstring = '%03d%03dZ'%(240,200+(speedfactor*100))
@@ -296,34 +285,26 @@ while not done:
         sendstring = '200200Z'
         sendcount = btcom.send_data(sendstring,sendcount)       
      
-
-
-
     textPrint.tprint(screen, "T-Bot Keyboard Controller")
-    textPrint.indent()
-        
+    textPrint.indent()        
     textPrint.tprint(screen, "gyrodata: {}".format(str(oldvals[3])))
     textPrint.tprint(screen, "kps: {} - j/k".format(str(oldvals[0])))
     textPrint.tprint(screen, "kp: {}".format(str(oldvals[1])))
     textPrint.tprint(screen, "trim: {} - r/t or y for Auto".format(str(oldvals[2])))
     textPrint.tprint(screen, "Speed Factor: {} - s/w".format(str(speedfactor)))
     textPrint.tprint(screen, "Speed Limit: {}% - a/d".format(str(speedlimit)))
-
     textPrint.unindent()
 
-#
-# #############   Send data   #################################
-#
 
-
+#-----------------------   Send data to T-Bot   -----------------------#
         
-    # Go ahead and update the screen with what we've drawn.
+    # Update the screen with what we've drawn.
     screen.blit(logo,(215,120))
     pygame.display.flip()
 
     # Limit to 20 frames per second.
     clock.tick(20)
-
+    
 # Close the window and quit.
 # If you forget this line, the program will 'hang'
 # on exit if running from IDLE.
