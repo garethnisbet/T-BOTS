@@ -32,7 +32,7 @@ if os.path.isfile(filename):
 else:
     coordinate = []
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -162,6 +162,8 @@ pinkUpper = (255,255,255)    # Artificial Lighting
 
 #pinkLower = (132,150,0)       # Day time dull
 #pinkUpper = (255,255,255)      # Day time dull
+pinkLower = (127,61,66)       # Day time dull
+pinkUpper = (255,255,255)      # Day time dull
 
 
 
@@ -170,9 +172,11 @@ pinkUpper = (255,255,255)    # Artificial Lighting
 #greenUpper = (104,162,224)  # Sunny
 
 
-greenLower = (34,32,58)     # Artificial Lighting
-greenUpper = (74,255,255)   # Artificial Lighting
+greenLower = (54,18,83)     # Artificial Lighting
+greenUpper = (96,255,255)   # Artificial Lighting
 
+#greenLower = (0,104,125)     # Artificial Lighting
+#greenUpper = (85,255,255)   # Artificial Lighting
 
 #greenLower = (51,39,92)     # Day time dull
 #greenUpper = (90,255,255)   # Day time dull
@@ -239,7 +243,7 @@ aa = np.loadtxt('pathpoints.dat') # Use Click2Path.py to create an arbitrary pat
 #-----------------------   Start main loop ----------------------------#
 ########################################################################
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)

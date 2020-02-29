@@ -129,7 +129,7 @@ btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Rasp
 
 
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -162,7 +162,7 @@ aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
 #-----------------------   Start main loop ----------------------------#
 ########################################################################
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)

@@ -14,7 +14,7 @@ imagepath = 'TemplateImages/Elephant.png'
 imagepath = 'TemplateImages/Bot.png'
 imagepath = 'TemplateImages/hex.png'
 #imagepath = 'TemplateImages/starfish.png'
-#imagepath = 'TemplateImages/MiniMaze.png'
+imagepath = 'TemplateImages/MiniMaze.png'
 #imagepath = 'TemplateImages/T-Bot.png'
 
 
