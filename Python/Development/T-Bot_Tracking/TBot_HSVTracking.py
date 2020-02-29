@@ -58,8 +58,8 @@ bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
-feedforward = 13
-pos_pid = pid.pid(0.2,0.4,0,[-10,10],[0,40],turntime)
+feedforward = 10
+pos_pid = pid.pid(0.1,0.4,0,[-10,10],[0,40],turntime)
 angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 #------------------------- set variables ------------------------------#
 
@@ -129,8 +129,7 @@ btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Rasp
 
 
 
-
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -146,7 +145,7 @@ cap.release()
 #-----------------  Generate target function  -------------------------#
 
 amplitude = 80
-frequency = 1
+frequency = 1.5
 phase = 0
 stepsize = 5
 border = 80 # sets the number of pixels from the edge which wont be occupied by the function.
@@ -163,7 +162,7 @@ aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
 #-----------------------   Start main loop ----------------------------#
 ########################################################################
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -256,6 +255,7 @@ if __name__ == '__main__':
             if laptime < 1000:
                 textstr = 'Best time is: '+"{:6.4f}".format(laptime)
                 oldlaptime = laptime
+                
         cv2.putText(frame, textstr, org, font,fontScale, color, thickness, cv2.LINE_AA)
         textstr2 = 'Last lap time: '+"{:6.4f}".format(laptime)
         cv2.putText(frame, textstr2, (org[0],org[1]+20), font,fontScale, color2, thickness, cv2.LINE_AA)
@@ -381,7 +381,7 @@ if __name__ == '__main__':
 
             cap.release()
             sendcount = btcom.send_data('200200Z',sendcount)
-
+            btcom.connect(0)
             break
         if record:
             if tii == 5:

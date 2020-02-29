@@ -15,7 +15,8 @@ import pygame
 from pygame.locals import *
 from sys import exit
 scalefactor = 1
-origin =  0
+#origin =  [636/2,357/2]
+origin =  [0,0]
 
 
 
@@ -25,13 +26,14 @@ origin =  0
 filename = 'pathpoints.dat'
 if os.path.isfile(filename):
     aa = np.loadtxt(filename)
-    aa = aa*scalefactor+origin 
+    aa[:,0] = aa[:,0]*scalefactor+origin[0]
+    aa[:,1] = aa[:,1]*scalefactor+origin[1] 
     coordinate = list(tuple(map(tuple,aa.astype(int))))
 else:
     coordinate = []
 
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+cap = cv2.VideoCapture(1)
+cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 
@@ -146,15 +148,16 @@ bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
-feedforward = 0
-pos_pid = pid.pid(5.9,10.8,0,[-55,55],[-90,90],turntime)
-angle_pid = pid.pid(5.8,3,0.01,[-15,15],[-40,40],turntime)
+
+feedforward = 10
+pos_pid = pid.pid(0.1,0.4,0,[-10,10],[0,40],turntime)
+angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 #------------------------- set variables ------------------------------#
 
 #pinkLower = (124,76,99)     # Sunny
 #pinkUpper = (255,255,255)   # Sunny
 
-pinkLower = (127,121,64)       # Artificial Lighting
+pinkLower = (140,23,93)       # Artificial Lighting
 pinkUpper = (255,255,255)    # Artificial Lighting
 
 #pinkLower = (132,150,0)       # Day time dull
@@ -167,8 +170,8 @@ pinkUpper = (255,255,255)    # Artificial Lighting
 #greenUpper = (104,162,224)  # Sunny
 
 
-greenLower = (47,58,88)     # Artificial Lighting
-greenUpper = (72,255,255)   # Artificial Lighting
+greenLower = (34,32,58)     # Artificial Lighting
+greenUpper = (74,255,255)   # Artificial Lighting
 
 
 #greenLower = (51,39,92)     # Day time dull
@@ -183,8 +186,8 @@ pathindex = 0
 rotspeed = 200
 speedfactor = 0.3
 turnspeedfactor = 0.3
-turntime = 0.01
-bendscalefactor = 2
+turntime = 0.005
+bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
@@ -214,19 +217,7 @@ btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Rasp
 #baudrate = 38400
 #bd_addr = 'Empty'
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
-#----------------------  Setup the Camera  ----------------------------#
 
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
-
-
-success, frame = cap.read()
-if not success:
-    sys.exit(1)
-
-cap.release()
 
 #-----------------  Generate target function  -------------------------#
 
@@ -248,11 +239,11 @@ aa = np.loadtxt('pathpoints.dat') # Use Click2Path.py to create an arbitrary pat
 #-----------------------   Start main loop ----------------------------#
 ########################################################################
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
-#cap.set(0,1280)
+
 
 oldtime = time()
 if __name__ == '__main__':
@@ -268,6 +259,7 @@ if __name__ == '__main__':
 
     while cap.isOpened():
         success, frame = cap.read()
+        #frame = cv2.flip(frame,1)
         if not success:
             break
 
@@ -386,10 +378,8 @@ if __name__ == '__main__':
             #rotspeed = 200+angle_pid.output(0,-angle,dt)
             rotspeed = 200+angle_pid.output(0,-angle)
             oldtime = time()
-            #bendangle = geom.bend(aa,pathindex)
-            #straightspeedfactor = 1-np.sin(bendangle)
+            #straightspeedfactor = 1-np.sin(abs(angle))
             straightspeedfactor = 1
-            
             #forwardspeed = 200+straightspeedfactor*(pos_pid.output(0,-_distance,dt)+feedforward)
             forwardspeed = 200+straightspeedfactor*(pos_pid.output(0,-_distance)+feedforward)
 
@@ -399,7 +389,6 @@ if __name__ == '__main__':
             rotspeed = '%03d' % rotspeed
         
             forwardspeed = '%03d' % forwardspeed
-            
 
             print('forward speed '+forwardspeed+' turn speed '+rotspeed)
             #--------------   Send data    ---------------#
@@ -442,7 +431,7 @@ if __name__ == '__main__':
 
             cap.release()
             sendcount = btcom.send_data('200200Z',sendcount)
-
+            btcom.connect(0)
             break
         if record:
             if tii == 5:

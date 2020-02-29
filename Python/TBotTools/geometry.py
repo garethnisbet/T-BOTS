@@ -67,6 +67,11 @@ class geometry(object):
         '''Calculates the distance the T-Bot is from a target coordinate. If the scale factor is 1 the units are in pixels'''
         vm = (np.array(v0)+np.array(v1))/2.0
         return np.linalg.norm([vto[0]-vm[0],vto[1]-vm[1]])*self.scalefactor
+        
+    def distanceSingle(self,v0,vto):
+        '''Calculates the distance the T-Bot is from a target coordinate. If the scale factor is 1 the units are in pixels'''
+        vm = v0
+        return np.linalg.norm([vto[0]-vm[0],vto[1]-vm[1]])*self.scalefactor
 
     def bend(self,array_in,pathindex):
         '''Calculates the magnitude of the bend angle over three cordinates'''
@@ -79,9 +84,9 @@ class geometry(object):
             return np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
             
     def image2path(self,im):
-		imi = cv2.bitwise_not(im)
-		gim = cv2.cvtColor(imi, cv2.COLOR_BGR2GRAY)
-		cnts = cv2.findContours(gim, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-		cnts = imutils.grab_contours(cnts)
-		return max(cnts, key=cv2.contourArea)[:,0]
+        imi = cv2.bitwise_not(im)
+        gim = cv2.cvtColor(imi, cv2.COLOR_BGR2GRAY)
+        cnts = cv2.findContours(gim, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        cnts = imutils.grab_contours(cnts)
+        return max(cnts, key=cv2.contourArea)[:,0]
 
