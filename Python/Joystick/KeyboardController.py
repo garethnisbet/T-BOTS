@@ -3,7 +3,7 @@
 #------------------------ Import Libraries ----------------------------#
 
 import pygame, sys, pygame.mixer, os
-sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
+sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt

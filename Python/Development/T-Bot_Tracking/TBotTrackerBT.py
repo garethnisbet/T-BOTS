@@ -3,6 +3,8 @@ import cv2
 import PID
 from random import randint
 import matplotlib.pyplot as plt
+sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+from TBotTools import tbt, pid, geometry
 plt.ion()
 import numpy as np
 import bluetooth as bt
@@ -10,60 +12,33 @@ pid = PID.PID(0.2,10,0) # P I D
 pid.SetPoint = 0
 pid.setSampleTime(0.1)
 forwardspeed = '%03d' % 220
-###################  Connection #############################
+geom = geometry.geometry(1)
+#--------------------- Setup Bluetooth --------------------------------#
+data = [0,0,0,0]
+sendcount = 0
 
-search = False
-if search == True:
-    print('Searching for devices...')
-    print("")
-    nearby_devices = bt.discover_devices()
-    #Run through all the devices found and list their name
-    num = 0
-    
-    for i in nearby_devices:
-	    num+=1
-	    print(num , ": " , bt.lookup_name( i ))
-    print('Select your device by entering its coresponding number...')
-    selection = input("> ") - 1
-    print('You have selected - '+bt.lookup_name(nearby_devices[selection]))
-
-    bd_addr = nearby_devices[selection]
-else:
-    bd_addr = '98:D3:51:FD:81:AC' # T-Bot-Demo
-    print('connecting...')
-error = 1
+#------------------------------------------------------------------
+#               For Linux / Raspberry Pi
+#------------------------------------------------------------------
+bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
+#bd_addr = '98:D3:51:FD:82:95' # George
+#bd_addr = '98:D3:91:FD:46:C9' # B
+#bd_addr = '98:D3:32:21:3D:77'
 port = 1
-while error:
-    try:
-        sock = bt.BluetoothSocket( bt.RFCOMM )
-        sock.connect((bd_addr,1))
-        sock.settimeout(5)
-        error = 0
-        print('connected to '+bd_addr)
-    except:
-        print('Trying again...')
-        sock.close()
-        error = 1
-        
+btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Raspberry Pi
+#btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
-###############  Functions   #######################
-
-def turn(v0,v1,vto):
-    ang = -(np.arctan2(vto[0]-v1[0],vto[1]-v1[1])-np.arctan2(v1[0]-v0[0],v1[1]-v0[1]))*180/np.pi
-    return (np.mod(ang+180.0,360.0)-180.0)
+#----------------------------------------------------------------------#
+#               For Windows and Mac
+#----------------------------------------------------------------------#
+#port = 'COM5'
+#port = '/dev/tty.George-DevB'
+#baudrate = 38400
+#bd_addr = 'Empty'
+#btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
 
-def distance(vto,v1):
-    return np.linalg.norm([vto[0]-v1[0],vto[1]-v1[1]])
-    
 
-def send(sendstr):
-    try:
-        builtstr = chr(0X02)+sendstr+chr(0X03)
-        sock.send(builtstr.encode(encoding='utf-8'))
-    except:
-        sock.close()
-        sys.exit()
 
 #########  Get image and set coordinates  ##################
 numpathpoints = 19
@@ -77,13 +52,30 @@ except:
 
 
 tracker = cv2.TrackerCSRT_create()
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 
 cap.set(0,1280)
 success, frame = cap.read()
+
+#-----------------  Generate target function  -------------------------#
+
+
+amplitude = 80
+frequency = 1.5
+phase = 0
+stepsize = 5
+border = 80 # sets the number of pixels from the edge which wont be occupied by the function.
+bg = frame.shape[0]/2 # this is the background of the sin function
+
+
+xdata =  np.arange(border, frame.shape[1]-border, stepsize)
+aa = geom.sinfuncM(xdata,border,bg,amplitude,frequency,phase)
+
+
+
 if nomapdata:
     plt.figure()
     plt.imshow(frame)
@@ -112,7 +104,7 @@ v1 = [0,0]
 
 
 # Create a video capture object
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -121,6 +113,27 @@ cap.set(0,1280)
 ############   Start main loop #############################
 
 if __name__ == '__main__':
+
+
+    if ~btcom.connected():
+        tries = 0
+        while btcom.connected() < 1 and tries < 10:
+            print('Connecting ...')
+            try:
+                print('Try '+str(tries+1)+' of 10')
+                btcom.connect(0)
+                btcom.connect(1)
+                tries+=1
+            except:
+                print('Something went wrong')
+                
+        if btcom.connected() < 1:
+            print('Exiting Program')
+            sys.exit()
+        else:
+            tries = 0
+            data = btcom.get_data(data)   
+
 
     # Read first frame to select ROI
     success, frame = cap.read()
@@ -191,15 +204,16 @@ if __name__ == '__main__':
 
 
         vto = aa[pathindex]
-        _distance = distance(vto,v1)
+        _distance = geom.distanceSingle(v1,vto)
         if _distance < 30:
             pathindex += 1
         if pathindex == len(aa):
-            send('200200Z')
+            sendcount = btcom.send_data('200200Z',sendcount)
+
             print('Done')
             break
         
-        angle = turn(v0,v1,vto)
+        angle = geom.angle(v0,v1,vto)
         pid.update(angle)
         rotspeed = pid.output+200
         rspeedfactor = 30
@@ -212,18 +226,18 @@ if __name__ == '__main__':
         if forwardspeed > 300:
             forwardspeed = 300
         
-        if distance(v0,v1) < 1:
+        if geom.distanceSingle(v0,v1) < 1:
             rotspeed = 200
             forwardspeed = 225
 
         rotspeed = '%03d' % rotspeed
         forwardspeed = '%03d' % forwardspeed
-        send(rotspeed+forwardspeed+'Z')
+        sendcount = btcom.send_data(rotspeed+forwardspeed+'Z',sendcount)
         
 
         # quit on ESC button
         if cv2.waitKey(1) & 0xFF == 27:    # Esc pressed
-            send('200200Z')
+            sendcount = btcom.send_data('200200Z',sendcount)
             
             break
 

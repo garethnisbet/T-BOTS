@@ -1,5 +1,4 @@
 #!/usr/bin/python
-import time
 
 class pid(object):
     def __init__(self,kp,ki,kd,int_limits,output_limits,dt):

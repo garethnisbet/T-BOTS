@@ -61,31 +61,41 @@ tolerance = 30
 feedforward = 10
 pos_pid = pid.pid(0.1,0.4,0,[-10,10],[0,40],turntime)
 angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
-#------------------------- set variables ------------------------------#
+#----------------------------------------------------------------------#
+#                        Set HSV Thresholds
+#
+#                        Artificial Lighting
+#----------------------------------------------------------------------#
+#greenLower = (36,42,228)   
+#greenUpper = (74,255,255) 
+ 
+#pinkLower = (143,70,113)       
+#pinkUpper = (255,255,255) 
 
-#pinkLower = (124,76,99)     # Sunny
-#pinkUpper = (255,255,255)   # Sunny
+#----------------------------------------------------------------------#
+#                                  Sunny
+#----------------------------------------------------------------------#
 
-pinkLower = (140,23,93)       # Artificial Lighting
-pinkUpper = (255,255,255)    # Artificial Lighting
+greenLower = (74,105,61)	
+greenUpper = (90,255,224)
 
-#pinkLower = (132,150,0)       # Day time dull
-#pinkUpper = (255,255,255)      # Day time dull
+pinkLower = (127,53,58)    
+pinkUpper = (255,255,255)  
 
-
-
-
-#greenLower = (36,40,76)	 # Sunny
-#greenUpper = (104,162,224)  # Sunny
+#----------------------------------------------------------------------#
 
 
-greenLower = (34,32,58)     # Artificial Lighting
-greenUpper = (74,255,255)   # Artificial Lighting
+#----------------------------------------------------------------------#
+#                                  Dull
+#----------------------------------------------------------------------#
 
+#greenLower = (41,43,213)	
+#greenUpper = (66,255,224)
 
-#greenLower = (51,39,92)     # Day time dull
-#greenUpper = (90,255,255)   # Day time dull
+#pinkLower = (140,77,98)    
+#pinkUpper = (255,255,255)  
 
+#----------------------------------------------------------------------#
 # sets the length of the trail
 pts = deque(maxlen=10)
 pts2 = deque(maxlen=10)
@@ -143,7 +153,7 @@ if not success:
 cap.release()
 
 #-----------------  Generate target function  -------------------------#
-
+success, frame = cap.read()
 amplitude = 80
 frequency = 1.5
 phase = 0
@@ -297,7 +307,7 @@ if __name__ == '__main__':
                 pathindex = 0
                 timeflag = 0
 
-            angle = geom.turn((x,y),(x2,y2),vto)
+            angle = geom.angle((x,y),(x2,y2),vto)
             #dt = time()-oldtime
             #rotspeed = 200+angle_pid.output(0,-angle,dt)
             rotspeed = 200+angle_pid.output(0,-angle)

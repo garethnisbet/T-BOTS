@@ -49,7 +49,8 @@ if record:
         os.mkdir(folder)
 template = folder + '%05d.png'
 
-
+success, frameold = cap.read()
+frameold = frameold
 iii = 0
 oldtime = time()
 if __name__ == '__main__':
@@ -61,11 +62,15 @@ if __name__ == '__main__':
         
         
         success, frame = cap.read()
+        #diff = frame - frameold
+        #frameold = frame
         if not success:
             break
             
         #adjusted = cv2.convertScaleAbs(frame, alpha=alpha, beta=beta)
-        #canny_edges = cv2.Canny(frame,low_threshold,high_threshold)
+        canny_edges = cv2.Canny(frame,low_threshold,high_threshold)
+        #diff = canny_edges - frameold
+        #frameold = canny_edges
         #canny_edges = (canny_edges*mask).astype('uint8')
         #dst = cv2.undistort(frame, K, dist, None, newcameramtx)
         wim1 = cv2.warpPerspective(frame, M, (635,480))
@@ -93,6 +98,7 @@ if __name__ == '__main__':
         cv2.imshow('Frames', frame)
         #cv2.imshow('Corrected',adjusted)
         cv2.imshow('Birds Eye',wim1)
+        cv2.imshow('Diff',canny_edges)
         
         if record:
             cv2.imwrite(template % iii, frame) 

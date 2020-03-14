@@ -57,10 +57,16 @@ class geometry(object):
         ydata = np.array([np.sin(x)*radius+origin[0]]).T
         return np.concatenate((xdata,ydata),1)
 
-    def turn(self,v0,v1,vto):
+    def angle(self,v0,v1,vto):
         '''Calculates the angle of the T-Bot with respect to a target coordinate'''
         vm = (np.array(v0)+np.array(v1))/2.0
         ang = -(np.arctan2(vto[0]-vm[0],vto[1]-vm[1])-(np.arctan2(v1[0]-v0[0],v1[1]-v0[1])+np.pi/2))*180/np.pi
+        return (np.mod(ang+180.0,360.0)-180.0)
+
+    def bend(self,array_in,pathindex):
+        '''Calculates the angle of the T-Bot with respect to a target coordinate'''
+        v0,v1,v2 = array_in[pathindex], array_in[pathindex+1], array_in[pathindex+2]
+        ang = -((np.arctan2(v2[0]-v1[0],v2[1]-v1[1])-np.arctan2(v1[0]-v0[0],v1[1]-v0[1]))+np.pi)*180/np.pi
         return (np.mod(ang+180.0,360.0)-180.0)
 
     def distance(self,v0,v1,vto):
@@ -70,19 +76,18 @@ class geometry(object):
         
     def distanceSingle(self,v0,vto):
         '''Calculates the distance the T-Bot is from a target coordinate. If the scale factor is 1 the units are in pixels'''
-        vm = v0
-        return np.linalg.norm([vto[0]-vm[0],vto[1]-vm[1]])*self.scalefactor
-
+        return np.linalg.norm([vto[0]-v0[0],vto[1]-v0[1]])*self.scalefactor
+    ''''
     def bend(self,array_in,pathindex):
-        '''Calculates the magnitude of the bend angle over three cordinates'''
+        Calculates the magnitude of the bend angle over three cordinates
         array_in = array_in.astype(float)
         v1,v2 = array_in[pathindex+1]-array_in[pathindex], array_in[pathindex+2]-array_in[pathindex+1]
         bendangle = np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
         if np.isnan(bendangle):
             return 0
         else:
-            return np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
-            
+            return bendangle
+    '''        
     def image2path(self,im):
         imi = cv2.bitwise_not(im)
         gim = cv2.cvtColor(imi, cv2.COLOR_BGR2GRAY)

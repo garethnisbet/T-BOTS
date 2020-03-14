@@ -11,12 +11,15 @@ plt.ion()
 from time import time
 
 imagepath = 'TemplateImages/Elephant.png'
-imagepath = 'TemplateImages/Bot.png'
-imagepath = 'TemplateImages/hex.png'
+imagepath = 'TemplateImages/Track.png'
+#imagepath = 'TemplateImages/Butterfly.png'
+#imagepath = 'TemplateImages/Bot.png'
+#imagepath = 'TemplateImages/hex.png'
 #imagepath = 'TemplateImages/starfish.png'
-imagepath = 'TemplateImages/MiniMaze.png'
+#imagepath = 'TemplateImages/MiniMaze.png'
 #imagepath = 'TemplateImages/T-Bot.png'
-
+#imagepath = 'TemplateImages/Car.png'
+#imagepath = 'TemplateImages/Plane.png'
 
 
 

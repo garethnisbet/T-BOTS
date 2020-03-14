@@ -17,10 +17,10 @@ from sys import exit
 scalefactor = 1
 #origin =  [636/2,357/2]
 origin =  [0,0]
-showline = 1
-geom = geometry.geometry(1) # scale factor to convert pixels to mm
+showline = 0
 
-bb = np.array([[0,0,],[0,1],[1,1],[2,0],[0,0]])
+
+
 ########################################################################
 #-----------------------   Draw            ----------------------------#
 ########################################################################
@@ -34,7 +34,7 @@ else:
     coordinate = []
 
 cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 
@@ -46,62 +46,6 @@ screen = pygame.display.set_mode((633, 359), 0, 0)
 canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
  
 
-drawplot = 1
-
-
-while drawplot:
-    keys = pygame.key.get_pressed()
-     
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            exit()
-        c1, c2, c3 =  pygame.mouse.get_pressed()
-
-        if event.type == MOUSEMOTION and c1:
-            if len(coordinate)>2:
-                if np.linalg.norm(np.array(event.pos)-np.array(coordinate[-1])) > 5:
-                    coordinate.append(event.pos)
-            else:
-                coordinate.append(event.pos)
-            
-
-        if c3:
-            if len(coordinate)>10:
-                coordinate = coordinate[0:len(coordinate)-10]
-            else:
-                coordinate  = []
-        if keys[K_c]:
-            coordinate  = []
-
-        if keys[K_q]:
-            pygame.display.quit()
-            exit()
-        if keys[K_s]:
-            aa = np.array(coordinate)
-            np.savetxt(filename,aa)
-        if keys[K_b]:
-            aa = np.array(coordinate)
-            timestampedname = 'Paths/'+datetime.now().strftime('%d-%m-%y-%H%M%S')+'.dat'
-            np.savetxt(timestampedname,aa)
-            print('Backup created in '+timestampedname)
-
-
-        screen.blit(canvas,(0,0))
-     
-        if len(coordinate)>1:
-            pygame.draw.lines(screen, (0,255,0), False, coordinate, 3)
-
-        if event.type == KEYDOWN and event.key == K_ESCAPE:
-            pygame.display.quit()
-            exit()
-
-        pygame.display.update()
-        
-        if keys[K_r]:
-            drawplot = 0
-            pygame.display.quit()
-
-
 x = []
 y = []
 x2 = []
@@ -112,12 +56,6 @@ laptime = 1000
 oldlaptime = 500
 folder = 'RecordedImages/'
 record = 0
-
-#folder = 'SpeedTest/'
-if record:
-    if os.path.isdir(folder) is not True:
-        os.mkdir(folder)
-template = folder + '%05d.png'
 font = cv2.FONT_HERSHEY_SIMPLEX 
 
 #---------------- Setup text writing  -----------------#
@@ -131,8 +69,6 @@ color2 = (255, 255, 255)
 # Line thickness of 2 px 
 thickness = 1
 textstr = ''
-
-
 
 tii = 0 # counter to prevent recording every frame and slowing the Pi
 iii = 1
@@ -150,8 +86,8 @@ rdeadban = 2
 tolerance = 30
 
 
-feedforward = 8
-pos_pid = pid.pid(0.4,0.4,0,[-10,10],[0,20],turntime)
+feedforward = 0
+pos_pid = pid.pid(0.2,0.4,0,[-10,10],[0,40],turntime)
 angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 
 #----------------------------------------------------------------------#
@@ -159,21 +95,20 @@ angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 #
 #                        Artificial Lighting
 #----------------------------------------------------------------------#
-greenLower = (36,42,178)   
-greenUpper = (71,126,255) 
+greenLower = (36,42,228)   
+greenUpper = (74,255,255) 
  
-pinkLower = (164,23,207)       
+pinkLower = (143,70,113)       
 pinkUpper = (255,255,255) 
 
 #----------------------------------------------------------------------#
 #                                  Sunny
 #----------------------------------------------------------------------#
 
-#greenLower = (49,13,202)	
-#greenUpper = (82,121,225)
+#greenLower = (74,105,61)	
+#greenUpper = (90,255,224)
 
-
-#pinkLower = (142,54,146)    
+#pinkLower = (127,53,58)    
 #pinkUpper = (255,255,255)  
 
 #----------------------------------------------------------------------#
@@ -183,10 +118,10 @@ pinkUpper = (255,255,255)
 #                                  Dull
 #----------------------------------------------------------------------#
 
-#greenLower = (60,55,216)	
-#greenUpper = (80,255,255)
+#greenLower = (41,43,213)	
+#greenUpper = (66,255,224)
 
-#pinkLower = (126,33,210)    
+#pinkLower = (140,77,98)    
 #pinkUpper = (255,255,255)  
 
 #----------------------------------------------------------------------#
@@ -208,7 +143,7 @@ rdeadban = 2
 tolerance = 30
 
 #--------------------  Define functions  ------------------------------#
-
+geom = geometry.geometry(1) # scale factor to convert pixels to mm
 
 #--------------------- Setup Bluetooth --------------------------------#
 data = [0,0,0,0]
@@ -389,7 +324,7 @@ if __name__ == '__main__':
                 pathindex = 0
                 timeflag = 0
 
-            angle = geom.angle((x,y),(x2,y2),vto)
+            angle = geom.turn((x,y),(x2,y2),vto)
             #dt = time()-oldtime
             #rotspeed = 200+angle_pid.output(0,-angle,dt)
             rotspeed = 200+angle_pid.output(0,-angle)
@@ -406,7 +341,7 @@ if __name__ == '__main__':
         
             forwardspeed = '%03d' % forwardspeed
 
-            #print('forward speed '+forwardspeed+' turn speed '+rotspeed)
+            print('forward speed '+forwardspeed+' turn speed '+rotspeed)
             #--------------   Send data    ---------------#
             sendstr = str(rotspeed)+str(forwardspeed)+'Z'
             sendcount = btcom.send_data(sendstr,sendcount)
