@@ -64,7 +64,7 @@ class geometry(object):
         return (np.mod(ang+180.0,360.0)-180.0)
 
     def bend(self,array_in,pathindex):
-        '''Calculates the angle of the T-Bot with respect to a target coordinate'''
+        '''Calculates the angle between two vectors'''
         v0,v1,v2 = array_in[pathindex], array_in[pathindex+1], array_in[pathindex+2]
         ang = -((np.arctan2(v2[0]-v1[0],v2[1]-v1[1])-np.arctan2(v1[0]-v0[0],v1[1]-v0[1]))+np.pi)*180/np.pi
         return (np.mod(ang+180.0,360.0)-180.0)
@@ -77,17 +77,7 @@ class geometry(object):
     def distanceSingle(self,v0,vto):
         '''Calculates the distance the T-Bot is from a target coordinate. If the scale factor is 1 the units are in pixels'''
         return np.linalg.norm([vto[0]-v0[0],vto[1]-v0[1]])*self.scalefactor
-    ''''
-    def bend(self,array_in,pathindex):
-        Calculates the magnitude of the bend angle over three cordinates
-        array_in = array_in.astype(float)
-        v1,v2 = array_in[pathindex+1]-array_in[pathindex], array_in[pathindex+2]-array_in[pathindex+1]
-        bendangle = np.arccos(np.dot(v1,v2)/(np.linalg.norm(v1)*np.linalg.norm(v2)))
-        if np.isnan(bendangle):
-            return 0
-        else:
-            return bendangle
-    '''        
+      
     def image2path(self,im):
         imi = cv2.bitwise_not(im)
         gim = cv2.cvtColor(imi, cv2.COLOR_BGR2GRAY)

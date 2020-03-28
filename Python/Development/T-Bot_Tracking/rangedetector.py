@@ -81,7 +81,7 @@ def main():
         camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 
 
-
+    print(range_filter)
 
     setup_trackbars(range_filter)
 

@@ -1,11 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-# USAGE: You need to specify a filter and "only one" image source
-#
-# (python) rangedetector --filter RGB --image /home/gareth/Desktop/2019-06-02-163848.jpg
-# or
-# python rangedetector.py --filter HSV --webcam
 
 import cv2
 import argparse
@@ -62,52 +55,21 @@ def get_trackbar_values(range_filter):
 def main():
     args = get_arguments()
 
-    range_filter = args['filter'].upper()
-
-    if args['image']:
-        image = cv2.imread(args['image'])
-
-        if range_filter == 'RGB':
-            frame_to_thresh = image.copy()
-        elif range_filter == 'HSV':
-            frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        else:
-            frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
-    else:
-
-        camera = cv2.VideoCapture(0)
-        camera.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-        camera.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-        camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
-
-
-
+    range_filter = 'HSV'
+    camera = cv2.VideoCapture(0)
+    camera.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+    camera.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+    camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 
     setup_trackbars(range_filter)
 
     while True:
-        if args['webcam']:
-            ret, image = camera.read()
-
-            if not ret:
-                break
-
-            if range_filter == 'RGB':
-                frame_to_thresh = image.copy()
-            elif range_filter == 'HSV':
-                frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-            else:
-                frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+        success, image = camera.read()
+        frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         v1_min, v2_min, v3_min, v1_max, v2_max, v3_max = get_trackbar_values(range_filter)
-
         thresh = cv2.inRange(frame_to_thresh, (v1_min, v2_min, v3_min), (v1_max, v2_max, v3_max))
-
-        if args['preview']:
-            preview = cv2.bitwise_and(image, image, mask=thresh)
-            cv2.imshow("Preview", preview)
-        else:
-            cv2.imshow("Original", image)
-            cv2.imshow("Thresh", thresh)
+        preview = cv2.bitwise_and(image, image, mask=thresh)
+        cv2.imshow("Preview", preview)
 
         if cv2.waitKey(1) & 0xFF is ord('q'):
             break

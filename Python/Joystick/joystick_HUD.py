@@ -9,39 +9,10 @@ from collections import deque
 import numpy as np
 starttime = time()
 
-   
-def blitRotate(surf, image, pos, originPos, angle):
-
-    # calcaulate the axis aligned bounding box of the rotated image
-    w, h       = image.get_size()
-    box        = [pygame.math.Vector2(p) for p in [(0, 0), (w, 0), (w, -h), (0, -h)]]
-    box_rotate = [p.rotate(angle) for p in box]
-    min_box    = (min(box_rotate, key=lambda p: p[0])[0], min(box_rotate, key=lambda p: p[1])[1])
-    max_box    = (max(box_rotate, key=lambda p: p[0])[0], max(box_rotate, key=lambda p: p[1])[1])
-
-    # calculate the translation of the pivot 
-    pivot        = pygame.math.Vector2(originPos[0], -originPos[1])
-    pivot_rotate = pivot.rotate(angle)
-    pivot_move   = pivot_rotate - pivot
-
-    # calculate the upper left origin of the rotated image
-    origin = (pos[0] - originPos[0] + min_box[0] - pivot_move[0], pos[1] - originPos[1] - max_box[1] + pivot_move[1])
-
-    # get a rotated image
-    rotated_image = pygame.transform.rotate(image, angle)
-
-    # rotate and blit the image
-    surf.blit(rotated_image, origin)
-
-    # draw rectangle around the image
-    #pygame.draw.rect (surf, (255, 0, 0), (*origin, *rotated_image.get_size()),2)
-
-
-
 # setup for plotting
-xdatarange = [200,320]
-y_origin = 270
-yscale = 50
+xdatarange = [280,500]
+y_origin = 100
+yscale = 100
 pts = deque(maxlen=xdatarange[1]-xdatarange[0])
 for ii in range(xdatarange[0],xdatarange[1]):
     pts.appendleft((ii,np.random.rand(1)))
@@ -107,10 +78,13 @@ class TextPrint(object):
 
     def unindent(self):
         self.x -= 10
+        
     def abspos(self,screen, textString, pos):
+        self.x = pos[0]
+        self.y = pos[1]
         textBitmap = self.font.render(textString, True, WHITE)
-        screen.blit(textBitmap, pos)
-    
+        screen.blit(textBitmap, (self.x, self.y))
+        self.y += self.line_height
  
 
 ###################  Instantiate BT Class #############################    
@@ -127,11 +101,39 @@ GRAY = pygame.Color('gray')
 pygame.init()
 
 # Set the width and height of the screen (width, height).
-screen = pygame.display.set_mode((350, 550))
-logo = pygame.image.load(dirpath+'/logo.png')
-model = pygame.image.load(dirpath+'/T-BotSide.png')
-bg = pygame.image.load(dirpath+'/JoystickBG.png').convert()
-bgG = pygame.image.load(dirpath+'/hexG.jpg').convert()
+screen = pygame.display.set_mode((900, 590))
+
+bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()
+#bg = pygame.image.load(dirpath+'/HUD/ControllerTemplate.png').convert()
+bgG = pygame.image.load(dirpath+'/HUD/offline.png').convert()
+dpad = pygame.image.load(dirpath+'/HUD/dpad.png')
+dpadU = pygame.image.load(dirpath+'/HUD/dpadU.png')
+dpadD = pygame.image.load(dirpath+'/HUD/dpadD.png')
+dpadL = pygame.image.load(dirpath+'/HUD/dpadL.png')
+dpadR = pygame.image.load(dirpath+'/HUD/dpadR.png')
+dpadUR = pygame.image.load(dirpath+'/HUD/dpadUR.png')
+dpadDR = pygame.image.load(dirpath+'/HUD/dpadDR.png')
+dpadUL = pygame.image.load(dirpath+'/HUD/dpadUL.png')
+dpadDL = pygame.image.load(dirpath+'/HUD/dpadDL.png')
+
+bpad = pygame.image.load(dirpath+'/HUD/bpad.png')
+bpadU = pygame.image.load(dirpath+'/HUD/bpadU.png')
+bpadD = pygame.image.load(dirpath+'/HUD/bpadD.png')
+bpadL = pygame.image.load(dirpath+'/HUD/bpadL.png')
+bpadR = pygame.image.load(dirpath+'/HUD/bpadR.png')
+bpadUR = pygame.image.load(dirpath+'/HUD/bpadUR.png')
+bpadDR = pygame.image.load(dirpath+'/HUD/bpadDR.png')
+bpadUL = pygame.image.load(dirpath+'/HUD/bpadUL.png')
+bpadDL = pygame.image.load(dirpath+'/HUD/bpadDL.png')
+
+stick = pygame.image.load(dirpath+'/HUD/stick.png')
+
+
+posdpad = (295,340)
+posbpad = (520,340)
+posstickL = (358, 395)
+posstickR = (480,395)
+
 
 
 
@@ -210,7 +212,7 @@ while not done:
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
 
-        textPrint.tprint(screen, "Joystick {}".format(i))
+        textPrint.abspos(screen, "Joystick {}".format(i),(20,280))
         textPrint.indent()
 
         # Get the name from the OS for the controller/joystick.
@@ -223,6 +225,10 @@ while not done:
         textPrint.tprint(screen, "")
         textPrint.tprint(screen, "Number of axes: {}".format(axes))
         textPrint.indent()
+        textPrint.unindent()
+        hats = joystick.get_numhats()
+        textPrint.tprint(screen, "Number of hats: {}".format(hats))
+        textPrint.indent()
 
         for i in range(axes):
             axis = joystick.get_axis(i)
@@ -234,19 +240,14 @@ while not done:
         textPrint.unindent()
         textPrint.tprint(screen, "")
         buttons = joystick.get_numbuttons()
-        textPrint.tprint(screen, "Number of buttons: {}".format(buttons))
-        textPrint.indent()
-
+        
+        textPrint.abspos(screen, "Number of buttons: {}".format(buttons),(710,280))
+        textPrint.tprint(screen, "")
         for i in range(buttons):
             button = joystick.get_button(i)
             textPrint.tprint(screen,
                              "Button {:>2} value: {}".format(i, button))
-        textPrint.unindent()
 
-        hats = joystick.get_numhats()
-        textPrint.tprint(screen, "")
-        textPrint.tprint(screen, "Number of hats: {}".format(hats))
-        textPrint.indent()
 
         # Hat position. All or nothing for direction, not a float like
         # get_axis(). Position is a tuple of int values (x, y).
@@ -271,17 +272,16 @@ while not done:
                 speedfactor = 0
                 
         textPrint.unindent()
-        textPrint.tprint(screen, "")
-        textPrint.tprint(screen, "T-Bot Data")
-        textPrint.indent()
+
+
                 
         oldvals = btcom.get_data(oldvals)
         #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
         g_angle = oldvals[3]
         pts.appendleft((iii,g_angle))
         iii+=1
-        pygame.draw.lines(screen, (4,150,7), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
-        pygame.draw.lines(screen, (5,150,7), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
+        pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
+        pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
         if iii > xdatarange[1]:
             iii = xdatarange[0]
         aa[:,1]=np.array(pts)[:,1]
@@ -293,12 +293,13 @@ while not done:
         except:
             b=1
             
- 
         textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
         textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
         
-         
-            
+        
+        
+        textPrint.abspos(screen, "T-Bot Data",(550,80))
+        textPrint.tprint(screen, "")
         textPrint.tprint(screen, "gyrodata: {}".format(str(oldvals[3])))
         textPrint.tprint(screen, "kps: {}".format(str(oldvals[0])))
         textPrint.tprint(screen, "kp: {}".format(str(oldvals[1])))
@@ -350,11 +351,50 @@ while not done:
             sendcount = btcom.send_data(buttonstring,sendcount)
 
 
+        # ------------------ Highlight buttons ----------------#
+        screen.blit(dpad,posdpad)
+        screen.blit(bpad,posbpad)
+        screen.blit(stick,(posstickL[0]+axis0*5,posstickL[1]+axis1*5))
+        screen.blit(stick,(posstickR[0]+axis2*5,posstickR[1]+axis3*5))
+        
+        if hat[0] == 1:
+            screen.blit(dpadR,posdpad)
+        elif hat[0] == -1:
+            screen.blit(dpadL,posdpad)
+        elif hat[1] == 1:
+            screen.blit(dpadU,posdpad)
+        elif hat[1] == -1:
+            screen.blit(dpadD,posdpad)
+        elif hat[0] == -1 & hat[1] == 1:
+            screen.blit(dpadUL,posdpad)
+        elif hat[0] == 1 & hat[1] == -1:
+            screen.blit(dpadDR,posdpad)
+        elif hat[0] == 1 & hat[1] == 1:
+            screen.blit(dpadUR,posdpad)
+        elif hat[0] == -1 & hat[1] == -1:
+            screen.blit(dpadDL,posdpad)
+            
+        if joystick.get_button(0):
+            screen.blit(bpadU,posbpad)
+        elif joystick.get_button(1):
+            screen.blit(bpadR,posbpad)
+        elif joystick.get_button(2):
+            screen.blit(bpadD,posbpad)
+        elif joystick.get_button(3):
+            screen.blit(bpadL,posbpad)
+        elif joystick.get_button(0) & joystick.get_button(1):
+            screen.blit(bpadUR,posbpad)
+        elif joystick.get_button(1) & joystick.get_button(2):
+            screen.blit(bpadDR,posbpad)
+        elif joystick.get_button(2) & joystick.get_button(3):
+            screen.blit(bpadDL,posbpad)
+        elif joystick.get_button(0) & joystick.get_button(3):
+            screen.blit(bpadUL,posbpad)
 
         
     # Go ahead and update the screen with what we've drawn.
     #modelr = pygame.transform.rotate(model,-g_angle)
-    screen.blit(logo,(230,420))
+    #screen.blit(logo,(20,480))
     
     #blitRotate(screen, model, (260,160), (75,75), -g_angle)
     #screen.blit(modelr,(230,100))    

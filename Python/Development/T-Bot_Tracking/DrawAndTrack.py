@@ -7,6 +7,7 @@ from collections import deque
 import numpy as np
 import matplotlib.pyplot as plt
 from TBotTools import tbt, pid, geometry
+from scipy.interpolate import interp1d
 from time import time
 plt.ion()
 import bluetooth as bt
@@ -18,8 +19,10 @@ scalefactor = 1
 #origin =  [636/2,357/2]
 origin =  [0,0]
 showline = 1
+interpfactor = 5
 geom = geometry.geometry(1) # scale factor to convert pixels to mm
 
+bb = np.array([[0,0,],[0,1],[1,1],[2,0],[3,0],[4,0],[3,0],[2,0],[1,0]])
 ########################################################################
 #-----------------------   Draw            ----------------------------#
 ########################################################################
@@ -158,10 +161,10 @@ angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 #
 #                        Artificial Lighting
 #----------------------------------------------------------------------#
-greenLower = (36,42,178)   
-greenUpper = (71,126,255) 
+greenLower = (37,26,178)   
+greenUpper = (56,255,255) 
  
-pinkLower = (164,23,207)       
+pinkLower = (156,56,173)       
 pinkUpper = (255,255,255) 
 
 #----------------------------------------------------------------------#
@@ -170,7 +173,6 @@ pinkUpper = (255,255,255)
 
 #greenLower = (49,13,202)	
 #greenUpper = (82,121,225)
-
 
 #pinkLower = (142,54,146)    
 #pinkUpper = (255,255,255)  
@@ -248,6 +250,15 @@ xdata =  np.arange(border, frame.shape[1]-border, stepsize)
 
 aa = np.loadtxt('pathpoints.dat') # Use Click2Path.py to create an arbitrary path
 
+if interpfactor != 1:
+    print('Interpolating data')
+    xdata = range(aa.shape[0])
+    x_hires = np.linspace(xdata[0],(xdata[-1]-1),len(xdata)*interpfactor)
+    f1 = interp1d(xdata,aa[:,0], kind = 'cubic')
+    f2 = interp1d(xdata,aa[:,1], kind = 'cubic')
+    y1 = f1(x_hires)
+    y2 = f2(x_hires)
+    aa = np.concatenate(([y1],[y2])).T
 
 
 ########################################################################
@@ -366,7 +377,7 @@ if __name__ == '__main__':
                 pass
             _distance = geom.distance((x,y),(x2,y2),vto) # distance to target coordinate
 
-            if _distance < tolerance:
+            if np.abs(_distance) < tolerance:
                 pathindex += 1  # if close enough to target coordinate, get next coordinate
                 vto = aa[pathindex]
                 
@@ -394,6 +405,7 @@ if __name__ == '__main__':
             rotspeed = 200+angle_pid.output(0,-angle)
             oldtime = time()
             #straightspeedfactor = 1-np.sin(abs(angle))
+            #straightspeedfactor = 1.2 - abs(np.sin(geom.bend(aa,pathindex)*np.pi/180))
             straightspeedfactor = 1
             #forwardspeed = 200+straightspeedfactor*(pos_pid.output(0,-_distance,dt)+feedforward)
             forwardspeed = 200+straightspeedfactor*(pos_pid.output(0,-_distance)+feedforward)
