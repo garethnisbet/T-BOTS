@@ -7,20 +7,17 @@ import bluetooth as bt
 from TBotTools import tbt
 from collections import deque
 import numpy as np
+starttime = time()
 import cv2
 
 
 cap = cv2.VideoCapture(0)
-#cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-#cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-#cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
-
-starttime = time()
 
 # setup for plotting
 xdatarange = [20,220]
 y_origin = 470
 yscale = 50
+
 pts = deque(maxlen=xdatarange[1]-xdatarange[0])
 for ii in range(xdatarange[0],xdatarange[1]):
     pts.appendleft((ii,np.random.rand(1)))
@@ -160,10 +157,6 @@ pygame.joystick.init()
 textPrint = TextPrint()
 
 # -------- Main Program Loop -----------
-loop = 0
-
-
-
 
 while not done:
         
@@ -187,7 +180,6 @@ while not done:
 
     if btcom.connected():
         screen.blit(bg, [0, 0])
-
     else:
         tries = 0
         while btcom.connected() < 1 and tries < 10:
@@ -211,10 +203,9 @@ while not done:
             
     success, frame = cap.read()
     frame = cv2.resize(frame, (int(320/1.2), int(240/1.2)))
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
-    screen.blit(canvas,(270,50))
-    
+    screen.blit(canvas,(260,49))            
 
     
     textPrint.reset()
@@ -291,11 +282,9 @@ while not done:
                 
         textPrint.unindent()
 
-        if loop == 2:
-            oldvals = btcom.get_data(oldvals)
-            loop = 0
-        loop += 1
 
+                
+        oldvals = btcom.get_data(oldvals)
         #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
         g_angle = oldvals[3]
         pts.appendleft((iii,g_angle))
@@ -347,35 +336,34 @@ while not done:
                 turn = 200-turnspeedlimit
             cmdwrite = 1       
             sendstring = str(turn)+str(speed)+'Z'
-
-
-        elif joystick.get_button(0):
-            sendstring = '200200F' # trim +ve
-            print('pressed')
-
-        elif joystick.get_button(2):
-            sendstring = '200200E' # trim -ve
-
-
-        elif joystick.get_button(1):
-            sendstring = '200200B' # kps +ve
-
-        elif joystick.get_button(3):
-            sendstring = '200200A' # kps -ve
-
-        elif joystick.get_button(9):
-            sendstring = '200200T' # kps -ve
+            sendcount = btcom.send_data(sendstring,sendcount)
         else:
             sendstring = '200200Z'
+            sendcount = btcom.send_data(sendstring,sendcount)
             
+            
+        if joystick.get_button(0):
+            buttonstring = '200200F' # trim +ve
+            sendcount = btcom.send_data(buttonstring,sendcount)
+        elif joystick.get_button(2):
+            buttonstring = '200200E' # trim -ve
+            sendcount = btcom.send_data(buttonstring,sendcount)
 
-        sendcount = btcom.send_data(sendstring,sendcount)
+        elif joystick.get_button(1):
+            buttonstring = '200200B' # kps +ve
+            sendcount = btcom.send_data(buttonstring,sendcount)
+        elif joystick.get_button(3):
+            buttonstring = '200200A' # kps -ve
+            sendcount = btcom.send_data(buttonstring,sendcount)
+        elif joystick.get_button(9):
+            buttonstring = '200200T' # kps -ve
+            sendcount = btcom.send_data(buttonstring,sendcount)
 
         # ------------------ Highlight buttons ----------------#
-        screen.blit(dpad,posdpad)
-        screen.blit(bpad,posbpad)
-        screen.blit(stick,(posstickL[0]+axis0*5,posstickL[1]+axis1*5))
-        screen.blit(stick,(posstickR[0]+axis2*5,posstickR[1]+axis3*5))
+        #screen.blit(dpad,posdpad)
+        #screen.blit(bpad,posbpad)
+        screen.blit(stick,(posstickL[0]+axis0*8,posstickL[1]+axis1*8))
+        screen.blit(stick,(posstickR[0]+axis2*8,posstickR[1]+axis3*8))
         
         if hat[0] == 1:
             screen.blit(dpadR,posdpad)
@@ -385,11 +373,14 @@ while not done:
             screen.blit(dpadU,posdpad)
         elif hat[1] == -1:
             screen.blit(dpadD,posdpad)
-        elif hat[0] == -1 & hat[1] == 1:
+        else:
+            screen.blit(dpad,posdpad)
+            
+        if (hat[0] == -1) & (hat[1] == 1):
             screen.blit(dpadUL,posdpad)
-        elif hat[0] == 1 & hat[1] == -1:
+        elif (hat[0] == 1) & (hat[1] == -1):
             screen.blit(dpadDR,posdpad)
-        elif hat[0] == 1 & hat[1] == 1:
+        elif (hat[0] == 1 & hat[1] == 1):
             screen.blit(dpadUR,posdpad)
         elif hat[0] == -1 & hat[1] == -1:
             screen.blit(dpadDL,posdpad)
@@ -402,7 +393,10 @@ while not done:
             screen.blit(bpadD,posbpad)
         elif joystick.get_button(3):
             screen.blit(bpadL,posbpad)
-        elif joystick.get_button(0) & joystick.get_button(1):
+        else:
+            screen.blit(bpad,posbpad)
+            
+        if joystick.get_button(0) & joystick.get_button(1):
             screen.blit(bpadUR,posbpad)
         elif joystick.get_button(1) & joystick.get_button(2):
             screen.blit(bpadDR,posbpad)

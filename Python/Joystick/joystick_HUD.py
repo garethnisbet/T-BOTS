@@ -350,7 +350,6 @@ while not done:
             buttonstring = '200200T' # kps -ve
             sendcount = btcom.send_data(buttonstring,sendcount)
 
-        print(sendcount)
         # ------------------ Highlight buttons ----------------#
         screen.blit(dpad,posdpad)
         screen.blit(bpad,posbpad)
@@ -365,11 +364,14 @@ while not done:
             screen.blit(dpadU,posdpad)
         elif hat[1] == -1:
             screen.blit(dpadD,posdpad)
-        elif hat[0] == -1 & hat[1] == 1:
+        else:
+            screen.blit(dpad,posdpad)
+            
+        if (hat[0] == -1) & (hat[1] == 1):
             screen.blit(dpadUL,posdpad)
-        elif hat[0] == 1 & hat[1] == -1:
+        elif (hat[0] == 1) & (hat[1] == -1):
             screen.blit(dpadDR,posdpad)
-        elif hat[0] == 1 & hat[1] == 1:
+        elif (hat[0] == 1 & hat[1] == 1):
             screen.blit(dpadUR,posdpad)
         elif hat[0] == -1 & hat[1] == -1:
             screen.blit(dpadDL,posdpad)
@@ -382,7 +384,10 @@ while not done:
             screen.blit(bpadD,posbpad)
         elif joystick.get_button(3):
             screen.blit(bpadL,posbpad)
-        elif joystick.get_button(0) & joystick.get_button(1):
+        else:
+            screen.blit(bpad,posbpad)
+            
+        if joystick.get_button(0) & joystick.get_button(1):
             screen.blit(bpadUR,posbpad)
         elif joystick.get_button(1) & joystick.get_button(2):
             screen.blit(bpadDR,posbpad)
