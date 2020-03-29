@@ -18,9 +18,9 @@ cap = cv2.VideoCapture(0)
 starttime = time()
 
 # setup for plotting
-xdatarange = [280,520]
-y_origin = 100
-yscale = 100
+xdatarange = [20,220]
+y_origin = 470
+yscale = 50
 pts = deque(maxlen=xdatarange[1]-xdatarange[0])
 for ii in range(xdatarange[0],xdatarange[1]):
     pts.appendleft((ii,np.random.rand(1)))
@@ -211,6 +211,7 @@ while not done:
             
     success, frame = cap.read()
     frame = cv2.resize(frame, (int(320/1.2), int(240/1.2)))
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
     canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
     screen.blit(canvas,(270,50))
     
