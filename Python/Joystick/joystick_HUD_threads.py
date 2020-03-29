@@ -7,6 +7,21 @@ import bluetooth as bt
 from TBotTools import tbt
 from collections import deque
 import numpy as np
+import threading
+import Queue
+import cv2
+
+
+cap = cv2.VideoCapture(0)
+#cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+#cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+#cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
+
+
+
+
+response_to_send_que = Queue.Queue()
+rcv_data_que = Queue.Queue()
 starttime = time()
 
 # setup for plotting
@@ -196,7 +211,11 @@ while not done:
         else:
             tries = 0
             
-            
+    success, frame = cap.read()
+    frame = cv2.resize(frame, (int(320/1.2), int(240/1.2)))
+    canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
+    screen.blit(canvas,(270,50))
+    
 
     
     textPrint.reset()
@@ -275,7 +294,14 @@ while not done:
 
 
                 
-        oldvals = btcom.get_data(oldvals)
+
+        getdata = threading.Thread(target=lambda q, arg1: q.put(btcom.get_data(oldvals)), args=(rcv_data_que,'make_iterable,'))
+        getdata.start()
+        #getdata.join()
+        oldvals = rcv_data_que.get()
+
+        
+        
         #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
         g_angle = oldvals[3]
         pts.appendleft((iii,g_angle))
@@ -327,30 +353,33 @@ while not done:
                 turn = 200-turnspeedlimit
             cmdwrite = 1       
             sendstring = str(turn)+str(speed)+'Z'
-            sendcount = btcom.send_data(sendstring,sendcount)
+
         else:
             sendstring = '200200Z'
-            sendcount = btcom.send_data(sendstring,sendcount)
-            
-            
+
         if joystick.get_button(0):
-            buttonstring = '200200F' # trim +ve
-            sendcount = btcom.send_data(buttonstring,sendcount)
+            sendstring = '200200F' # trim +ve
+
         elif joystick.get_button(2):
-            buttonstring = '200200E' # trim -ve
-            sendcount = btcom.send_data(buttonstring,sendcount)
+            sendstring = '200200E' # trim -ve
+
 
         elif joystick.get_button(1):
-            buttonstring = '200200B' # kps +ve
-            sendcount = btcom.send_data(buttonstring,sendcount)
+            sendstring = '200200B' # kps +ve
+
         elif joystick.get_button(3):
-            buttonstring = '200200A' # kps -ve
-            sendcount = btcom.send_data(buttonstring,sendcount)
+            sendstring = '200200A' # kps -ve
+
         elif joystick.get_button(9):
             buttonstring = '200200T' # kps -ve
-            sendcount = btcom.send_data(buttonstring,sendcount)
+            
+        senddata = threading.Thread(target=lambda q, arg1: q.put(btcom.send_data(sendstring,sendcount)), args=(response_to_send_que,'make_iterable,'))
+        senddata.start()
+        #senddata.join()
+        sendcount = response_to_send_que.get()
 
-        print(sendcount)
+
+
         # ------------------ Highlight buttons ----------------#
         screen.blit(dpad,posdpad)
         screen.blit(bpad,posbpad)

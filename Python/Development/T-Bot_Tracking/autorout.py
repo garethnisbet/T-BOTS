@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 from time import sleep
 plt.ion()
 
-save = 1 # Save way points
-usecam = 1
+save = 0 # Save way points
+usecam = 0
 showconv = 1
 
 if usecam:
