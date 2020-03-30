@@ -133,8 +133,8 @@ bpadDL = pygame.image.load(dirpath+'/HUD/bpadDL.png')
 
 stick = pygame.image.load(dirpath+'/HUD/stick.png')
 
-spotT = pygame.image.load(dirpath+'/HUD/spotT.png')
-spotB = pygame.image.load(dirpath+'/HUD/spotB.png')
+spotB = pygame.image.load(dirpath+'/HUD/spotT.png')
+spotT = pygame.image.load(dirpath+'/HUD/spotB.png')
 
 posdpad = (295,340)
 posbpad = (520,340)
@@ -307,10 +307,10 @@ while not done:
         except:
             b=1
 
-        g_angleR = g_angle*np.pi/180
-        rmat = np.array([[np.cos(g_angleR),-np.sin(g_angleR)],[np.sin(g_angleR),np.cos(g_angleR)]])
-        spotTpos = tuple(spotTorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
-        screen.blit(spotB,spotTpos)
+        #g_angleR = g_angle*np.pi/180
+        #rmat = np.array([[np.cos(g_angleR),-np.sin(g_angleR)],[np.sin(g_angleR),np.cos(g_angleR)]])
+        #spotTpos = tuple(spotTorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
+        #screen.blit(spotB,spotTpos)
         
         
         
@@ -359,10 +359,24 @@ while not done:
             
         
         
-        theta = np.arctan2(turn-200,speed-200)
+        theta = np.arctan((speed-200,speed-200))
         rmat = np.array([[np.cos(theta),-np.sin(theta)],[np.sin(theta),np.cos(theta)]])
+        spotTpos = tuple(spotTorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
+        theta = -theta-np.pi
+        rmat = np.array([[np.cos(theta),-np.sin(theta)],[np.sin(theta),np.cos(theta)]])
+        spotTpos2 = tuple(spotTorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
+
+        
+        theta2 = np.arctan((turn-200,turn-200))+np.pi/2
+        rmat = np.array([[np.cos(theta2),-np.sin(theta2)],[np.sin(theta2),np.cos(theta2)]])
         spotBpos = tuple(spotBorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
-        screen.blit(spotT,spotBpos)    
+        rmat = np.array([[np.cos(-theta2),-np.sin(-theta2)],[np.sin(-theta2),np.cos(-theta2)]])
+        spotBpos2 = tuple(spotBorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
+        
+        screen.blit(spotT,spotTpos)
+        screen.blit(spotT,spotTpos2)
+        screen.blit(spotB,spotBpos)
+        screen.blit(spotB,spotBpos2)     
             
         if joystick.get_button(0):
             buttonstring = '200200F' # trim +ve
@@ -427,13 +441,6 @@ while not done:
         elif joystick.get_button(0) & joystick.get_button(3):
             screen.blit(bpadUL,posbpad)
 
-        
-    # Go ahead and update the screen with what we've drawn.
-    #modelr = pygame.transform.rotate(model,-g_angle)
-    #screen.blit(logo,(20,480))
-    
-    #blitRotate(screen, model, (260,160), (75,75), -g_angle)
-    #screen.blit(modelr,(230,100))    
 
     
     
