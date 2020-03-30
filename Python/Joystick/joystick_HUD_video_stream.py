@@ -133,12 +133,17 @@ bpadDL = pygame.image.load(dirpath+'/HUD/bpadDL.png')
 
 stick = pygame.image.load(dirpath+'/HUD/stick.png')
 
+spotT = pygame.image.load(dirpath+'/HUD/spotT.png')
+spotB = pygame.image.load(dirpath+'/HUD/spotB.png')
 
 posdpad = (295,340)
 posbpad = (520,340)
 posstickL = (358, 395)
 posstickR = (480,395)
 
+spotTorigin = (123,145)
+spotBorigin = (765,145)
+spotV = np.array([0,-62])
 
 
 
@@ -301,6 +306,14 @@ while not done:
             
         except:
             b=1
+
+        g_angleR = g_angle*np.pi/180
+        rmat = np.array([[np.cos(g_angleR),-np.sin(g_angleR)],[np.sin(g_angleR),np.cos(g_angleR)]])
+        spotTpos = tuple(spotTorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
+        screen.blit(spotB,spotTpos)
+        
+        
+        
             
         textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
         textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
@@ -338,9 +351,18 @@ while not done:
             sendstring = str(turn)+str(speed)+'Z'
             sendcount = btcom.send_data(sendstring,sendcount)
         else:
+            turn = 200
+            speed = 200
+            sendstring = str(turn)+str(speed)+'Z'
             sendstring = '200200Z'
             sendcount = btcom.send_data(sendstring,sendcount)
             
+        
+        
+        theta = np.arctan2(turn-200,speed-200)
+        rmat = np.array([[np.cos(theta),-np.sin(theta)],[np.sin(theta),np.cos(theta)]])
+        spotBpos = tuple(spotBorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
+        screen.blit(spotT,spotBpos)    
             
         if joystick.get_button(0):
             buttonstring = '200200F' # trim +ve
