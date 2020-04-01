@@ -12,6 +12,13 @@ import cv2
 
 
 cap = cv2.VideoCapture(0)
+try:
+    camera.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+    camera.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+    camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
+except:
+    print('Camera functions might be limited.')
+
 
 # setup for plotting
 xdatarange = [20,220]
@@ -109,6 +116,7 @@ pygame.init()
 screen = pygame.display.set_mode((900, 590))
 
 bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()
+#bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()
 #bg = pygame.image.load(dirpath+'/HUD/ControllerTemplate.png').convert()
 bgG = pygame.image.load(dirpath+'/HUD/offline.png').convert()
 dpad = pygame.image.load(dirpath+'/HUD/dpad.png')
@@ -161,6 +169,9 @@ pygame.joystick.init()
 # Get ready to print.
 textPrint = TextPrint()
 
+readdataevent = pygame.USEREVENT+1
+pygame.time.set_timer(readdataevent, 50)
+
 # -------- Main Program Loop -----------
 
 while not done:
@@ -207,7 +218,8 @@ while not done:
             tries = 0
             
     success, frame = cap.read()
-    frame = cv2.resize(frame, (int(320/1.2), int(240/1.2)))
+    imagescalefactor = 200./frame.shape[0]
+    frame = cv2.resize(frame, (int(frame.shape[1]*imagescalefactor), int(frame.shape[0]*imagescalefactor)))
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
     screen.blit(canvas,(260,49))            
@@ -287,9 +299,8 @@ while not done:
                 
         textPrint.unindent()
 
-
-                
-        oldvals = btcom.get_data(oldvals)
+        if pygame.event.get(readdataevent):
+            oldvals = btcom.get_data(oldvals)
         #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
         g_angle = oldvals[3]
         pts.appendleft((iii,g_angle))
@@ -448,7 +459,7 @@ while not done:
 
 
     # Limit to 20 frames per second.
-    clock.tick(20)
+    clock.tick(30)
 
 # Close the window and quit.
 # If you forget this line, the program will 'hang'
