@@ -125,7 +125,10 @@ bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()
 if colourinvert:
     bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()
 else:
-    bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()
+    #bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()
+    #bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()
+    #bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()
+    bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert() 
     
 bgG = pygame.image.load(dirpath+'/HUD/offline.png').convert()
 dpad = pygame.image.load(dirpath+'/HUD/dpad.png')
