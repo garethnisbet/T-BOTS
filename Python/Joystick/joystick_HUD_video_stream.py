@@ -2,6 +2,7 @@
 import pygame, sys, pygame.mixer, os
 sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from pygame.locals import *
+
 from time import sleep, time
 import bluetooth as bt
 from TBotTools import tbt
@@ -9,8 +10,8 @@ from collections import deque
 import numpy as np
 starttime = time()
 import cv2
-
-
+clock = pygame.time.Clock()
+colourinvert = 0
 cap = cv2.VideoCapture(0)
 try:
     camera.set(cv2.CAP_PROP_AUTOFOCUS, 0)
@@ -106,7 +107,10 @@ class TextPrint(object):
         
 # Define some colors.
 BLACK = pygame.Color('black')
-WHITE = pygame.Color('white')
+if colourinvert:
+    WHITE = BLACK
+else:
+    WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
 
 
@@ -118,6 +122,11 @@ screen = pygame.display.set_mode((900, 590))
 bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()
 #bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()
 #bg = pygame.image.load(dirpath+'/HUD/ControllerTemplate.png').convert()
+if colourinvert:
+    bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()
+else:
+    bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()
+    
 bgG = pygame.image.load(dirpath+'/HUD/offline.png').convert()
 dpad = pygame.image.load(dirpath+'/HUD/dpad.png')
 dpadU = pygame.image.load(dirpath+'/HUD/dpadU.png')
@@ -219,10 +228,13 @@ while not done:
             
     success, frame = cap.read()
     imagescalefactor = 200./frame.shape[0]
+    
     frame = cv2.resize(frame, (int(frame.shape[1]*imagescalefactor), int(frame.shape[0]*imagescalefactor)))
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
-    screen.blit(canvas,(260,49))            
+    
+    frame = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
+    frame.set_alpha(210)
+    screen.blit(frame,(260,49))            
 
     
     textPrint.reset()
@@ -313,7 +325,7 @@ while not done:
         try:  
             bb[:,1] = (yscale/((aa[:,1]-aa[:,1].max()).min())*(aa[:,1]-aa[:,1].max()))+y_origin
             gdata = tuple(map(tuple, tuple(bb)))
-            pygame.draw.lines(screen, (255,255,255), False, (gdata),1)
+            pygame.draw.lines(screen, WHITE, False, (gdata),1)
             
         except:
             b=1
@@ -339,6 +351,7 @@ while not done:
         textPrint.tprint(screen, "trim: {}".format(str(oldvals[2])))
         textPrint.tprint(screen, "Speed Factor: {}".format(str(speedfactor)))
         textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
+        textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))   
 
         textPrint.unindent()
 

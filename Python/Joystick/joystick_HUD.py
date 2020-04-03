@@ -157,6 +157,10 @@ pygame.joystick.init()
 # Get ready to print.
 textPrint = TextPrint()
 
+
+readdataevent = pygame.USEREVENT+1
+pygame.time.set_timer(readdataevent, 50)
+
 # -------- Main Program Loop -----------
 
 while not done:
@@ -279,9 +283,8 @@ while not done:
                 
         textPrint.unindent()
 
-
-                
-        oldvals = btcom.get_data(oldvals)
+        if pygame.event.get(readdataevent):
+            oldvals = btcom.get_data(oldvals)
         #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
         g_angle = oldvals[3]
         pts.appendleft((iii,g_angle))
@@ -443,7 +446,7 @@ while not done:
 
 
     # Limit to 20 frames per second.
-    clock.tick(20)
+    clock.tick(30)
 
 # Close the window and quit.
 # If you forget this line, the program will 'hang'
