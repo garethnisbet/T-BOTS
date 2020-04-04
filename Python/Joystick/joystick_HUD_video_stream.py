@@ -282,7 +282,7 @@ while not done:
         textPrint.tprint(screen, "")
         buttons = joystick.get_numbuttons()
         
-        textPrint.abspos(screen, "Number of buttons: {}".format(buttons),(710,280))
+        textPrint.abspos(screen, "Number of buttons: {}".format(buttons),(720,280))
         textPrint.tprint(screen, "")
         for i in range(buttons):
             button = joystick.get_button(i)

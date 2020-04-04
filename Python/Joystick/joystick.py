@@ -8,7 +8,7 @@ from TBotTools import tbt
 from collections import deque
 import numpy as np
 starttime = time()
-
+clock = pygame.time.Clock()
    
 def blitRotate(surf, image, pos, originPos, angle):
 
@@ -305,6 +305,7 @@ while not done:
         textPrint.tprint(screen, "trim: {}".format(str(oldvals[2])))
         textPrint.tprint(screen, "Speed Factor: {}".format(str(speedfactor)))
         textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
+        textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps())))) 
 
         textPrint.unindent()
 
@@ -365,7 +366,7 @@ while not done:
 
 
     # Limit to 20 frames per second.
-    clock.tick(20)
+    clock.tick(30)
 
 # Close the window and quit.
 # If you forget this line, the program will 'hang'

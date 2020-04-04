@@ -7,8 +7,10 @@ import bluetooth as bt
 from TBotTools import tbt
 from collections import deque
 import numpy as np
-starttime = time()
+clock = pygame.time.Clock()
 
+starttime = time()
+colourinvert = 0
 # setup for plotting
 xdatarange = [280,520]
 y_origin = 100
@@ -94,8 +96,14 @@ class TextPrint(object):
         
 # Define some colors.
 BLACK = pygame.Color('black')
-WHITE = pygame.Color('white')
+
+if colourinvert:
+    WHITE = BLACK
+else:
+    WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
+
+
 
 
 pygame.init()
@@ -103,8 +111,15 @@ pygame.init()
 # Set the width and height of the screen (width, height).
 screen = pygame.display.set_mode((900, 590))
 
-bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()
-#bg = pygame.image.load(dirpath+'/HUD/ControllerTemplate.png').convert()
+if colourinvert:
+    bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()
+else:
+    #bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()
+    #bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()
+    #bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()
+    bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert()
+
+
 bgG = pygame.image.load(dirpath+'/HUD/offline.png').convert()
 dpad = pygame.image.load(dirpath+'/HUD/dpad.png')
 dpadU = pygame.image.load(dirpath+'/HUD/dpadU.png')
@@ -282,7 +297,7 @@ while not done:
                 speedfactor = 0
                 
         textPrint.unindent()
-
+        
         if pygame.event.get(readdataevent):
             oldvals = btcom.get_data(oldvals)
         #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
@@ -297,7 +312,7 @@ while not done:
         try:  
             bb[:,1] = (yscale/((aa[:,1]-aa[:,1].max()).min())*(aa[:,1]-aa[:,1].max()))+y_origin
             gdata = tuple(map(tuple, tuple(bb)))
-            pygame.draw.lines(screen, (255,255,255), False, (gdata),1)
+            pygame.draw.lines(screen, WHITE, False, (gdata),1)
             
         except:
             b=1
@@ -320,6 +335,7 @@ while not done:
         textPrint.tprint(screen, "trim: {}".format(str(oldvals[2])))
         textPrint.tprint(screen, "Speed Factor: {}".format(str(speedfactor)))
         textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
+        textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))   
 
         textPrint.unindent()
 
