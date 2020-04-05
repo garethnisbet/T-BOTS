@@ -156,6 +156,14 @@ stick = pygame.image.load(dirpath+'/HUD/stick.png')
 spotB = pygame.image.load(dirpath+'/HUD/spotT.png')
 spotT = pygame.image.load(dirpath+'/HUD/spotB.png')
 
+L1 = pygame.image.load(dirpath+'/HUD/L1.png')
+L2 = pygame.image.load(dirpath+'/HUD/L2.png')
+L1L2 = pygame.image.load(dirpath+'/HUD/L1L2.png')
+R1 = pygame.image.load(dirpath+'/HUD/R1.png')
+R2 = pygame.image.load(dirpath+'/HUD/R2.png')
+R1R2 = pygame.image.load(dirpath+'/HUD/R1R2.png')
+
+
 posdpad = (295,340)
 posbpad = (520,340)
 posstickL = (358, 395)
@@ -164,6 +172,8 @@ posstickR = (480,395)
 spotTorigin = (123,145)
 spotBorigin = (765,145)
 spotV = np.array([0,-62])
+posL = (302,282)
+posR = (531,282)
 
 
 
@@ -204,6 +214,23 @@ while not done:
         sys.exit()
         print('Connection Closed')
         pass
+
+    if event.type == KEYDOWN and event.key == K_t:
+        WHITE = pygame.Color('white')
+        themelist = ["bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()"]
+        exec(themelist[t1])
+        if t1 == 4:
+            WHITE = BLACK
+        
+        #pygame.image.save(screen, "CapturedImages/{}.png".format(t1))
+        if t1 == 4:
+            t1 = 0
+        else:
+            t1 += 1
     
 
     if btcom.connected():
@@ -467,6 +494,52 @@ while not done:
             screen.blit(bpadDL,posbpad)
         elif joystick.get_button(0) & joystick.get_button(3):
             screen.blit(bpadUL,posbpad)
+            
+            
+        if joystick.get_button(4):
+            screen.blit(L1,posL)
+        elif joystick.get_button(6):
+            screen.blit(L2,posL)
+        elif joystick.get_button(5):
+            screen.blit(R1,posR)
+        elif joystick.get_button(7):
+            screen.blit(R2,posR)
+        else:
+            screen.blit(bpad,posbpad)
+            
+        if joystick.get_button(4) & joystick.get_button(6):
+            screen.blit(L1L2,posL)
+        elif joystick.get_button(5) & joystick.get_button(7):
+            screen.blit(R1R2,posR)
+        elif joystick.get_button(4) & joystick.get_button(5):
+            screen.blit(L1,posL)
+            screen.blit(R1,posR)
+        elif joystick.get_button(4) & joystick.get_button(7):
+            screen.blit(L1,posL)
+            screen.blit(R2,posR)
+        elif joystick.get_button(6) & joystick.get_button(5):
+            screen.blit(L2,posL)
+            screen.blit(R1,posR)
+        elif joystick.get_button(6) & joystick.get_button(7):
+            screen.blit(L2,posL)
+            screen.blit(R2,posR)
+            
+        if joystick.get_button(4) & joystick.get_button(6) & joystick.get_button(5):
+            screen.blit(L1L2,posL)
+            screen.blit(R1,posR)
+        elif joystick.get_button(4) & joystick.get_button(6) & joystick.get_button(7):
+            screen.blit(L1L2,posL)
+            screen.blit(R2,posR)
+        elif joystick.get_button(4) & joystick.get_button(5) & joystick.get_button(7):
+            screen.blit(L1,posL)
+            screen.blit(R1R2,posR)
+        elif joystick.get_button(5) & joystick.get_button(6) & joystick.get_button(7):
+            screen.blit(L2,posL)
+            screen.blit(R1R2,posR) 
+        
+        if joystick.get_button(4) & joystick.get_button(5) & joystick.get_button(6) & joystick.get_button(7):
+            screen.blit(L1L2,posL)
+            screen.blit(R1R2,posR)
 
 
     
