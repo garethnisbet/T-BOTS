@@ -196,10 +196,12 @@ while not done:
         exec(themelist[t1])
         if t1 == 4:
             WHITE = BLACK
-            t1 = 0
         
-        #pygame.image.save(screen, "CapturedImages/{}.png".format(t1))
-        t1+=1
+        pygame.image.save(screen, "CapturedImages/{}.png".format(t1))
+        if t1 == 4:
+            t1 = 0
+        else:
+            t1 += 1
     
 
     if btcom.connected():
