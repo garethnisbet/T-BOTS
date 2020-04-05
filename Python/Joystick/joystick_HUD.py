@@ -8,9 +8,9 @@ from TBotTools import tbt
 from collections import deque
 import numpy as np
 clock = pygame.time.Clock()
-
+t1 = 0
 starttime = time()
-colourinvert = 0
+
 # setup for plotting
 xdatarange = [280,520]
 y_origin = 100
@@ -96,11 +96,7 @@ class TextPrint(object):
         
 # Define some colors.
 BLACK = pygame.Color('black')
-
-if colourinvert:
-    WHITE = BLACK
-else:
-    WHITE = pygame.Color('white')
+WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
 
 
@@ -111,13 +107,7 @@ pygame.init()
 # Set the width and height of the screen (width, height).
 screen = pygame.display.set_mode((900, 590))
 
-if colourinvert:
-    bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()
-else:
-    #bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()
-    #bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()
-    #bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()
-    bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert()
+bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert()
 
 
 bgG = pygame.image.load(dirpath+'/HUD/offline.png').convert()
@@ -196,6 +186,20 @@ while not done:
         sys.exit()
         print('Connection Closed')
         pass
+    if event.type == KEYDOWN and event.key == K_t:
+        WHITE = pygame.Color('white')
+        themelist = ["bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()"]
+        exec(themelist[t1])
+        if t1 == 4:
+            WHITE = BLACK
+            t1 = 0
+        
+        #pygame.image.save(screen, "CapturedImages/{}.png".format(t1))
+        t1+=1
     
 
     if btcom.connected():
@@ -242,10 +246,8 @@ while not done:
 
         # Get the name from the OS for the controller/joystick.
         name = joystick.get_name()
-        textPrint.tprint(screen, "Joystick name: {}".format(name))
-        #textPrint.tprint(screen, "Joystick name: {}".format('Generic Controller'))
-        # Usually axis run in pairs, up/down for one, and left/right for
-        # the other.
+        #textPrint.tprint(screen, "Joystick name: {}".format(name))
+        textPrint.tprint(screen, "Joystick name: {}".format('Generic Controller'))
         axes = joystick.get_numaxes()
         textPrint.tprint(screen, "")
         textPrint.tprint(screen, "Number of axes: {}".format(axes))
@@ -339,8 +341,9 @@ while not done:
 
         textPrint.unindent()
 
+        textPrint.abspos(screen, "Press T to change Theme",(20,520))
     #
-    # #############   Send data   #################################
+    # #############   Send data to T-Bot  ##############################
     #
         if abs(axis0)+abs(axis1)+abs(axis2)+abs(axis3) != 0:
             slowfactor = 1+joystick.get_button(7)
@@ -456,7 +459,8 @@ while not done:
     #blitRotate(screen, model, (260,160), (75,75), -g_angle)
     #screen.blit(modelr,(230,100))    
 
-    
+    #Rectangle1 = pygame.Rect(400, 100, 200, 200)
+    #pygame.display.update(Rectangle1)
     
     pygame.display.flip()
 
