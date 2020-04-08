@@ -36,8 +36,6 @@ def blitRotate(surf, image, pos, originPos, angle):
     # draw rectangle around the image
     #pygame.draw.rect (surf, (255, 0, 0), (*origin, *rotated_image.get_size()),2)
 
-
-
 # setup for plotting
 xdatarange = [200,320]
 y_origin = 270

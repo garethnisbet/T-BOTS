@@ -112,12 +112,12 @@ R2 = pygame.image.load(dirpath+'/Simple/R2.png')
 R1R2 = pygame.image.load(dirpath+'/Simple/R1R2.png')
 
 offset = (190,60)
-posdpad = (292-offset[0],135-offset[1])
-posbpad = (517-offset[0],135-offset[1])
-posstickL = (355-offset[0], 190-offset[1])
-posstickR = (477-offset[0],190-offset[1])
-posL = (302-offset[0],282-offset[1])
-posR = (531-offset[0],282-offset[1])
+posdpad = (102, 75)
+posbpad = (327, 75)
+posstickL = (165, 130)
+posstickR = (287, 130)
+posL = (108,15)
+posR = (337,15)
 
 
 pygame.display.set_caption("Player 1")
@@ -128,7 +128,7 @@ done = False
 # Used to manage how fast the screen updates.
 clock = pygame.time.Clock()
 
-# Initialize the joysticks.
+# Initialize the joystick.
 pygame.joystick.init()
 
 # Get ready to print.
@@ -220,10 +220,10 @@ while not done:
     if pygame.event.get(readdataevent):
         oldvals = btcom.get_data(oldvals)
 
-    textPrint.abspos(screen, "gyrodata: {}".format(str(oldvals[3])),(10,10))
-    textPrint.tprint(screen, "kps: {}".format(str(oldvals[0])))
-    textPrint.tprint(screen, "kp: {}".format(str(oldvals[1])))
-    textPrint.tprint(screen, "trim: {}".format(str(oldvals[2])))
+    textPrint.abspos(screen, "Gyro Data: {}".format(str(oldvals[3])),(10,10))
+    textPrint.tprint(screen, "KPS: {}".format(str(oldvals[0])))
+    textPrint.tprint(screen, "KP: {}".format(str(oldvals[1])))
+    textPrint.tprint(screen, "Trim: {}".format(str(oldvals[2])))
     
     textPrint.abspos(screen, "Speed Factor: {}".format(str(speedfactor)),(415,10))
     textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
