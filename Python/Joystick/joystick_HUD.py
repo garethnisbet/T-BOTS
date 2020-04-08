@@ -1,12 +1,12 @@
 #!/usr/bin/python
-import pygame, sys, pygame.mixer, os
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+import pygame, sys, os
 from pygame.locals import *
 from time import sleep, time
-import bluetooth as bt
-from TBotTools import tbt
 from collections import deque
 import numpy as np
+sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+from TBotTools import tbt
+
 clock = pygame.time.Clock()
 t1 = 0
 starttime = time()
@@ -177,6 +177,12 @@ pygame.time.set_timer(readdataevent, 50)
 
 # -------- Main Program Loop -----------
 
+joystick = pygame.joystick.Joystick(0)
+joystick.init()
+joystick_count = pygame.joystick.get_count()
+name = joystick.get_name()
+axes = joystick.get_numaxes()
+hats = joystick.get_numhats()
 while not done:
         
     #
@@ -235,277 +241,260 @@ while not done:
             sys.exit()
         else:
             tries = 0
-            
-            
 
-    
     textPrint.reset()
 
     # Get count of joysticks.
-    joystick_count = pygame.joystick.get_count()
+    
 
-    textPrint.tprint(screen, "Number of joysticks: {}".format(joystick_count))
+    textPrint.abspos(screen, "Number of joysticks: {}".format(joystick_count),(20,280))
     textPrint.indent()
 
-    # For each joystick:
-    for i in [0]: # If you have multiple joysticks connected, set this index for the one you want to use.
-        joystick = pygame.joystick.Joystick(i)
-        joystick.init()
+    textPrint.tprint(screen, "Joystick name: {}".format('Generic Controller'))
+    
+    textPrint.tprint(screen, "")
+    textPrint.tprint(screen, "Number of axes: {}".format(axes))
+    textPrint.indent()
+    textPrint.unindent()
+    
+    textPrint.tprint(screen, "Number of hats: {}".format(hats))
+    textPrint.indent()
 
-        textPrint.abspos(screen, "Joystick {}".format(i),(20,280))
-        textPrint.indent()
+    for i in range(axes):
+        axis = joystick.get_axis(i)
+        textPrint.tprint(screen, "Axis {} value: {:>6.3f}".format(i, axis))
+    axis0 = joystick.get_axis(0)
+    axis1 = joystick.get_axis(1)
+    axis2 = joystick.get_axis(2)
+    axis3 = joystick.get_axis(3)
+    textPrint.unindent()
+    textPrint.tprint(screen, "")
+    buttons = joystick.get_numbuttons()
+    
+    textPrint.abspos(screen, "Number of buttons: {}".format(buttons),(710,280))
+    textPrint.tprint(screen, "")
+    for i in range(buttons):
+        button = joystick.get_button(i)
+        textPrint.tprint(screen,
+                         "Button {:>2} value: {}".format(i, button))
 
-        # Get the name from the OS for the controller/joystick.
-        name = joystick.get_name()
-        #textPrint.tprint(screen, "Joystick name: {}".format(name))
-        textPrint.tprint(screen, "Joystick name: {}".format('Generic Controller'))
-        axes = joystick.get_numaxes()
-        textPrint.tprint(screen, "")
-        textPrint.tprint(screen, "Number of axes: {}".format(axes))
-        textPrint.indent()
-        textPrint.unindent()
-        hats = joystick.get_numhats()
-        textPrint.tprint(screen, "Number of hats: {}".format(hats))
-        textPrint.indent()
-
-        for i in range(axes):
-            axis = joystick.get_axis(i)
-            textPrint.tprint(screen, "Axis {} value: {:>6.3f}".format(i, axis))
-        axis0 = joystick.get_axis(0)
-        axis1 = joystick.get_axis(1)
-        axis2 = joystick.get_axis(2)
-        axis3 = joystick.get_axis(3)
-        textPrint.unindent()
-        textPrint.tprint(screen, "")
-        buttons = joystick.get_numbuttons()
-        
-        textPrint.abspos(screen, "Number of buttons: {}".format(buttons),(710,280))
-        textPrint.tprint(screen, "")
-        for i in range(buttons):
-            button = joystick.get_button(i)
-            textPrint.tprint(screen,
-                             "Button {:>2} value: {}".format(i, button))
-
-
-        # Hat position. All or nothing for direction, not a float like
-        # get_axis(). Position is a tuple of int values (x, y).
-        for i in range(hats):
-            hat = joystick.get_hat(i)
-            textPrint.tprint(screen, "Hat {} value: {}".format(i, str(hat)))
-            if hat[1] == 1:
-                speedfactor += 0.1
-            elif hat[1] == -1:
-                speedfactor -= 0.1
-            elif hat[0] == -1:
-                speedlimit -= 5
-            elif hat[0] == +1:
-                speedlimit += 5
-            if speedlimit >= 100:
-                speedlimit = 100
-            if speedlimit <= 0:
-                speedlimit = 0
-            if speedfactor >= 5:
-                speedfactor = 5
-            if speedfactor <= 0:
-                speedfactor = 0
-                
-        textPrint.unindent()
-        
-        if pygame.event.get(readdataevent):
-            oldvals = btcom.get_data(oldvals)
-        #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
-        g_angle = oldvals[3]
-        pts.appendleft((iii,g_angle))
-        iii+=1
-        pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
-        pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
-        if iii > xdatarange[1]:
-            iii = xdatarange[0]
-        aa[:,1]=np.array(pts)[:,1]
-        try:  
-            bb[:,1] = (yscale/((aa[:,1]-aa[:,1].max()).min())*(aa[:,1]-aa[:,1].max()))+y_origin
-            gdata = tuple(map(tuple, tuple(bb)))
-            pygame.draw.lines(screen, WHITE, False, (gdata),1)
-            
-        except:
-            b=1
-            
-        #g_angleR = g_angle*np.pi/180
-        #rmat = np.array([[np.cos(g_angleR),-np.sin(g_angleR)],[np.sin(g_angleR),np.cos(g_angleR)]])
-        #spotTpos = tuple(spotTorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
-        #screen.blit(spotB,spotTpos)
-            
-        textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
-        textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
-        
-        
-        
-        textPrint.abspos(screen, "T-Bot Data",(550,85))
-        textPrint.tprint(screen, "")
-        textPrint.tprint(screen, "gyrodata: {}".format(str(oldvals[3])))
-        textPrint.tprint(screen, "kps: {}".format(str(oldvals[0])))
-        textPrint.tprint(screen, "kp: {}".format(str(oldvals[1])))
-        textPrint.tprint(screen, "trim: {}".format(str(oldvals[2])))
-        textPrint.tprint(screen, "Speed Factor: {}".format(str(speedfactor)))
-        textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
-        textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))   
-
-        textPrint.unindent()
-
-        textPrint.abspos(screen, "Press T to change Theme",(20,520))
-    #
-    # #############   Send data to T-Bot  ##############################
-    #
-        if abs(axis0)+abs(axis1)+abs(axis2)+abs(axis3) != 0:
-            slowfactor = 1+joystick.get_button(7)
-            turn = 200+int(((axis0+(axis2*0.5))*speedfactor*100/slowfactor))
-            speed = 200-int(((axis1+(axis3*0.5))*speedfactor*100/slowfactor))
-            if speed > 200+speedlimit:
-                speed = 200+speedlimit
-            if speed < 200-speedlimit:
-                speed = 200-speedlimit
-
-            if turn > 200+turnspeedlimit:
-                turn = 200+turnspeedlimit
-            if turn < 200-turnspeedlimit:
-                turn = 200-turnspeedlimit
-            cmdwrite = 1       
-            sendstring = str(turn)+str(speed)+'Z'
-            sendcount = btcom.send_data(sendstring,sendcount)
-        else:
-            turn = 200
-            speed = 200
-            sendstring = str(turn)+str(speed)+'Z'
-            sendstring = '200200Z'
-            sendcount = btcom.send_data(sendstring,sendcount)
-            
-        
-        theta = np.arctan((speed-200,speed-200))
-        rmat = np.array([[np.cos(theta),-np.sin(theta)],[np.sin(theta),np.cos(theta)]])
-        spotTpos = tuple(spotTorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
-        theta = -theta-np.pi
-        rmat = np.array([[np.cos(theta),-np.sin(theta)],[np.sin(theta),np.cos(theta)]])
-        spotTpos2 = tuple(spotTorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
-
-        
-        theta2 = np.arctan((turn-200,turn-200))+np.pi/2
-        rmat = np.array([[np.cos(theta2),-np.sin(theta2)],[np.sin(theta2),np.cos(theta2)]])
-        spotBpos = tuple(spotBorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
-        rmat = np.array([[np.cos(-theta2),-np.sin(-theta2)],[np.sin(-theta2),np.cos(-theta2)]])
-        spotBpos2 = tuple(spotBorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
-        
-        screen.blit(spotT,spotTpos)
-        screen.blit(spotT,spotTpos2)
-        screen.blit(spotB,spotBpos)
-        screen.blit(spotB,spotBpos2)   
-            
-        if joystick.get_button(0):
-            buttonstring = '200200F' # trim +ve
-            sendcount = btcom.send_data(buttonstring,sendcount)
-        elif joystick.get_button(2):
-            buttonstring = '200200E' # trim -ve
-            sendcount = btcom.send_data(buttonstring,sendcount)
-
-        elif joystick.get_button(1):
-            buttonstring = '200200B' # kps +ve
-            sendcount = btcom.send_data(buttonstring,sendcount)
-        elif joystick.get_button(3):
-            buttonstring = '200200A' # kps -ve
-            sendcount = btcom.send_data(buttonstring,sendcount)
-        elif joystick.get_button(9):
-            buttonstring = '200200T' # kps -ve
-            sendcount = btcom.send_data(buttonstring,sendcount)
-
-        # ------------------ Highlight buttons ----------------#
-        screen.blit(dpad,posdpad)
-        screen.blit(bpad,posbpad)
-        screen.blit(stick,(posstickL[0]+axis0*5,posstickL[1]+axis1*5))
-        screen.blit(stick,(posstickR[0]+axis2*5,posstickR[1]+axis3*5))
-        
-        if hat[0] == 1:
-            screen.blit(dpadR,posdpad)
-        elif hat[0] == -1:
-            screen.blit(dpadL,posdpad)
-        elif hat[1] == 1:
-            screen.blit(dpadU,posdpad)
+    for i in range(hats):
+        hat = joystick.get_hat(i)
+        textPrint.tprint(screen, "Hat {} value: {}".format(i, str(hat)))
+        if hat[1] == 1:
+            speedfactor += 0.1
         elif hat[1] == -1:
-            screen.blit(dpadD,posdpad)
-        else:
-            screen.blit(dpad,posdpad)
+            speedfactor -= 0.1
+        elif hat[0] == -1:
+            speedlimit -= 5
+        elif hat[0] == +1:
+            speedlimit += 5
+        if speedlimit >= 100:
+            speedlimit = 100
+        if speedlimit <= 0:
+            speedlimit = 0
+        if speedfactor >= 5:
+            speedfactor = 5
+        if speedfactor <= 0:
+            speedfactor = 0
             
-        if (hat[0] == -1) & (hat[1] == 1):
-            screen.blit(dpadUL,posdpad)
-        elif (hat[0] == 1) & (hat[1] == -1):
-            screen.blit(dpadDR,posdpad)
-        elif (hat[0] == 1 & hat[1] == 1):
-            screen.blit(dpadUR,posdpad)
-        elif hat[0] == -1 & hat[1] == -1:
-            screen.blit(dpadDL,posdpad)
-            
-        if joystick.get_button(0):
-            screen.blit(bpadU,posbpad)
-        elif joystick.get_button(1):
-            screen.blit(bpadR,posbpad)
-        elif joystick.get_button(2):
-            screen.blit(bpadD,posbpad)
-        elif joystick.get_button(3):
-            screen.blit(bpadL,posbpad)
-        else:
-            screen.blit(bpad,posbpad)
-            
-        if joystick.get_button(0) & joystick.get_button(1):
-            screen.blit(bpadUR,posbpad)
-        elif joystick.get_button(1) & joystick.get_button(2):
-            screen.blit(bpadDR,posbpad)
-        elif joystick.get_button(2) & joystick.get_button(3):
-            screen.blit(bpadDL,posbpad)
-        elif joystick.get_button(0) & joystick.get_button(3):
-            screen.blit(bpadUL,posbpad)
-
-        if joystick.get_button(4):
-            screen.blit(L1,posL)
-        elif joystick.get_button(6):
-            screen.blit(L2,posL)
-        elif joystick.get_button(5):
-            screen.blit(R1,posR)
-        elif joystick.get_button(7):
-            screen.blit(R2,posR)
-        else:
-            screen.blit(bpad,posbpad)
-            
-        if joystick.get_button(4) & joystick.get_button(6):
-            screen.blit(L1L2,posL)
-        elif joystick.get_button(5) & joystick.get_button(7):
-            screen.blit(R1R2,posR)
-        elif joystick.get_button(4) & joystick.get_button(5):
-            screen.blit(L1,posL)
-            screen.blit(R1,posR)
-        elif joystick.get_button(4) & joystick.get_button(7):
-            screen.blit(L1,posL)
-            screen.blit(R2,posR)
-        elif joystick.get_button(6) & joystick.get_button(5):
-            screen.blit(L2,posL)
-            screen.blit(R1,posR)
-        elif joystick.get_button(6) & joystick.get_button(7):
-            screen.blit(L2,posL)
-            screen.blit(R2,posR)
-            
-        if joystick.get_button(4) & joystick.get_button(6) & joystick.get_button(5):
-            screen.blit(L1L2,posL)
-            screen.blit(R1,posR)
-        elif joystick.get_button(4) & joystick.get_button(6) & joystick.get_button(7):
-            screen.blit(L1L2,posL)
-            screen.blit(R2,posR)
-        elif joystick.get_button(4) & joystick.get_button(5) & joystick.get_button(7):
-            screen.blit(L1,posL)
-            screen.blit(R1R2,posR)
-        elif joystick.get_button(5) & joystick.get_button(6) & joystick.get_button(7):
-            screen.blit(L2,posL)
-            screen.blit(R1R2,posR) 
+    textPrint.unindent()
+    
+    if pygame.event.get(readdataevent):
+        oldvals = btcom.get_data(oldvals)
+    #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
+    g_angle = oldvals[3]
+    pts.appendleft((iii,g_angle))
+    iii+=1
+    pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
+    pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
+    if iii > xdatarange[1]:
+        iii = xdatarange[0]
+    aa[:,1]=np.array(pts)[:,1]
+    try:  
+        bb[:,1] = (yscale/((aa[:,1]-aa[:,1].max()).min())*(aa[:,1]-aa[:,1].max()))+y_origin
+        gdata = tuple(map(tuple, tuple(bb)))
+        pygame.draw.lines(screen, WHITE, False, (gdata),1)
         
-        if joystick.get_button(4) & joystick.get_button(5) & joystick.get_button(6) & joystick.get_button(7):
-            screen.blit(L1L2,posL)
-            screen.blit(R1R2,posR)
+    except:
+        b=1
+        
+    #g_angleR = g_angle*np.pi/180
+    #rmat = np.array([[np.cos(g_angleR),-np.sin(g_angleR)],[np.sin(g_angleR),np.cos(g_angleR)]])
+    #spotTpos = tuple(spotTorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
+    #screen.blit(spotB,spotTpos)
+        
+    textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
+    textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
+    
+    
+    
+    textPrint.abspos(screen, "T-Bot Data",(550,85))
+    textPrint.tprint(screen, "")
+    textPrint.tprint(screen, "gyrodata: {}".format(str(oldvals[3])))
+    textPrint.tprint(screen, "kps: {}".format(str(oldvals[0])))
+    textPrint.tprint(screen, "kp: {}".format(str(oldvals[1])))
+    textPrint.tprint(screen, "trim: {}".format(str(oldvals[2])))
+    textPrint.tprint(screen, "Speed Factor: {}".format(str(speedfactor)))
+    textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
+    textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))   
+
+    textPrint.unindent()
+
+    textPrint.abspos(screen, "Press T to change Theme",(20,520))
+#
+# #############   Send data to T-Bot  ##############################
+#
+    if abs(axis0)+abs(axis1)+abs(axis2)+abs(axis3) != 0:
+        slowfactor = 1+joystick.get_button(7)
+        turn = 200+int(((axis0+(axis2*0.5))*speedfactor*100/slowfactor))
+        speed = 200-int(((axis1+(axis3*0.5))*speedfactor*100/slowfactor))
+        if speed > 200+speedlimit:
+            speed = 200+speedlimit
+        if speed < 200-speedlimit:
+            speed = 200-speedlimit
+
+        if turn > 200+turnspeedlimit:
+            turn = 200+turnspeedlimit
+        if turn < 200-turnspeedlimit:
+            turn = 200-turnspeedlimit
+        cmdwrite = 1       
+        sendstring = str(turn)+str(speed)+'Z'
+        sendcount = btcom.send_data(sendstring,sendcount)
+    else:
+        turn = 200
+        speed = 200
+        sendstring = str(turn)+str(speed)+'Z'
+        sendstring = '200200Z'
+        sendcount = btcom.send_data(sendstring,sendcount)
+        
+    
+    theta = np.arctan((speed-200,speed-200))
+    rmat = np.array([[np.cos(theta),-np.sin(theta)],[np.sin(theta),np.cos(theta)]])
+    spotTpos = tuple(spotTorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
+    theta = -theta-np.pi
+    rmat = np.array([[np.cos(theta),-np.sin(theta)],[np.sin(theta),np.cos(theta)]])
+    spotTpos2 = tuple(spotTorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
+
+    
+    theta2 = np.arctan((turn-200,turn-200))+np.pi/2
+    rmat = np.array([[np.cos(theta2),-np.sin(theta2)],[np.sin(theta2),np.cos(theta2)]])
+    spotBpos = tuple(spotBorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
+    rmat = np.array([[np.cos(-theta2),-np.sin(-theta2)],[np.sin(-theta2),np.cos(-theta2)]])
+    spotBpos2 = tuple(spotBorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
+    
+    screen.blit(spotT,spotTpos)
+    screen.blit(spotT,spotTpos2)
+    screen.blit(spotB,spotBpos)
+    screen.blit(spotB,spotBpos2)   
+        
+    if joystick.get_button(0):
+        buttonstring = '200200F' # trim +ve
+        sendcount = btcom.send_data(buttonstring,sendcount)
+    elif joystick.get_button(2):
+        buttonstring = '200200E' # trim -ve
+        sendcount = btcom.send_data(buttonstring,sendcount)
+
+    elif joystick.get_button(1):
+        buttonstring = '200200B' # kps +ve
+        sendcount = btcom.send_data(buttonstring,sendcount)
+    elif joystick.get_button(3):
+        buttonstring = '200200A' # kps -ve
+        sendcount = btcom.send_data(buttonstring,sendcount)
+    elif joystick.get_button(9):
+        buttonstring = '200200T' # kps -ve
+        sendcount = btcom.send_data(buttonstring,sendcount)
+
+    # ------------------ Highlight buttons ----------------#
+    screen.blit(dpad,posdpad)
+    screen.blit(bpad,posbpad)
+    screen.blit(stick,(posstickL[0]+axis0*5,posstickL[1]+axis1*5))
+    screen.blit(stick,(posstickR[0]+axis2*5,posstickR[1]+axis3*5))
+    
+    if hat[0] == 1:
+        screen.blit(dpadR,posdpad)
+    elif hat[0] == -1:
+        screen.blit(dpadL,posdpad)
+    elif hat[1] == 1:
+        screen.blit(dpadU,posdpad)
+    elif hat[1] == -1:
+        screen.blit(dpadD,posdpad)
+    else:
+        screen.blit(dpad,posdpad)
+        
+    if (hat[0] == -1) & (hat[1] == 1):
+        screen.blit(dpadUL,posdpad)
+    elif (hat[0] == 1) & (hat[1] == -1):
+        screen.blit(dpadDR,posdpad)
+    elif (hat[0] == 1 & hat[1] == 1):
+        screen.blit(dpadUR,posdpad)
+    elif hat[0] == -1 & hat[1] == -1:
+        screen.blit(dpadDL,posdpad)
+        
+    if joystick.get_button(0):
+        screen.blit(bpadU,posbpad)
+    elif joystick.get_button(1):
+        screen.blit(bpadR,posbpad)
+    elif joystick.get_button(2):
+        screen.blit(bpadD,posbpad)
+    elif joystick.get_button(3):
+        screen.blit(bpadL,posbpad)
+    else:
+        screen.blit(bpad,posbpad)
+        
+    if joystick.get_button(0) & joystick.get_button(1):
+        screen.blit(bpadUR,posbpad)
+    elif joystick.get_button(1) & joystick.get_button(2):
+        screen.blit(bpadDR,posbpad)
+    elif joystick.get_button(2) & joystick.get_button(3):
+        screen.blit(bpadDL,posbpad)
+    elif joystick.get_button(0) & joystick.get_button(3):
+        screen.blit(bpadUL,posbpad)
+
+    if joystick.get_button(4):
+        screen.blit(L1,posL)
+    elif joystick.get_button(6):
+        screen.blit(L2,posL)
+    elif joystick.get_button(5):
+        screen.blit(R1,posR)
+    elif joystick.get_button(7):
+        screen.blit(R2,posR)
+    else:
+        screen.blit(bpad,posbpad)
+        
+    if joystick.get_button(4) & joystick.get_button(6):
+        screen.blit(L1L2,posL)
+    elif joystick.get_button(5) & joystick.get_button(7):
+        screen.blit(R1R2,posR)
+    elif joystick.get_button(4) & joystick.get_button(5):
+        screen.blit(L1,posL)
+        screen.blit(R1,posR)
+    elif joystick.get_button(4) & joystick.get_button(7):
+        screen.blit(L1,posL)
+        screen.blit(R2,posR)
+    elif joystick.get_button(6) & joystick.get_button(5):
+        screen.blit(L2,posL)
+        screen.blit(R1,posR)
+    elif joystick.get_button(6) & joystick.get_button(7):
+        screen.blit(L2,posL)
+        screen.blit(R2,posR)
+        
+    if joystick.get_button(4) & joystick.get_button(6) & joystick.get_button(5):
+        screen.blit(L1L2,posL)
+        screen.blit(R1,posR)
+    elif joystick.get_button(4) & joystick.get_button(6) & joystick.get_button(7):
+        screen.blit(L1L2,posL)
+        screen.blit(R2,posR)
+    elif joystick.get_button(4) & joystick.get_button(5) & joystick.get_button(7):
+        screen.blit(L1,posL)
+        screen.blit(R1R2,posR)
+    elif joystick.get_button(5) & joystick.get_button(6) & joystick.get_button(7):
+        screen.blit(L2,posL)
+        screen.blit(R1R2,posR) 
+    
+    if joystick.get_button(4) & joystick.get_button(5) & joystick.get_button(6) & joystick.get_button(7):
+        screen.blit(L1L2,posL)
+        screen.blit(R1R2,posR)
 
         
     # Go ahead and update the screen with what we've drawn.
