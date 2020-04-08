@@ -11,7 +11,8 @@ import numpy as np
 starttime = time()
 import cv2
 clock = pygame.time.Clock()
-colourinvert = 0
+
+t1 = 0
 cap = cv2.VideoCapture(0)
 try:
     camera.set(cv2.CAP_PROP_AUTOFOCUS, 0)
@@ -107,10 +108,7 @@ class TextPrint(object):
         
 # Define some colors.
 BLACK = pygame.Color('black')
-if colourinvert:
-    WHITE = BLACK
-else:
-    WHITE = pygame.Color('white')
+WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
 
 
@@ -119,16 +117,7 @@ pygame.init()
 # Set the width and height of the screen (width, height).
 screen = pygame.display.set_mode((900, 590))
 
-bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()
-#bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()
-#bg = pygame.image.load(dirpath+'/HUD/ControllerTemplate.png').convert()
-if colourinvert:
-    bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()
-else:
-    #bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()
-    #bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()
-    #bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()
-    bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert() 
+bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()
     
 bgG = pygame.image.load(dirpath+'/HUD/offline.png').convert()
 dpad = pygame.image.load(dirpath+'/HUD/dpad.png')

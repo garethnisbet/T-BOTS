@@ -81,8 +81,6 @@ pygame.init()
 screen = pygame.display.set_mode((512, 294))
 
 bg = pygame.image.load(dirpath+'/Simple/Controller.png').convert()
-
-
 bgG = pygame.image.load(dirpath+'/Simple/Offline.png').convert()
 dpad = pygame.image.load(dirpath+'/Simple/dpad.png')
 dpadU = pygame.image.load(dirpath+'/Simple/dpadU.png')
@@ -104,8 +102,6 @@ bpadDR = pygame.image.load(dirpath+'/Simple/bpadDR.png')
 bpadUL = pygame.image.load(dirpath+'/Simple/bpadUL.png')
 bpadDL = pygame.image.load(dirpath+'/Simple/bpadDL.png')
 
-
-
 stick = pygame.image.load(dirpath+'/Simple/stick.png')
 
 L1 = pygame.image.load(dirpath+'/Simple/L1.png')
@@ -122,10 +118,6 @@ posstickL = (355-offset[0], 190-offset[1])
 posstickR = (477-offset[0],190-offset[1])
 posL = (302-offset[0],282-offset[1])
 posR = (531-offset[0],282-offset[1])
-
-
-spotV = np.array([0,-62])
-
 
 
 pygame.display.set_caption("Player 1")
@@ -146,21 +138,16 @@ textPrint = TextPrint()
 readdataevent = pygame.USEREVENT+1
 pygame.time.set_timer(readdataevent, 50)
 
-# -------- Main Program Loop -----------
 joystick = pygame.joystick.Joystick(0)
 joystick.init()
 name = joystick.get_name()
 axes = joystick.get_numaxes()
 hats = joystick.get_numhats()
 
+# -------- Main Program Loop -----------
 
 while not done:
         
-    #
-    # EVENT PROCESSING STEP
-    #
-    # Possible joystick actions: JOYAXISMOTION, JOYBALLMOTION, JOYBUTTONDOWN,
-    # JOYBUTTONUP, JOYHATMOTION
     for event in pygame.event.get(): # User did something.
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
