@@ -4,7 +4,7 @@ sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from pygame.locals import *
 
 from time import sleep, time
-import bluetooth as bt
+
 from TBotTools import tbt
 from collections import deque
 import numpy as np
