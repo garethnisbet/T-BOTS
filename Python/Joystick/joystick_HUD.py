@@ -202,13 +202,14 @@ while not done:
                     "bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller5.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()"]
         exec(themelist[t1])
-        if t1 == 4:
+        if t1 == 5:
             WHITE = BLACK
         
         #pygame.image.save(screen, "CapturedImages/{}.png".format(t1))
-        if t1 == 4:
+        if t1 == 5:
             t1 = 0
         else:
             t1 += 1
@@ -336,6 +337,7 @@ while not done:
     textPrint.unindent()
 
     textPrint.abspos(screen, "Press T to change Theme",(20,520))
+    textPrint.abspos(screen, "www.klikrobotics.com",(20,20))
 #
 # #############   Send data to T-Bot  ##############################
 #

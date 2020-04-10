@@ -56,6 +56,7 @@ sendcount = 0
 #------------------------------------------------------------------
 bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 #bd_addr = '98:D3:32:21:3D:77'
+bd_addr = '98:D3:91:FD:46:C9'
 port = 1
 #btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -181,7 +182,7 @@ pygame.joystick.init()
 textPrint = TextPrint()
 
 readdataevent = pygame.USEREVENT+1
-pygame.time.set_timer(readdataevent, 200) # reduce this number for better plotting resolution
+pygame.time.set_timer(readdataevent, 100) # reduce this number for better plotting resolution
                                           # Increase it for faster video frame rate. 
 
 # -------- Main Program Loop -----------
@@ -213,13 +214,14 @@ while not done:
                     "bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller5.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()"]
         exec(themelist[t1])
-        if t1 == 4:
+        if t1 == 5:
             WHITE = BLACK
         
         #pygame.image.save(screen, "CapturedImages/{}.png".format(t1))
-        if t1 == 4:
+        if t1 == 5:
             t1 = 0
         else:
             t1 += 1
@@ -368,7 +370,8 @@ while not done:
     textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
     textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))   
 
-    textPrint.unindent()
+    textPrint.abspos(screen, "Press T to change Theme",(20,540))
+    textPrint.abspos(screen, "www.klikrobotics.com",(20,20))
 
 #
 # #############   Send data   #################################
