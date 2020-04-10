@@ -181,7 +181,7 @@ pygame.joystick.init()
 textPrint = TextPrint()
 
 readdataevent = pygame.USEREVENT+1
-pygame.time.set_timer(readdataevent, 50)
+pygame.time.set_timer(readdataevent, 60)
 
 # -------- Main Program Loop -----------
 joystick = pygame.joystick.Joystick(0)

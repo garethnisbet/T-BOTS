@@ -172,9 +172,6 @@ pygame.joystick.init()
 textPrint = TextPrint()
 
 
-readdataevent = pygame.USEREVENT+1
-pygame.time.set_timer(readdataevent, 50)
-
 # -------- Main Program Loop -----------
 
 joystick = pygame.joystick.Joystick(0)
@@ -300,8 +297,8 @@ while not done:
             
     textPrint.unindent()
     
-    if pygame.event.get(readdataevent):
-        oldvals = btcom.get_data(oldvals)
+
+    oldvals = btcom.get_data(oldvals)
     #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
     g_angle = oldvals[3]
     pts.appendleft((iii,g_angle))

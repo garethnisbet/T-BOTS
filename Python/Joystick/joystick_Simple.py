@@ -2,8 +2,6 @@
 import pygame
 import pygame.locals as pgl
 import sys, os
-
-import numpy as np
 sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from TBotTools import tbt
 
@@ -13,8 +11,8 @@ dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 # setup for plotting
 
 speedfactor = 0.6
-speedlimit = 70
-turnspeedlimit = 60
+speedlimit = 65
+turnspeedlimit = 70
 
 ###################  Setup Bluetooth   #############################
 
@@ -26,6 +24,7 @@ sendcount = 0
 #------------------------------------------------------------------
 bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 #bd_addr = '98:D3:32:21:3D:77'
+#bd_addr = '98:D3:91:FD:46:C9'
 port = 1
 #btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -135,9 +134,6 @@ pygame.joystick.init()
 textPrint = TextPrint()
 
 
-readdataevent = pygame.USEREVENT+1
-pygame.time.set_timer(readdataevent, 50)
-
 joystick = pygame.joystick.Joystick(0)
 joystick.init()
 name = joystick.get_name()
@@ -217,8 +213,7 @@ while not done:
             
     textPrint.unindent()
     
-    if pygame.event.get(readdataevent):
-        oldvals = btcom.get_data(oldvals)
+    oldvals = btcom.get_data(oldvals)
 
     textPrint.abspos(screen, "Gyro Data: {}".format(str(oldvals[3])),(10,10))
     textPrint.tprint(screen, "KPS: {}".format(str(oldvals[0])))
