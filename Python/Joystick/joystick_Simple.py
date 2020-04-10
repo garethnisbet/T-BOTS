@@ -118,7 +118,6 @@ posstickR = (287, 130)
 posL = (108,15)
 posR = (337,15)
 
-
 pygame.display.set_caption("Player 1")
 
 # Loop until the user clicks the close button.
@@ -133,16 +132,20 @@ pygame.joystick.init()
 # Get ready to print.
 textPrint = TextPrint()
 
-
 joystick = pygame.joystick.Joystick(0)
 joystick.init()
 name = joystick.get_name()
 axes = joystick.get_numaxes()
 hats = joystick.get_numhats()
 
+readdataevent = pygame.USEREVENT+1
+pygame.time.set_timer(readdataevent, 60)
+
 # -------- Main Program Loop -----------
 
 while not done:
+    if pygame.event.get(readdataevent):
+        oldvals = btcom.get_data(oldvals)
         
     for event in pygame.event.get(): # User did something.
         if event.type == pygame.QUIT: # If user clicked close.
@@ -211,9 +214,8 @@ while not done:
         if speedfactor <= 0:
             speedfactor = 0
             
-    textPrint.unindent()
-    
-    oldvals = btcom.get_data(oldvals)
+
+
 
     textPrint.abspos(screen, "Gyro Data: {}".format(str(oldvals[3])),(10,10))
     textPrint.tprint(screen, "KPS: {}".format(str(oldvals[0])))
@@ -225,7 +227,6 @@ while not done:
     textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))   
 
     textPrint.unindent()
-
 
 # #############   Send data to T-Bot  ##############################
 #
@@ -251,7 +252,6 @@ while not done:
         sendstring = str(turn)+str(speed)+'Z'
         sendstring = '200200Z'
         sendcount = btcom.send_data(sendstring,sendcount)
-        
         
     if joystick.get_button(0):
         buttonstring = '200200F' # trim +ve
@@ -360,7 +360,6 @@ while not done:
     if joystick.get_button(4) & joystick.get_button(5) & joystick.get_button(6) & joystick.get_button(7):
         screen.blit(L1L2,posL)
         screen.blit(R1R2,posR)
-
 
     pygame.display.flip()
 

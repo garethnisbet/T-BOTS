@@ -171,7 +171,8 @@ pygame.joystick.init()
 # Get ready to print.
 textPrint = TextPrint()
 
-
+readdataevent = pygame.USEREVENT+1
+pygame.time.set_timer(readdataevent, 33)
 # -------- Main Program Loop -----------
 
 joystick = pygame.joystick.Joystick(0)
@@ -181,12 +182,9 @@ name = joystick.get_name()
 axes = joystick.get_numaxes()
 hats = joystick.get_numhats()
 while not done:
-        
-    #
-    # EVENT PROCESSING STEP
-    #
-    # Possible joystick actions: JOYAXISMOTION, JOYBALLMOTION, JOYBUTTONDOWN,
-    # JOYBUTTONUP, JOYHATMOTION
+    if pygame.event.get(readdataevent):
+        oldvals = btcom.get_data(oldvals)
+
     for event in pygame.event.get(): # User did something.
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
@@ -298,7 +296,6 @@ while not done:
     textPrint.unindent()
     
 
-    oldvals = btcom.get_data(oldvals)
     #g_angle = (oldvals[3]*20/255)-10 # Conversion from scaled output from T-Bot
     g_angle = oldvals[3]
     pts.appendleft((iii,g_angle))
