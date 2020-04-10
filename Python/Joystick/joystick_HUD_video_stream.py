@@ -181,7 +181,8 @@ pygame.joystick.init()
 textPrint = TextPrint()
 
 readdataevent = pygame.USEREVENT+1
-pygame.time.set_timer(readdataevent, 60)
+pygame.time.set_timer(readdataevent, 200) # reduce this number for better plotting resolution
+                                          # Increase it for faster video frame rate. 
 
 # -------- Main Program Loop -----------
 joystick = pygame.joystick.Joystick(0)

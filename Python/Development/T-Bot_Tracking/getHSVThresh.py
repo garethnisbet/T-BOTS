@@ -1,66 +1,31 @@
 #!/usr/bin/env python
 
 import cv2
-import argparse
-from operator import xor
-
 
 def callback(value):
     pass
 
-
 def setup_trackbars(range_filter):
-    cv2.namedWindow("Trackbars", 0)
-
+    cv2.namedWindow("Trackbars",cv2.WINDOW_NORMAL)
     for i in ["MIN", "MAX"]:
         v = 0 if i == "MIN" else 255
-
         for j in range_filter:
             cv2.createTrackbar("%s_%s" % (j, i), "Trackbars", v, 255, callback)
 
-
-def get_arguments():
-    ap = argparse.ArgumentParser()
-    ap.add_argument('-f', '--filter', required=False,
-                    help='Range filter. RGB, HSV or LAB',default='HSV')
-    ap.add_argument('-i', '--image', required=False,
-                    help='Path to the image')
-    ap.add_argument('-w', '--webcam', required=False,
-                    help='Use webcam', action='store_true', default='webcam')
-    ap.add_argument('-p', '--preview', required=False,
-                    help='Show a preview of the image after applying the mask',
-                    action='store_true')
-    args = vars(ap.parse_args())
-
-    if not xor(bool(args['image']), bool(args['webcam'])):
-        ap.error("Please specify only one image source")
-
-    if not args['filter'].upper() in ['RGB', 'HSV', 'LAB']:
-        ap.error("Please speciy a correct filter.")
-
-    return args
-
-
 def get_trackbar_values(range_filter):
     values = []
-
     for i in ["MIN", "MAX"]:
         for j in range_filter:
             v = cv2.getTrackbarPos("%s_%s" % (j, i), "Trackbars")
             values.append(v)
-
     return values
 
-
 def main():
-    args = get_arguments()
-
     range_filter = 'HSV'
     camera = cv2.VideoCapture(0)
     camera.set(cv2.CAP_PROP_AUTOFOCUS, 0)
     camera.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
-
     setup_trackbars(range_filter)
 
     while True:
@@ -73,7 +38,6 @@ def main():
 
         if cv2.waitKey(1) & 0xFF is ord('q'):
             break
-
 
 if __name__ == '__main__':
     main()

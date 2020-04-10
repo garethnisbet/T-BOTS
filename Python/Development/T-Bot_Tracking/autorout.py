@@ -1,28 +1,40 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from time import sleep
 plt.ion()
 
 save = 0 # Save way points
 usecam = 0
 showconv = 1
 
+font = cv2.FONT_HERSHEY_SIMPLEX
+# fontScale 
+fontScale = 0.5   
+# Blue color in BGR 
+color = (255, 0, 0)
+color2 = (255, 255, 255)  
+# Line thickness of 2 px 
+thickness = 1
+
 if usecam:
     cap = cv2.VideoCapture(0)
-    cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
-    success, im_rgb = cap.read()
-    sleep(1)
-    success, im_rgb = cap.read()
+    try:
+        cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
+        success, im_rgb = cap.read()
+    except:
+        success, im_rgb = cap.read()
+        im_rgb = cv2.resize(track,(720,405))
+    
     cv2.imwrite('TrackTiles/fulltrack2.png',im_rgb)
     im_rgb = cv2.cvtColor(im_rgb, cv2.COLOR_BGR2RGB)
 else:
     im_rgb = cv2.imread('TrackTiles/fulltrack.png')
     
+    
 track = cv2.cvtColor(im_rgb, cv2.COLOR_BGR2GRAY)
-#track = cv2.resize(track,None,fx=0.95,fy=0.95)
+
 
 
 #----------------------------------------------------------------------#
@@ -78,14 +90,18 @@ def tilesequence(last_tile,current_tile,tile_type):
 # -------------  Load image kernels for convolution  ------------------#
 # ---------------------------------------------------------------------#
 
-tile_RD = cv2.imread('TrackTiles/bend.png',0)
+tile_RD = cv2.imread('TrackTiles/bend.png')
+tile_RD = cv2.cvtColor(tile_RD, cv2.COLOR_BGR2GRAY)
 tile_UR = np.fliplr(tile_RD)
 tile_DR = np.flipud(tile_UR)
 tile_RU = np.flipud(tile_RD)
-tile_HS = cv2.imread('TrackTiles/straight.png',0)
+tile_HS = cv2.imread('TrackTiles/straight.png')
+tile_HS = cv2.cvtColor(tile_HS, cv2.COLOR_BGR2GRAY)
 tile_VS = tile_HS.T
-tile_cross = cv2.imread('TrackTiles/cross.png',0)
-tile_zebraV = cv2.imread('TrackTiles/zebra.png',0)
+tile_cross = cv2.imread('TrackTiles/cross.png')
+tile_cross = cv2.cvtColor(tile_cross, cv2.COLOR_BGR2GRAY)
+tile_zebraV = cv2.imread('TrackTiles/zebra.png')
+tile_zebraV = cv2.cvtColor(tile_zebraV, cv2.COLOR_BGR2GRAY)
 tile_zebraH = tile_zebraV.T
 
 w, h = tile_RD.shape[::-1]
@@ -97,14 +113,25 @@ w, h = tile_RD.shape[::-1]
 threshold = 0.85
 positions = []
 tilelist = [tile_RD,tile_UR,tile_DR,tile_RU,tile_HS,tile_VS,tile_cross,tile_zebraH,tile_zebraV]
-colourstep = int(255/len(tilelist))
-for ii in range(len(tilelist)):
+
+#colourstep = int(255/len(tilelist))
+cv2.imwrite('Images/{:02d}.png'.format(1),im_rgb)
+
+for ii in [0,1,2,3,4,5,7]:
+#for ii in range(len(tilelist)):
     res = cv2.matchTemplate(track,tilelist[ii],cv2.TM_CCOEFF_NORMED)
     loc = np.where(res >= threshold)
+    iii = 0
+    linecolour = (int(np.random.rand(1)*255),int(np.random.rand(1)*255),int(np.random.rand(1)*255))
     for pt in zip(*loc[::-1]):
         positions.append(pt+(ii,))
         if showconv:
-            cv2.rectangle(im_rgb,pt,(pt[0] + w, pt[1] + h), ((55),(ii*colourstep),(255)), 2)
+            cv2.rectangle(im_rgb,pt,(pt[0] + w, pt[1] + h), linecolour, 2)
+            iii += 1
+    print(pt[0])
+    textstr = str(iii)
+    cv2.putText(im_rgb, textstr, tuple(np.array(pt)+[25,25]), font,fontScale, color, thickness, cv2.LINE_AA)
+    cv2.imwrite('Images/{:02d}.png'.format(ii+2),im_rgb)
 
 plt.figure()
 plt.imshow(im_rgb)
