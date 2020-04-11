@@ -90,8 +90,7 @@ posR = (337,15)
 
 pygame.display.set_caption("Player 1")
 
-# Loop until the user clicks the close button.
-done = False
+
 
 # Used to manage how fast the screen updates.
 clock = pygame.time.Clock()
@@ -111,8 +110,10 @@ hats = joystick.get_numhats()
 readdataevent = pygame.USEREVENT+1
 pygame.time.set_timer(readdataevent, 60)
 
-# -------- Main Program Loop -----------
 
+# Loop until the user clicks the close button.
+done = False
+# -------- Main Program Loop -----------
 while not done:
     if pygame.event.get(readdataevent):
         oldvals = btcom.get_data(oldvals)
@@ -120,14 +121,10 @@ while not done:
     for event in pygame.event.get(): # User did something.
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
-            btcom.connect(0)
-            print('Connection Closed')
+            
     if event.type == pgl.KEYDOWN and event.key == pgl.K_q:
-        btcom.connect(0)
-        pygame.display.quit()
-        sys.exit()
-        print('Connection Closed')
-        pass   
+        done = True
+ 
 
     if btcom.connected():
         screen.blit(bg, [0, 0])
@@ -339,4 +336,9 @@ while not done:
 # Close the window and quit.
 # If you forget this line, the program will 'hang'
 # on exit if running from IDLE.
+pygame.display.quit()
 pygame.quit()
+btcom.connect(0)
+print('Connection Closed')
+
+        

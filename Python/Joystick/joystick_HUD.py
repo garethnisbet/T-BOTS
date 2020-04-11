@@ -188,14 +188,10 @@ while not done:
     for event in pygame.event.get(): # User did something.
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
-            btcom.connect(0)
-            print('Connection Closed')
+
     if event.type == KEYDOWN and event.key == K_q:
-        btcom.connect(0)
-        pygame.display.quit()
-        sys.exit()
-        print('Connection Closed')
-        pass
+        done = True
+
     if event.type == KEYDOWN and event.key == K_t:
         WHITE = pygame.Color('white')
         themelist = ["bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()",
@@ -313,12 +309,7 @@ while not done:
         
     except:
         b=1
-        
-    #g_angleR = g_angle*np.pi/180
-    #rmat = np.array([[np.cos(g_angleR),-np.sin(g_angleR)],[np.sin(g_angleR),np.cos(g_angleR)]])
-    #spotTpos = tuple(spotTorigin+np.dot(rmat,np.array([spotV]).T).T[0].astype(int))
-    #screen.blit(spotB,spotTpos)
-        
+               
     textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
     textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
     
@@ -513,3 +504,5 @@ while not done:
 # If you forget this line, the program will 'hang'
 # on exit if running from IDLE.
 pygame.quit()
+btcom.connect(0)
+print('Connection Closed')

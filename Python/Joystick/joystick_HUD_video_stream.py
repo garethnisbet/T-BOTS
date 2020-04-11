@@ -56,7 +56,7 @@ sendcount = 0
 #------------------------------------------------------------------
 bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 #bd_addr = '98:D3:32:21:3D:77'
-bd_addr = '98:D3:91:FD:46:C9'
+#bd_addr = '98:D3:91:FD:46:C9'
 port = 1
 #btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -199,14 +199,10 @@ while not done:
     for event in pygame.event.get(): # User did something.
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
-            btcom.connect(0)
-            print('Connection Closed')
+
     if event.type == KEYDOWN and event.key == K_q:
-        btcom.connect(0)
-        pygame.display.quit()
-        sys.exit()
-        print('Connection Closed')
-        pass
+        done = True
+
 
     if event.type == KEYDOWN and event.key == K_t:
         WHITE = pygame.Color('white')
@@ -542,3 +538,5 @@ while not done:
 # If you forget this line, the program will 'hang'
 # on exit if running from IDLE.
 pygame.quit()
+btcom.connect(0)
+print('Connection Closed')
