@@ -1,57 +1,15 @@
 #!/usr/bin/python
-import pygame, sys, pygame.mixer, os
-from pygame.locals import *
-from time import sleep, time
+import sys
+sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+from TBotTools import tbt, pgt
+import pygame
+import pygame.locals as pgl
 
-starttime = time()
 clock = pygame.time.Clock()
-   
-
-
-#######################  Screen Text Class #############################
-
-class TextPrint(object):
-    def __init__(self):
-        self.reset()
-        self.font = pygame.font.Font(None, 15)
-
-    def tprint(self, screen, textString):
-        textBitmap = self.font.render(textString, True, WHITE)
-        screen.blit(textBitmap, (self.x, self.y))
-        self.y += self.line_height
-
-    def reset(self):
-        self.x = 10
-        self.y = 10
-        self.line_height = 15
-
-    def indent(self):
-        self.x += 10
-
-    def unindent(self):
-        self.x -= 10
-        
-    def abspos(self,screen, textString, pos):
-        self.x = pos[0]
-        self.y = pos[1]
-        textBitmap = self.font.render(textString, True, WHITE)
-        screen.blit(textBitmap, (self.x, self.y))
-        self.y += self.line_height
-    
- 
-
-###################  Instantiate BT Class #############################    
-
-
-      
-        
-# Define some colors.
-BLACK = pygame.Color('black')
-WHITE = pygame.Color('white')
-GRAY = pygame.Color('gray')
-
 
 pygame.init()
+
+textPrint = pgt.TextPrint(pygame.Color('white'))     
 
 # Set the width and height of the screen (width, height).
 screen = pygame.display.set_mode((1000, 800))
@@ -67,9 +25,6 @@ clock = pygame.time.Clock()
 # Initialize the joysticks.
 pygame.joystick.init()
 
-# Get ready to print.
-textPrint = TextPrint()
-
 # -------- Main Program Loop -----------
 
 while not done:
@@ -82,14 +37,9 @@ while not done:
     for event in pygame.event.get(): # User did something.
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
-            btcom.connect(0)
-            print('Connection Closed')
-    if event.type == KEYDOWN and event.key == K_q:
-        btcom.connect(0)
-        pygame.display.quit()
-        sys.exit()
-        print('Connection Closed')
-        pass
+
+    if event.type == pgl.KEYDOWN and event.key == pgl.K_q:
+        done = True
         
     textPrint.reset()
 
@@ -148,11 +98,6 @@ while not done:
             hat = joystick.get_hat(i)
             textPrint.tprint(screen, "Hat {} value: {}".format(i, str(hat)))
 
-                
-        textPrint.unindent()
-        textPrint.tprint(screen, "")
-        textPrint.tprint(screen, "T-Bot Data")
-        textPrint.indent()
  
    
     pygame.display.flip()

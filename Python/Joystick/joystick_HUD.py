@@ -107,7 +107,7 @@ pygame.init()
 # Set the width and height of the screen (width, height).
 screen = pygame.display.set_mode((900, 590))
 
-bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert()
+bg = pygame.image.load(dirpath+'/HUD/Controller7.png').convert()
 
 
 bgG = pygame.image.load(dirpath+'/HUD/offline.png').convert()
@@ -199,13 +199,15 @@ while not done:
                     "bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller5.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller6.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller7.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()"]
         exec(themelist[t1])
-        if t1 == 5:
+        if t1 == 7:
             WHITE = BLACK
         
         #pygame.image.save(screen, "CapturedImages/{}.png".format(t1))
-        if t1 == 5:
+        if t1 == 7:
             t1 = 0
         else:
             t1 += 1
@@ -482,27 +484,14 @@ while not done:
     if joystick.get_button(4) & joystick.get_button(5) & joystick.get_button(6) & joystick.get_button(7):
         screen.blit(L1L2,posL)
         screen.blit(R1R2,posR)
-
-        
-    # Go ahead and update the screen with what we've drawn.
-    #modelr = pygame.transform.rotate(model,-g_angle)
-    #screen.blit(logo,(20,480))
-    
-    #blitRotate(screen, model, (260,160), (75,75), -g_angle)
-    #screen.blit(modelr,(230,100))    
-
-    #Rectangle1 = pygame.Rect(400, 100, 200, 200)
-    #pygame.display.update(Rectangle1)
     
     pygame.display.flip()
-
 
     # Limit to 20 frames per second.
     clock.tick(30)
 
 # Close the window and quit.
-# If you forget this line, the program will 'hang'
-# on exit if running from IDLE.
+
 pygame.quit()
 btcom.connect(0)
 print('Connection Closed')
