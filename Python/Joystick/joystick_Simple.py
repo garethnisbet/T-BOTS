@@ -40,17 +40,23 @@ btcom = tbt.bt_connect(bd_addr,port,'Socket')
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
 
-###################  Instantiate BT Class #############################    
-
-
-
 pygame.init()
 
 # Set the width and height of the screen (width, height).
 screen = pygame.display.set_mode((512, 294))
+pygame.display.set_caption("Player 1")
+# Used to manage how fast the screen updates.
+clock = pygame.time.Clock()
 
-bg = pygame.image.load(dirpath+'/Simple/Controller.png').convert()
+
+# Use convert for the large images. This is the fastest format for blitting
+# Background images
+bg = pygame.image.load(dirpath+'/Simple/Controller.png').convert() 
 bgG = pygame.image.load(dirpath+'/Simple/Offline.png').convert()
+
+# Do not use convert for the following images
+# Button images
+
 dpad = pygame.image.load(dirpath+'/Simple/dpad.png')
 dpadU = pygame.image.load(dirpath+'/Simple/dpadU.png')
 dpadD = pygame.image.load(dirpath+'/Simple/dpadD.png')
@@ -80,7 +86,6 @@ R1 = pygame.image.load(dirpath+'/Simple/R1.png')
 R2 = pygame.image.load(dirpath+'/Simple/R2.png')
 R1R2 = pygame.image.load(dirpath+'/Simple/R1R2.png')
 
-offset = (190,60)
 posdpad = (102, 75)
 posbpad = (327, 75)
 posstickL = (165, 130)
@@ -88,20 +93,13 @@ posstickR = (287, 130)
 posL = (108,15)
 posR = (337,15)
 
-pygame.display.set_caption("Player 1")
-
-
-
-# Used to manage how fast the screen updates.
-clock = pygame.time.Clock()
-
-# Initialize the joystick.
-pygame.joystick.init()
-
 # Get ready to print.
 textPrint = pgt.TextPrint(pygame.Color('white'))
 
-joystick = pygame.joystick.Joystick(0)
+
+# Initialize the joystick.
+pygame.joystick.init()
+joystick = pygame.joystick.Joystick(0) # 0 for first joystick, 1 for the next etc.
 joystick.init()
 name = joystick.get_name()
 axes = joystick.get_numaxes()
@@ -111,20 +109,20 @@ readdataevent = pygame.USEREVENT+1
 pygame.time.set_timer(readdataevent, 60)
 
 
-# Loop until the user clicks the close button.
+# Loop until the user clicks the close button or q is pressed
+framecount = 1
 done = False
 # -------- Main Program Loop -----------
 while not done:
     if pygame.event.get(readdataevent):
         oldvals = btcom.get_data(oldvals)
         
-    for event in pygame.event.get(): # User did something.
+    for event in pygame.event.get(): 
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
             
     if event.type == pgl.KEYDOWN and event.key == pgl.K_q:
         done = True
- 
 
     if btcom.connected():
         screen.blit(bg, [0, 0])
@@ -144,34 +142,22 @@ while not done:
                 
         if btcom.connected() < 1:
             print('Exiting Program')
-            pygame.display.quit()
-            sys.exit()
+            done = True
         else:
             tries = 0
-    
-    textPrint.reset()
-
-    # Get count of joysticks.
-    joystick_count = pygame.joystick.get_count()
-
-    # Get the name from the OS for the controller/joystick.
-    
-    axis0 = joystick.get_axis(0)
-    axis1 = joystick.get_axis(1)
-    axis2 = joystick.get_axis(2)
-    axis3 = joystick.get_axis(3)
   
     for i in range(hats):
         hat = joystick.get_hat(i)
-        #textPrint.tprint(screen, "Hat {} value: {}".format(i, str(hat)))
+        
         if hat[1] == 1:
-            speedfactor += 0.1
+            speedfactor += 0.05
         elif hat[1] == -1:
-            speedfactor -= 0.1
+            speedfactor -= 0.05
         elif hat[0] == -1:
             speedlimit -= 5
-        elif hat[0] == +1:
+        elif hat[0] == 1:
             speedlimit += 5
+            
         if speedlimit >= 100:
             speedlimit = 100
         if speedlimit <= 0:
@@ -180,27 +166,18 @@ while not done:
             speedfactor = 5
         if speedfactor <= 0:
             speedfactor = 0
-            
 
 
-
-    textPrint.abspos(screen, "Gyro Data: {}".format(str(oldvals[3])),(10,10))
-    textPrint.tprint(screen, "KPS: {}".format(str(oldvals[0])))
-    textPrint.tprint(screen, "KP: {}".format(str(oldvals[1])))
-    textPrint.tprint(screen, "Trim: {}".format(str(oldvals[2])))
-    
-    textPrint.abspos(screen, "Speed Factor: {}".format(str(speedfactor)),(415,10))
-    textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
-    textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))   
-
-    textPrint.unindent()
-
-# #############   Send data to T-Bot  ##############################
+    axis0 = joystick.get_axis(0)
+    axis1 = joystick.get_axis(1)
+    axis2 = joystick.get_axis(2)
+    axis3 = joystick.get_axis(3)
 #
     if abs(axis0)+abs(axis1)+abs(axis2)+abs(axis3) != 0:
         slowfactor = 1+joystick.get_button(7)
         turn = 200+int(((axis0+(axis2*0.5))*speedfactor*100/slowfactor))
         speed = 200-int(((axis1+(axis3*0.5))*speedfactor*100/slowfactor))
+        
         if speed > 200+speedlimit:
             speed = 200+speedlimit
         if speed < 200-speedlimit:
@@ -210,13 +187,11 @@ while not done:
             turn = 200+turnspeedlimit
         if turn < 200-turnspeedlimit:
             turn = 200-turnspeedlimit
-        cmdwrite = 1       
+     
         sendstring = str(turn)+str(speed)+'Z'
         sendcount = btcom.send_data(sendstring,sendcount)
+
     else:
-        turn = 200
-        speed = 200
-        sendstring = str(turn)+str(speed)+'Z'
         sendstring = '200200Z'
         sendcount = btcom.send_data(sendstring,sendcount)
         
@@ -327,15 +302,24 @@ while not done:
     if joystick.get_button(4) & joystick.get_button(5) & joystick.get_button(6) & joystick.get_button(7):
         screen.blit(L1L2,posL)
         screen.blit(R1R2,posR)
-
+        
+    textPrint.abspos(screen, "Gyro Data: {}".format(str(oldvals[3])),(10,10))
+    textPrint.tprint(screen, "KPS: {}".format(str(oldvals[0])))
+    textPrint.tprint(screen, "KP: {}".format(str(oldvals[1])))
+    textPrint.tprint(screen, "Trim: {}".format(str(oldvals[2])))
+    
+    textPrint.abspos(screen, "Speed Factor: {}".format(str(speedfactor)),(415,10))
+    textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
+    textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))      
+    if framecount < 500:    
+        pygame.image.save(screen, "CapturedImages/{:04d}.png".format(framecount))
+    framecount += 1
     pygame.display.flip()
 
     # Limit to 30 frames per second.
     clock.tick(30)
 
-# Close the window and quit.
-# If you forget this line, the program will 'hang'
-# on exit if running from IDLE.
+
 pygame.display.quit()
 pygame.quit()
 btcom.connect(0)

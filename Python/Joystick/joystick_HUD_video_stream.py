@@ -1,11 +1,11 @@
 #!/usr/bin/python
 import pygame, sys, pygame.mixer, os
 sys.path.append('/home/pi/GitHub/T-BOTS/Python')
-from pygame.locals import *
 
+from TBotTools import tbt, pgt
+import pygame
+import pygame.locals as pgl
 from time import sleep, time
-
-from TBotTools import tbt
 from collections import deque
 import numpy as np
 starttime = time()
@@ -68,50 +68,18 @@ btcom = tbt.bt_connect(bd_addr,port,'Socket')
 #port = '/dev/tty.George-DevB'
 #baudrate = 38400
 #bd_addr = 'Empty'
-#btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
-
-
-#######################  Screen Text Class #############################
-
-class TextPrint(object):
-    def __init__(self):
-        self.reset()
-        self.font = pygame.font.Font(None, 15)
-
-    def tprint(self, screen, textString):
-        textBitmap = self.font.render(textString, True, WHITE)
-        screen.blit(textBitmap, (self.x, self.y))
-        self.y += self.line_height
-
-    def reset(self):
-        self.x = 10
-        self.y = 10
-        self.line_height = 15
-
-    def indent(self):
-        self.x += 10
-
-    def unindent(self):
-        self.x -= 10
-        
-    def abspos(self,screen, textString, pos):
-        self.x = pos[0]
-        self.y = pos[1]
-        textBitmap = self.font.render(textString, True, WHITE)
-        screen.blit(textBitmap, (self.x, self.y))
-        self.y += self.line_height
- 
-
-###################  Instantiate BT Class #############################    
-
-
-      
+#btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)  
         
 # Define some colors.
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
 
+
+
+#-----------------------------------------------------------------------
+#                        Initialize PyGame
+#-----------------------------------------------------------------------
 
 pygame.init()
 
@@ -179,7 +147,7 @@ clock = pygame.time.Clock()
 pygame.joystick.init()
 
 # Get ready to print.
-textPrint = TextPrint()
+textPrint = pgt.TextPrint(WHITE)
 
 readdataevent = pygame.USEREVENT+1
 pygame.time.set_timer(readdataevent, 100) # reduce this number for better plotting resolution
@@ -200,12 +168,13 @@ while not done:
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
 
-    if event.type == KEYDOWN and event.key == K_q:
+    if event.type == pgl.KEYDOWN and event.key == pgl.K_q:
         done = True
 
 
-    if event.type == KEYDOWN and event.key == K_t:
+    if event.type == pgl.KEYDOWN and event.key == pgl.K_t:
         WHITE = pygame.Color('white')
+
         themelist = ["bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()",
@@ -217,6 +186,7 @@ while not done:
         exec(themelist[t1])
         if t1 == 7:
             WHITE = BLACK
+        textPrint.setColour(WHITE)
         
         #pygame.image.save(screen, "CapturedImages/{}.png".format(t1))
         if t1 == 7:
@@ -255,7 +225,7 @@ while not done:
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     
     frame = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
-    frame.set_alpha(210)
+    #frame.set_alpha(210)
     screen.blit(frame,(260,49))            
 
     
