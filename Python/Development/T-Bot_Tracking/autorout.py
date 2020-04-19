@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.ion()
 
-save = 0 # Save way points
+save = 1 # Save way points
 usecam = 0
 showconv = 1
 
@@ -132,6 +132,7 @@ for ii in [0,1,2,3,4,5,7]:
     textstr = str(iii)
     cv2.putText(im_rgb, textstr, tuple(np.array(pt)+[25,25]), font,fontScale, color, thickness, cv2.LINE_AA)
     cv2.imwrite('Images/{:02d}.png'.format(ii+2),im_rgb)
+lastimage = ii
 
 plt.figure()
 plt.imshow(im_rgb)
@@ -219,7 +220,13 @@ minipaths =[[[[10,50],[40,55],[50,80]],[[50,80],[40,55],[10,50]]],# RD
 p2 = np.array([[]]*2).T
 for ii in range(patharray.shape[0]):
     p2 = np.vstack((p2,patharray[ii,:2]+np.array(minipaths[int(patharray[ii,-1])][int(signarray[ii])])))
+    
 plt.plot(p2[:,0],p2[:,1],'ro')
+
+if save:
+    for ii in range(p2.shape[0]):
+        cv2.circle(im_rgb, tuple(p2[ii,:].astype(int)), 10, (0,255,0), -1)
+        cv2.imwrite('Images/{:02d}.png'.format(lastimage+ii),im_rgb)
 
 if save:
     filename = 'pathpoints.dat'
