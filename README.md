@@ -37,4 +37,4 @@
 
 💡 **Note:** Windows users need to use the old boot loader. In the Arduino IDE select ```TOOLS > PROCESSOR > in the pull down menu change ATmega328P to ATmega328P (Old Bootloader)```.
 
-💡 **Note:** Raspberry Pi users will need to download the ARM 32 bit version [arduino-1.8.3](https://www.arduino.cc/en/Main/Software). 
+💡 **Note:** Raspberry Pi users will need to [download] (https://www.arduino.cc/en/Main/Software) the ARM 32 bit version. 
