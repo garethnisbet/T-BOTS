@@ -28,8 +28,9 @@ if search == True:
 
     bd_addr = nearby_devices[selection]
 else:
-    bd_addr = '98:D3:51:FD:81:AC'
-    #bd_addr = '98:D3:91:FD:46:C9'
+    #bd_addr = '98:D3:51:FD:81:AC'
+    bd_addr = '98:D3:91:FD:46:C9'
+
     print('connecting...')
 error = 1
 port = 1

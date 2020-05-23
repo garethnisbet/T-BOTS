@@ -1,5 +1,4 @@
 import pygame
-import pygame.locals as pgl
 
 class TextPrint(object):
     '''Text positioning class for PyGame'''
@@ -30,5 +29,6 @@ class TextPrint(object):
         textBitmap = self.font.render(textString, True, self.textcolour)
         screen.blit(textBitmap, (self.x, self.y))
         self.y += self.line_height
+        
     def setColour(self, textcolour):
         self.textcolour = textcolour

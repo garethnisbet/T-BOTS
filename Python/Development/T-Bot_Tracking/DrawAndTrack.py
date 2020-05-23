@@ -20,6 +20,7 @@ scalefactor = 1
 origin =  [0,0]
 showline = 1
 interpfactor = 5
+flag = 0
 geom = geometry.geometry(1) # scale factor to convert pixels to mm
 
 bb = np.array([[0,0,],[0,1],[1,1],[2,0],[3,0],[4,0],[3,0],[2,0],[1,0]])
@@ -112,7 +113,7 @@ starttime = []
 endtime = []
 laptime = 1000
 oldlaptime = 500
-folder = 'RecordedImages/'
+folder = 'RecordedImages2/'
 record = 0
 
 #folder = 'SpeedTest/'
@@ -120,16 +121,19 @@ if record:
     if os.path.isdir(folder) is not True:
         os.mkdir(folder)
 template = folder + '%05d.png'
+frameskip = 10
+
+
 font = cv2.FONT_HERSHEY_SIMPLEX 
 
 #---------------- Setup text writing  -----------------#
 # org 
-org = (50, 50)  
+org = (60, 20)  
 # fontScale 
 fontScale = 0.5   
 # Blue color in BGR 
 color = (255, 0, 0)
-color2 = (255, 255, 255)  
+color2 = (0, 255, 0)  
 # Line thickness of 2 px 
 thickness = 1
 textstr = ''
@@ -152,7 +156,7 @@ rdeadban = 2
 tolerance = 30
 
 
-feedforward = 8
+feedforward = 26
 pos_pid = pid.pid(0.4,0.4,0,[-10,10],[0,20],turntime)
 angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 
@@ -358,9 +362,11 @@ if __name__ == '__main__':
             if laptime < 1000:
                 textstr = 'Best time is: '+"{:6.4f}".format(laptime)
                 oldlaptime = laptime
-        cv2.putText(frame, textstr, org, font,fontScale, color, thickness, cv2.LINE_AA)
-        textstr2 = 'Last lap time: '+"{:6.4f}".format(laptime)
-        cv2.putText(frame, textstr2, (org[0],org[1]+20), font,fontScale, color2, thickness, cv2.LINE_AA)
+                flag = 1
+        if flag == 1:
+            cv2.putText(frame, textstr, org, font,fontScale, color, thickness, cv2.LINE_AA)
+            textstr2 = 'Last lap time: '+"{:6.4f}".format(laptime)
+            cv2.putText(frame, textstr2, (org[0],org[1]+20), font,fontScale, color2, thickness, cv2.LINE_AA)
 
         cv2.imshow('MultiTracker', frame)
 
@@ -458,7 +464,7 @@ if __name__ == '__main__':
             btcom.connect(0)
             break
         if record:
-            if tii == 5:
+            if tii == frameskip:
                 cv2.imwrite(template % iii, frame)
                 iii += 1
                 tii = 0

@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 #------------------------ Import Libraries ----------------------------#
 
 import pygame, sys, pygame.mixer, os
@@ -7,7 +6,7 @@ sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
-from TBotTools import tbt
+from TBotTools import tbt, pgt
 from collections import deque
 import numpy as np
 starttime = time()
@@ -45,9 +44,9 @@ sendcount = 0
 #                     For Linux / Raspberry Pi
 #----------------------------------------------------------------------#
 
-bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
+#bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 #bd_addr = '98:D3:32:21:3D:77'
-#bd_addr = '98:D3:91:FD:46:C9' # B
+bd_addr = '98:D3:91:FD:46:C9' # B
 #bd_addr = '98:D3:32:21:3D:A2' # Foxy
 #bd_addr = '98:D3:91:FD:46:9C' # T-Bot
 #bd_addr = '98:D3:32:21:3D:77' # Cinemon
@@ -67,34 +66,7 @@ btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 #bd_addr = 'Empty'
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
-#---------------------  Screen Text Class  ----------------------------#
-
-class TextPrint(object):
-    def __init__(self):
-        self.reset()
-        self.font = pygame.font.Font(None, 15)
-
-    def tprint(self, screen, textString):
-        textBitmap = self.font.render(textString, True, WHITE)
-        screen.blit(textBitmap, (self.x, self.y))
-        self.y += self.line_height
-
-    def reset(self):
-        self.x = 10
-        self.y = 10
-        self.line_height = 15
-
-    def indent(self):
-        self.x += 10
-
-    def unindent(self):
-        self.x -= 10
-    def abspos(self,screen, textString, pos):
-        textBitmap = self.font.render(textString, True, WHITE)
-        screen.blit(textBitmap, pos)
-
-   
-#------------------     Define some colors  ---------------------------#
+ #------------------     Define some colors  ---------------------------#
 
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
@@ -136,7 +108,8 @@ pygame.joystick.init()
 
 #-----------------------  Print to Window -----------------------------#
 
-textPrint = TextPrint()
+textPrint = pgt.TextPrint(WHITE)
+
 
 # ---------------------- Main Program Loop ----------------------------#
 
@@ -196,6 +169,7 @@ while not done:
         pygame.draw.lines(screen, (255,255,255), False, (gdata),1)
     except:
         print('Plotting Interupted')
+
     textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
     textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
     
@@ -284,8 +258,7 @@ while not done:
     else:
         sendstring = '200200Z'
         sendcount = btcom.send_data(sendstring,sendcount)       
-     
-    textPrint.tprint(screen, "T-Bot Keyboard Controller")
+    textPrint.abspos(screen, "T-Bot Keyboard Controller",(10,10))
     textPrint.indent()        
     textPrint.tprint(screen, "gyrodata: {}".format(str(oldvals[3])))
     textPrint.tprint(screen, "kps: {} - j/k".format(str(oldvals[0])))

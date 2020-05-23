@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 plt.ion()
 
 save = 1 # Save way points
-usecam = 0
+usecam = 1
 showconv = 1
 
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -110,12 +110,12 @@ w, h = tile_RD.shape[::-1]
 # -------------------  Find Tiles and Asign Type  ---------------------#
 # ---------------------------------------------------------------------#
 
-threshold = 0.85
+threshold = 0.82
 positions = []
 tilelist = [tile_RD,tile_UR,tile_DR,tile_RU,tile_HS,tile_VS,tile_cross,tile_zebraH,tile_zebraV]
 
 #colourstep = int(255/len(tilelist))
-cv2.imwrite('Images/{:02d}.png'.format(1),im_rgb)
+cv2.imwrite('Images/{:05d}.png'.format(1),im_rgb)
 
 for ii in [0,1,2,3,4,5,7]:
 #for ii in range(len(tilelist)):
@@ -131,7 +131,7 @@ for ii in [0,1,2,3,4,5,7]:
     print(pt[0])
     textstr = str(iii)
     cv2.putText(im_rgb, textstr, tuple(np.array(pt)+[25,25]), font,fontScale, color, thickness, cv2.LINE_AA)
-    cv2.imwrite('Images/{:02d}.png'.format(ii+2),im_rgb)
+    cv2.imwrite('Images/{:05d}.png'.format(ii+2),im_rgb)
 lastimage = ii
 
 plt.figure()
@@ -226,7 +226,7 @@ plt.plot(p2[:,0],p2[:,1],'ro')
 if save:
     for ii in range(p2.shape[0]):
         cv2.circle(im_rgb, tuple(p2[ii,:].astype(int)), 10, (0,255,0), -1)
-        cv2.imwrite('Images/{:02d}.png'.format(lastimage+ii),im_rgb)
+        cv2.imwrite('Images/{:05d}.png'.format(lastimage+ii),im_rgb)
 
 if save:
     filename = 'pathpoints.dat'
