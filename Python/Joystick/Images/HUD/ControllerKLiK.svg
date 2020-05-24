@@ -17,7 +17,7 @@
    id="svg8"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="ControllerKLiK.svg"
-   inkscape:export-filename="/home/pi/GitHub/T-BOTS/Python/Joystick/Images/HUD/Controller4.png"
+   inkscape:export-filename="/home/pi/GitHub/T-BOTS/Python/Joystick/Images/HUD/JoystickBG.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96">
   <defs
@@ -224,9 +224,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.78849764"
-     inkscape:cx="551.15006"
-     inkscape:cy="282.58668"
+     inkscape:zoom="0.4435073"
+     inkscape:cx="169.98716"
+     inkscape:cy="281.31945"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -248,7 +248,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>

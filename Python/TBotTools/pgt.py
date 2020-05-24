@@ -2,10 +2,11 @@ import pygame
 
 class TextPrint(object):
     '''Text positioning class for PyGame'''
-    def __init__(self, textcolour):
+    def __init__(self, textcolour, size = 15):
         self.reset()
         self.textcolour = textcolour
-        self.font = pygame.font.Font(None, 15)
+        self.fontsize = size
+        self.font = pygame.font.Font(None, self.fontsize)
 
     def tprint(self, screen, textString):
         textBitmap = self.font.render(textString, True, self.textcolour)
@@ -19,7 +20,11 @@ class TextPrint(object):
 
     def indent(self):
         self.x += 10
-
+        
+    def setfontsize(self,size):
+        self.fontsize = size
+        self.font = pygame.font.Font(None, self.fontsize)
+        
     def unindent(self):
         self.x -= 10
         

@@ -10,6 +10,11 @@ from TBotTools import tbt, pgt
 from collections import deque
 import numpy as np
 starttime = time()
+PlayMacro = 0
+RecordMacro = 0
+DeleteMacro = 0
+
+
 
 #---------------------- Setup for rolling plot  -----------------------#
 
@@ -46,9 +51,9 @@ sendcount = 0
 #                     For Linux / Raspberry Pi
 #----------------------------------------------------------------------#
 
-bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
+#bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 #bd_addr = '98:D3:32:21:3D:77'
-#bd_addr = '98:D3:91:FD:46:C9' # B
+bd_addr = '98:D3:91:FD:46:C9' # B
 #bd_addr = '98:D3:32:21:3D:A2' # Foxy
 #bd_addr = '98:D3:91:FD:46:9C' # T-Bot
 #bd_addr = '98:D3:32:21:3D:77' # Cinemon
@@ -68,12 +73,36 @@ btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 #bd_addr = 'Empty'
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
- #------------------     Define some colors  ---------------------------#
 
+
+def send(sendstr,sendcount,cmd_write):
+    global starttime
+    sendcount = btcom.send_data(sendstr,sendcount)
+    if cmd_write:
+        f2.write(str(time()-starttime)+','+sendstr+'\n')
+    starttime = time()
+    return sendcount
+
+
+def playmacro(filename,sendcount):
+    #try:
+    ff = open(filename)
+    cmd_data = ff.readlines()
+    ff.close()
+    for ii in range(len(cmd_data)):
+        aa = cmd_data[ii].split(',')
+        dtime = float(aa[0])
+        cmsstr = aa[1]
+        sleep(dtime)
+        sendcount = btcom.send_data(cmsstr,sendcount)
+#    except:
+#        print('The cmd.csv file does not exist. Try recording a macro first.')
+
+ #------------------     Define some colors  ---------------------------#
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
-
+RED = pygame.Color('red')
 pygame.init()
 
 #------- Set the width and height of the screen (width, height) -------#
@@ -184,46 +213,61 @@ while not done:
     keys = pygame.key.get_pressed()
 
     screen.blit(arrowkeys,posarrows)
+
+    if keys[K_i]:
+        textPrint.abspos(screen, 'Recording Macro', (20,500))
+        RecordMacro = 1
+        f2= open('cmd.csv','a')
+    if keys[K_o]:
+        RecordMacro = 0
+        f2.close()
+        print('Not Recording')
+    if keys[K_k]:
+        DeleteMacro = 1
+        print('Macro Deleted')
+        
+    if keys[K_p]:
+        PlayMacro = 1
     
     if keys[K_RIGHT] and keys[K_UP]:
         screen.blit(arrowkeysUR,posarrows)
         sendstring = '%03d%03dZ'%(240,200+(speedfactor*100))
-        sendcount = btcom.send_data(sendstring,sendcount)
+        sendcount = send(sendstring,sendcount,RecordMacro)
 
     elif keys[K_LEFT] and keys[K_UP]:
         screen.blit(arrowkeysUL,posarrows)
         sendstring = '%03d%03dZ'%(160,200+(speedfactor*100))
-        sendcount = btcom.send_data(sendstring,sendcount)
+        sendcount = send(sendstring,sendcount,RecordMacro)
         
     elif keys[K_RIGHT] and keys[K_DOWN]:
         screen.blit(arrowkeysDR,posarrows)
         sendstring = '%03d%03dZ'%(260,200-(speedfactor*100))
-        sendcount = btcom.send_data(sendstring,sendcount)
+        sendcount = send(sendstring,sendcount,RecordMacro)
         
     elif keys[K_LEFT] and keys[K_DOWN]:
         screen.blit(arrowkeysDL,posarrows)
         sendstring = '%03d%03dZ'%(140,200-(speedfactor*100))
-        sendcount = btcom.send_data(sendstring,sendcount)
+        sendcount = send(sendstring,sendcount,RecordMacro)
 
     elif keys[K_DOWN]:
         screen.blit(arrowkeysDown,posarrows)
         sendstring = '%03d%03dZ'%(200,200-(speedfactor*100))
-        sendcount = btcom.send_data(sendstring,sendcount)
+        sendcount = send(sendstring,sendcount,RecordMacro)
         
     elif keys[K_UP]:
         screen.blit(arrowkeysUp,posarrows)
         sendstring = '%03d%03dZ'%(200,200+(speedfactor*100))
-        sendcount = btcom.send_data(sendstring,sendcount)
+        sendcount = send(sendstring,sendcount,RecordMacro)
 
     elif keys[K_RIGHT]:
         screen.blit(arrowkeysR,posarrows)
         sendstring = '260200Z'
-        sendcount = btcom.send_data(sendstring,sendcount)
+        sendcount = send(sendstring,sendcount,RecordMacro)
 
     elif keys[K_LEFT]:
         screen.blit(arrowkeysL,posarrows)
         sendstring = '140200Z'
-        sendcount = btcom.send_data(sendstring,sendcount)
+        sendcount = send(sendstring,sendcount,RecordMacro)
         
     elif keys[K_t]:
         buttonstring = '200200F' # trim +ve
@@ -285,10 +329,10 @@ while not done:
                 sendstring = '200200Z'      
         mxnew = mx
         mynew = my
-        sendcount = btcom.send_data(sendstring,sendcount)
+        sendcount = send(sendstring,sendcount,RecordMacro)
 
     if c1==0 and np.sum(keys)==0:
-        sendcount = btcom.send_data('200200Z',sendcount) 
+        sendcount = send('200200Z',sendcount,RecordMacro) 
     
     screen.blit(joybase,(mx_origin-125,my_origin-125))
     screen.blit(joytop,(mx-40,my-40))    
@@ -303,8 +347,27 @@ while not done:
     textPrint.tprint(screen, "x, y: {}, {}".format(str(mx-mx_origin),str(my-my_origin)))
     textPrint.tprint(screen, "jx, jy: {}, {}".format(str(jx),str(jy)))
     textPrint.unindent()
+    
+    textPrint.abspos(screen, "i - Record", (20,500))
+    textPrint.tprint(screen, "o - Stop Recording")
+    textPrint.tprint(screen, "p - Play Macro")
 
-
+    textPrint.setColour(RED)
+    textPrint.setfontsize(30)
+    if RecordMacro:
+        textPrint.tprint(screen, 'Recording Macro')
+    if PlayMacro:
+        textPrint.tprint(screen, 'Playing Macro')
+        pygame.display.flip()
+        playmacro('cmd.csv',sendcount)
+        PlayMacro = 0
+    if DeleteMacro:
+        f2= open('cmd.csv','w')
+        f2.close()
+        DeleteMacro = 0
+        
+    textPrint.setColour(WHITE)
+    textPrint.setfontsize(15)
 #-----------------------   Send data to T-Bot   -----------------------#
         
     # Update the screen with what we've drawn.
