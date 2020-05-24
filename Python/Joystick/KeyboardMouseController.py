@@ -85,18 +85,18 @@ def send(sendstr,sendcount,cmd_write):
 
 
 def playmacro(filename,sendcount):
-    #try:
-    ff = open(filename)
-    cmd_data = ff.readlines()
-    ff.close()
-    for ii in range(len(cmd_data)):
-        aa = cmd_data[ii].split(',')
-        dtime = float(aa[0])
-        cmsstr = aa[1]
-        sleep(dtime)
-        sendcount = btcom.send_data(cmsstr,sendcount)
-#    except:
-#        print('The cmd.csv file does not exist. Try recording a macro first.')
+    try:
+        ff = open(filename)
+        cmd_data = ff.readlines()
+        ff.close()
+        for ii in range(len(cmd_data)):
+            aa = cmd_data[ii].split(',')
+            dtime = float(aa[0])
+            cmsstr = aa[1]
+            sleep(dtime)
+            sendcount = btcom.send_data(cmsstr,sendcount)
+    except:
+        print('The cmd.csv file does not exist. Try recording a macro first.')
 
  #------------------     Define some colors  ---------------------------#
 BLACK = pygame.Color('black')
@@ -357,7 +357,7 @@ while not done:
     if RecordMacro:
         textPrint.tprint(screen, 'Recording Macro')
     if PlayMacro:
-        textPrint.tprint(screen, 'Playing Macro')
+        textPrint.tprint(screen, 'Locked - Playing Macro')
         pygame.display.flip()
         playmacro('cmd.csv',sendcount)
         PlayMacro = 0
