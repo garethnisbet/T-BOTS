@@ -51,9 +51,9 @@ sendcount = 0
 #                     For Linux / Raspberry Pi
 #----------------------------------------------------------------------#
 
-#bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
+bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 #bd_addr = '98:D3:32:21:3D:77'
-bd_addr = '98:D3:91:FD:46:C9' # B
+#bd_addr = '98:D3:91:FD:46:C9' # B
 #bd_addr = '98:D3:32:21:3D:A2' # Foxy
 #bd_addr = '98:D3:91:FD:46:9C' # T-Bot
 #bd_addr = '98:D3:32:21:3D:77' # Cinemon
