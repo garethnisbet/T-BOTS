@@ -440,7 +440,6 @@ while not done:
 
     if joystick.get_button(4):
         screen.blit(L1,posL)
-        textPrint.abspos(screen, 'Recording Macro', (20,500))
         RecordMacro = 1
         f2= open('cmd.csv','a')
         
@@ -500,18 +499,26 @@ while not done:
     textPrint.tprint(screen, "R2 - Delete Macro")
         
     textPrint.setColour(RED)
-    textPrint.setfontsize(30)
+    textPrint.setfontsize(20)
     if RecordMacro:
         textPrint.tprint(screen, 'Recording Macro')
     if PlayMacro:
-        textPrint.tprint(screen, 'Locked - Playing Macro')
-        pygame.display.flip()
-        playmacro('cmd.csv',sendcount)
-        PlayMacro = 0
+        if RecordMacro == 0:
+            textPrint.tprint(screen, 'Locked - Playing Macro')
+            pygame.display.flip()
+            playmacro('cmd.csv',sendcount)
+            PlayMacro = 0
+        else:
+            textPrint.tprint(screen, 'Stop Recording First')
+            
     if DeleteMacro:
-        f2= open('cmd.csv','w')
-        f2.close()
-        DeleteMacro = 0
+        if RecordMacro == 0:
+            f2= open('cmd.csv','w')
+            f2.close()
+            DeleteMacro = 0
+        else:
+            textPrint.tprint(screen, 'Stop Recording First')
+            
         
     textPrint.setColour(WHITE)
     textPrint.setfontsize(15)    

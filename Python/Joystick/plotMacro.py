@@ -5,7 +5,7 @@ import numpy as np
 def rotxy(theta,v1):
     return (np.matrix([[np.cos(theta),-np.sin(theta)],[np.sin(theta),np.cos(theta)]])*v1.T).T
 
-filename = '/home/gareth/GitHub/T-BOTS/Python/Joystick/cmd.csv'
+filename = '/home/pi/GitHub/T-BOTS/Python/Joystick/cmd.csv'
 ff = open(filename)
 cmd_data = ff.readlines()
 def vbuilder(s1,s2,_cmd_data):
@@ -20,11 +20,13 @@ def vbuilder(s1,s2,_cmd_data):
         w1 = (-X/2.+(Y))*dt
         w2 = (X/2.+(Y))*dt
         w_average = (w1+w2)/2.0
+        if w_average == 0:
+            w_average = 0.0001
         if (w1-w2) != 0:
             angle = ((73.E-3*s1)/(w1-w2))*2*np.pi
         else:
             angle = 0
-        vo = vo/np.linalg.norm(vo)    
+        vo = vo/np.linalg.norm(vo)
         v = np.array(rotxy(angle,vo*w_average))
         vo = v
         v1 = np.vstack((v1,v))
