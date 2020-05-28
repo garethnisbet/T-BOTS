@@ -215,7 +215,6 @@ while not done:
     screen.blit(arrowkeys,posarrows)
 
     if keys[K_i]:
-        textPrint.abspos(screen, 'Recording Macro', (20,500))
         RecordMacro = 1
         f2= open('cmd.csv','a')
     if keys[K_o]:
@@ -348,23 +347,32 @@ while not done:
     textPrint.tprint(screen, "jx, jy: {}, {}".format(str(jx),str(jy)))
     textPrint.unindent()
     
-    textPrint.abspos(screen, "i - Record", (20,500))
+    textPrint.abspos(screen, "i - Record", (20,480))
     textPrint.tprint(screen, "o - Stop Recording")
     textPrint.tprint(screen, "p - Play Macro")
+    textPrint.tprint(screen, "k - Delete Macro")
 
     textPrint.setColour(RED)
-    textPrint.setfontsize(30)
+    textPrint.setfontsize(20)
     if RecordMacro:
         textPrint.tprint(screen, 'Recording Macro')
     if PlayMacro:
-        textPrint.tprint(screen, 'Locked - Playing Macro')
-        pygame.display.flip()
-        playmacro('cmd.csv',sendcount)
-        PlayMacro = 0
+        if RecordMacro == 0:
+            textPrint.tprint(screen, 'Locked - Playing Macro')
+            pygame.display.flip()
+            playmacro('cmd.csv',sendcount)
+            PlayMacro = 0
+        else:
+            textPrint.tprint(screen, 'Stop Recording First')
+
+            
     if DeleteMacro:
-        f2= open('cmd.csv','w')
-        f2.close()
-        DeleteMacro = 0
+        if RecordMacro == 0:
+            f2= open('cmd.csv','w')
+            f2.close()
+            DeleteMacro = 0
+        else:
+            textPrint.tprint(screen, 'Stop Recording First')
         
     textPrint.setColour(WHITE)
     textPrint.setfontsize(15)
