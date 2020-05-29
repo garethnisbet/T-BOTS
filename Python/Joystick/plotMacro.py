@@ -15,15 +15,15 @@ def vbuilder(s1,s2,_cmd_data):
         data = _cmd_data[ii].split(',')
         dt = float(data[0])
         data = data[1].split('\n')[0]
-        X = (int(data[:3])-200)/10*s2
-        Y = (int(data[3:-1])-200)/10*s2
+        X = (int(data[:3])-200)*s1
+        Y = (int(data[3:-1])-200)/s2
         w1 = (-X/2.+(Y))*dt
         w2 = (X/2.+(Y))*dt
         w_average = (w1+w2)/2.0
         if w_average == 0:
             w_average = 0.0001
         if (w1-w2) != 0:
-            angle = 2.0*(w1-w2)/73.E-3*s1
+            angle = 2.0*(w1-w2)/73.E-3
         else:
             angle = 0
         vo = vo/np.linalg.norm(vo)
@@ -34,7 +34,7 @@ def vbuilder(s1,s2,_cmd_data):
 
 
 
-s1,s2 = 0.04,1.16
+s1,s2 = 0.003,1.16
   
 v2 = vbuilder(s1,s2,cmd_data)
 xdata = np.cumsum(v2[:,0])
@@ -66,7 +66,7 @@ thickness = 0.02
 ax_a = plt.axes([0.3,spacing[0], 0.5, thickness], facecolor='white')
 ax_b = plt.axes([0.3, spacing[1], 0.5, thickness], facecolor='white')
 
-sldr_a = plt.Slider(ax_a, 'Rotation Rate', s1-0.5, s1+0.5,valinit=s1,valfmt = '%0.5f',color='gray')
+sldr_a = plt.Slider(ax_a, 'Rotation Rate', s1-0.01, s1+0.01,valinit=s1,valfmt = '%0.5f',color='gray')
 sldr_b = plt.Slider(ax_b, 'Speed Factor', s2-10.5, s2+10.5,valinit=s2,valfmt = '%0.5f',color='gray')
 
 def update(val):
