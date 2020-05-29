@@ -34,7 +34,7 @@ def vbuilder(s1,s2,_cmd_data):
 
 
 
-s1,s2 = 0.0026,0.35
+s1,s2 = 0.0026,3.5
   
 v2 = vbuilder(s1,s2,cmd_data)
 xdata = np.cumsum(v2[:,0])
@@ -43,10 +43,16 @@ ydata = np.cumsum(v2[:,1])
 
 
 
-fig, ax = plt.subplots(figsize=(5, 6),dpi=130)
+fig, ax = plt.subplots(figsize=(5, 6))
 p, = plt.plot(xdata,ydata)
 plt.plot(0,0,'o')
+plt.title('T-Bot Macro Plotter')
+plt.xlabel('Displacement (mm)')
+plt.ylabel('Displacement (mm)')
+
 fig.subplots_adjust(bottom=0.23)
+fig.subplots_adjust(left=0.165)
+fig.subplots_adjust(right=0.94)
 
 if xdata.min() < ydata.min():
     minval = xdata.min()
@@ -60,7 +66,7 @@ else:
 ax.set_xlim(minval,maxval)
 ax.set_ylim(minval,maxval)
 
-spacing = np.linspace(0.1,0.05,2)
+spacing = np.linspace(0.08,0.04,2)
 thickness = 0.02
 
 ax_a = plt.axes([0.3,spacing[0], 0.5, thickness], facecolor='white')
@@ -92,5 +98,5 @@ sldr_a.on_changed(update)
 sldr_b.on_changed(update)
 
 
-        
+plt.ion()
 plt.show()
