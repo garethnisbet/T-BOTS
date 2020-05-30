@@ -46,7 +46,7 @@ ydata = np.cumsum(v2[:,1])
 fig, ax = plt.subplots(figsize=(5, 6))
 p, = plt.plot(xdata,ydata)
 plt.plot(xdata[0],ydata[0],'o')
-plt.plot(xdata[-1],ydata[-1],'o')
+p2, = plt.plot(xdata[-1],ydata[-1],'o')
 plt.title('T-Bot Macro Plotter')
 plt.xlabel('Displacement (mm)')
 plt.ylabel('Displacement (mm)')
@@ -83,6 +83,7 @@ def update(val):
         xdata = np.cumsum(v2[:,0])
         ydata = np.cumsum(v2[:,1])
         p.set_data(xdata,ydata)
+        p2.set_data(xdata[-1],ydata[-1])
         if xdata.min() < ydata.min():
             minval = xdata.min()
         else:
