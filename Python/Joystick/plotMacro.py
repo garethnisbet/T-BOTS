@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 def rotxy(theta,v1):
     return (np.matrix([[np.cos(theta),-np.sin(theta)],[np.sin(theta),np.cos(theta)]])*v1.T).T
 
@@ -9,8 +8,8 @@ filename = '/home/pi/GitHub/T-BOTS/Python/Joystick/cmd.csv'
 ff = open(filename)
 cmd_data = ff.readlines()
 def vbuilder(s1,s2,_cmd_data):
-    v1 = np.array([[]]*2).T
-    vo = np.array([[0,1]])
+    v1 = np.array([[0,0]])
+    vo = np.array([[1,0]])
     for ii in range(len(cmd_data)):
         data = _cmd_data[ii].split(',')
         dt = float(data[0])
@@ -33,15 +32,11 @@ def vbuilder(s1,s2,_cmd_data):
     return v1
 
 
-
 s1,s2 = 0.00268,3.5
   
 v2 = vbuilder(s1,s2,cmd_data)
 xdata = np.cumsum(v2[:,0])
 ydata = np.cumsum(v2[:,1])
-
-
-
 
 fig, ax = plt.subplots(figsize=(5, 6))
 p, = plt.plot(xdata,ydata)
@@ -94,7 +89,6 @@ def update(val):
             maxval = ydata.max()
         ax.set_xlim(minval,maxval)
         ax.set_ylim(minval,maxval)
-
      
 sldr_a.on_changed(update)
 sldr_b.on_changed(update)
