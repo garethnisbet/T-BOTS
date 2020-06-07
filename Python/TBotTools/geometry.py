@@ -84,4 +84,7 @@ class geometry(object):
         cnts = cv2.findContours(gim, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
         return max(cnts, key=cv2.contourArea)[:,0]
+        
+    def rotxy(self,theta,v1):
+        return (np.matrix([[np.cos(theta),-np.sin(theta)],[np.sin(theta),np.cos(theta)]])*v1.T).T
 

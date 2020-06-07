@@ -12,6 +12,8 @@ from time import time
 
 imagepath = 'TemplateImages/Elephant.png'
 imagepath = 'TemplateImages/Track.png'
+imagepath = 'TemplateImages/TBot_side.png'
+
 #imagepath = 'TemplateImages/Butterfly.png'
 #imagepath = 'TemplateImages/Bot.png'
 #imagepath = 'TemplateImages/hex.png'
@@ -24,6 +26,7 @@ imagepath = 'TemplateImages/Track.png'
 
 
 filename = 'pathpoints.dat'
+filename = 'T-BotSideView.dat'
 low_threshold = 0
 high_threshold = 255
 geom = geometry.geometry()

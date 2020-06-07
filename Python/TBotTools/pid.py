@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 class pid(object):
-    def __init__(self,kp,ki,kd,int_limits,output_limits,dt):
+    def __init__(self,kp,ki,kd,input_limits,output_limits,dt):
         self.kp = kp
         self.ki = ki
         self.kd = kd
@@ -9,7 +9,7 @@ class pid(object):
         self.p_term = 0
         self.i_term = 0
         self.d_term = 0
-        self.int_llimit, self.int_ulimit = int_limits[0], int_limits[1]
+        self.input_llimit, self.input_ulimit = input_limits[0], input_limits[1]
         self.output_llimit, self.output_ulimit  = output_limits[0],output_limits[1] 
         self.last_error = 0.0
 
@@ -18,13 +18,11 @@ class pid(object):
         self.ki = ki
         self.kd = kd
 
-    def set_dt(self,kp,ki,kd):
-        self.kp = kp
-        self.ki = ki
-        self.kd = kd
+    def set_dt(self,dt):
+        self.dt = dt
 
-    def set_int_limit(self,limits):
-        self.int_limits(limits)
+    def set_input_limit(self,limits):
+        self.input_limits(limits)
 
     def set_output_limits(self,limits):
         self.output_limits(limits)
@@ -46,10 +44,10 @@ class pid(object):
         self.p_term = error
         self.i_term += error * self.dt
 
-        if self.i_term > self.int_ulimit:
-           self.i_term = self.int_ulimit
-        elif self.i_term < self.int_llimit:
-           self.i_term = self.int_llimit
+        if self.i_term > self.input_ulimit:
+           self.i_term = self.input_ulimit
+        elif self.i_term < self.input_llimit:
+           self.i_term = self.input_llimit
             
         self.d_term = delta_error / self.dt
         self.last_error = error

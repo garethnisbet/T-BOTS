@@ -78,7 +78,7 @@ thickness = 0.02
 ax_a = plt.axes([0.3,spacing[0], 0.5, thickness], facecolor='white')
 ax_b = plt.axes([0.3, spacing[1], 0.5, thickness], facecolor='white')
 
-sldr_a = plt.Slider(ax_a, 'Rotation Rate', s1-0.01, s1+0.01,valinit=s1,valfmt = '%0.5f',color='gray')
+sldr_a = plt.Slider(ax_a, 'Rotation Rate', s1-0.001, s1+0.001,valinit=s1,valfmt = '%0.5f',color='gray')
 sldr_b = plt.Slider(ax_b, 'Speed Factor', s2-2, s2+2,valinit=s2,valfmt = '%0.5f',color='gray')
 imsavetemplate = "gif/{:04d}.png"
 framenum = 1
@@ -101,7 +101,7 @@ def update(val):
             maxval = ydata.max()
         ax.set_xlim(minval,maxval)
         ax.set_ylim(minval,maxval)
-        #plt.savefig(imsavetemplate.format(framenum),facecolor=fig.get_facecolor(),format='png')
+        plt.savefig(imsavetemplate.format(framenum),facecolor=fig.get_facecolor(),format='png')
         framenum += 1
      
 sldr_a.on_changed(update)
