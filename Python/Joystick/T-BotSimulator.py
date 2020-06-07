@@ -31,11 +31,11 @@ targetvelocity = 0
 
 geom = geometry.geometry()
 
-s_kpo, s_kio, s_kdo = 0.01, 0.5, 0
-a_kpo, a_kio, a_kdo = 1.9, 0.001, 0
+s_kpo, s_kio, s_kdo = 0.047, 0.59, 0.022
+a_kpo, a_kio, a_kdo = 1.898, 0.006, 0.067
 
-s_kp, s_ki, s_kd = 0.01, 0.5, 0
-a_kp, a_ki, a_kd = 1.9, 0.001, 0
+s_kp, s_ki, s_kd = 0.047, 0.59, 0.022
+a_kp, a_ki, a_kd = 1.898, 0.006, 0.067
 
 speed_pid = pid.pid(s_kp, s_ki, s_kd,[-10,10],[-5,5],dt)
 angle_pid = pid.pid(a_kp, a_ki, a_kd,[6, 6],[-1,1],dt)
