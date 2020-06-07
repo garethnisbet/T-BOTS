@@ -41,7 +41,7 @@ speed_pid = pid.pid(s_kp, s_ki, s_kd,[-10,10],[-5,5],dt)
 angle_pid = pid.pid(a_kp, a_ki, a_kd,[6, 6],[-1,1],dt)
 
 
-origin = [500,300]
+origin = [500,319]
 tbot_drawing_offset = [-78,-10]
 xydata = np.loadtxt('T-BotSideView.dat')
 xydata = np.vstack((xydata,xydata[0,:]))+tbot_drawing_offset
@@ -49,9 +49,9 @@ xydata = np.vstack((xydata,xydata[0,:]))+tbot_drawing_offset
 xydata_rot = np.array(geom.rotxy(theta,xydata))   
 xydata_tup = tuple(map(tuple, tuple((xydata_rot+origin).astype(int))))
 
+spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0],[-0.8660254, -0.5 ],[0,0]])*45
 
-
-trackmarksArray = np.array([[0,350],[1000,350]])
+trackmarksArray = np.array([[0,368],[1000,368]])
 track_marks_tup = tuple(map(tuple, tuple((trackmarksArray).astype(int))))
 
 speedfactor = 0.6
@@ -107,13 +107,13 @@ R2 = pygame.image.load(dirpath+'/Simple/R2.png')
 R1R2 = pygame.image.load(dirpath+'/Simple/R1R2.png')
 
 hoffset = 244
-voffset = 400
+voffset = 388
 posdpad = (102+hoffset, 75+voffset)
 posbpad = (327+hoffset, 75+voffset)
 posstickL = (165+hoffset, 130+voffset)
-posstickR = (287+hoffset, 130+voffset)
+posstickR = (289+hoffset, 130+voffset)
 posL = (108+hoffset,15+voffset)
-posR = (337+hoffset,15+voffset)
+posR = (340+hoffset,15+voffset)
 
 # Get ready to print.
 textPrint = pgt.TextPrint(pygame.Color('white'))
@@ -165,12 +165,15 @@ while not done:
         xydata_rot = np.array(geom.rotxy(theta,xydata))   
         xydata_tup = tuple(map(tuple, tuple((xydata_rot+origin).astype(int))))
         settheta = -speed_pid.output(targetvelocity,-velocity,dt)
-        noise = np.random.rand(1)*np.pi/180
+        noise = np.random.rand(1)*np.pi/180*2
+        spokes_rot = np.array(geom.rotxy(distance*1674/50,spokes))
+        spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
         acc = -angle_pid.output(np.pi+settheta,(theta+noise[0]),dt)
     else:
         textPrint.abspos(screen, "Press the start button to reset.",(430,180))
         
     pygame.draw.lines(screen, WHITE, False, (xydata_tup),1)
+    pygame.draw.lines(screen, WHITE, False, (spokes_tup),1)
     pygame.draw.circle(screen, WHITE, origin, 50, 1)
     pygame.draw.lines(screen, WHITE, False, (track_marks_tup),1)
     
