@@ -18,6 +18,8 @@ sf = 0.1
 dt = 0.033 # From frame rate
 g = 9.81 * sf
 h = 0.08
+auto_toggle = 0
+auto = 1
 
 t = 0
 alpha = 0
@@ -164,11 +166,12 @@ while not done:
         origin[0] = np.mod(origin[0],1000)
         xydata_rot = np.array(geom.rotxy(theta,xydata))   
         xydata_tup = tuple(map(tuple, tuple((xydata_rot+origin).astype(int))))
-        settheta = -speed_pid.output(targetvelocity,-velocity,dt)
         noise = np.random.rand(1)*np.pi/180*2
         spokes_rot = np.array(geom.rotxy(distance*1674/50,spokes))
         spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
-        acc = -angle_pid.output(np.pi+settheta,(theta+noise[0]),dt)
+        if auto:
+            settheta = -speed_pid.output(targetvelocity,-velocity,dt)
+            acc = -angle_pid.output(np.pi+settheta,(theta+noise[0]),dt)
     else:
         textPrint.abspos(screen, "Press the start button to reset.",(430,180))
         
@@ -233,9 +236,17 @@ while not done:
     axis1 = joystick.get_axis(1)
     axis2 = joystick.get_axis(2)
     axis3 = joystick.get_axis(3)
+    
+    
+    
+    if joystick.get_button(10):
+        auto_toggle += 1
+        auto = np.mod(auto_toggle,2)
 #
-    targetvelocity =  -axis0 * 0.2
-
+    if auto:
+        targetvelocity =  -axis0 * 0.2
+    else:
+        acc = axis0   
 
     # ------------------ Highlight buttons ----------------#
     screen.blit(dpad,posdpad)
@@ -368,6 +379,7 @@ while not done:
     if joystick.get_button(4) & joystick.get_button(5) & joystick.get_button(6) & joystick.get_button(7):
         screen.blit(L1L2,posL)
         screen.blit(R1R2,posR)
+
     
 
     textPrint.abspos(screen, "Tuning Parameters",(10,10))
@@ -379,6 +391,10 @@ while not done:
     textPrint.tprint(screen, "a_kp: {:.3f}".format(angle_pid.get_PID()[0]))
     textPrint.tprint(screen, "a_ki: {:.3f}".format(angle_pid.get_PID()[1]))
     textPrint.tprint(screen, "a_kd: {:.3f}".format(angle_pid.get_PID()[2]))
+    if auto:
+        textPrint.tprint(screen, "Auto")
+    else:
+        textPrint.tprint(screen, "Manual")
     
     textPrint.abspos(screen, "Speed Factor: {}".format(str(speedfactor)),(900,10))
     textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
