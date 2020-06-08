@@ -28,7 +28,7 @@ acc = 0
 omega = 0
 velocity = 0
 distance = 0
-theta = np.pi
+theta = np.pi+0.001
 targetvelocity = 0
 
 geom = geometry.geometry()
@@ -240,8 +240,9 @@ while not done:
     
     
     if joystick.get_button(10):
-        auto_toggle += 1
-        auto = np.mod(auto_toggle,2)
+        auto = 1
+    elif joystick.get_button(11):
+        auto = 0
 #
     if auto:
         targetvelocity =  -axis0 * 0.2
@@ -313,7 +314,7 @@ while not done:
         omega = 0
         velocity = 0
         distance = 0
-        theta = np.pi
+        theta = np.pi+0.001
         origin[0] = 500
         speed_pid.clear()
         angle_pid.clear()
@@ -392,9 +393,9 @@ while not done:
     textPrint.tprint(screen, "a_ki: {:.3f}".format(angle_pid.get_PID()[1]))
     textPrint.tprint(screen, "a_kd: {:.3f}".format(angle_pid.get_PID()[2]))
     if auto:
-        textPrint.tprint(screen, "Auto")
+        textPrint.tprint(screen, "Auto - Press right stick for manual control")
     else:
-        textPrint.tprint(screen, "Manual")
+        textPrint.tprint(screen, "Manual - Press left stick for automatic control")
     
     textPrint.abspos(screen, "Speed Factor: {}".format(str(speedfactor)),(900,10))
     textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
