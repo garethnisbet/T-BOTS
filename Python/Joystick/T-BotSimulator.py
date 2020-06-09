@@ -3,6 +3,7 @@ import sys, os
 import numpy as np
 sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
+from time import time
 import pygame
 import pygame.locals as pgl
 from collections import deque
@@ -15,7 +16,10 @@ GRAY = pygame.Color('gray')
 
 # ------------------------- Physics and Controls -----------------------
 sf = 0.1
-dt = 0.033 # From frame rate
+#sf = 0.165 # For the moon
+#sf = 1 # For the Earth
+
+dt = 0.016 # From frame rate
 g = 9.81 * sf
 h = 0.08
 auto_toggle = 0
@@ -32,12 +36,32 @@ theta = np.pi+0.001
 targetvelocity = 0
 
 geom = geometry.geometry()
-
+starttime = time()
+lasttime = 0
+timeflag = 1
+#------------------------- Tuning for g = g *0.1 -----------------------
 s_kpo, s_kio, s_kdo = 0.047, 0.59, 0.022
 a_kpo, a_kio, a_kdo = 1.898, 0.006, 0.067
 
 s_kp, s_ki, s_kd = 0.047, 0.59, 0.022
 a_kp, a_ki, a_kd = 1.898, 0.006, 0.067
+#-----------------------------------------------------------------------
+
+#------------------------- Tuning for the Moon -----------------------
+#s_kpo, s_kio, s_kdo = 0.075, 0.94, 0.022
+#a_kpo, a_kio, a_kdo = 3.03, 0.0096, 0.067
+
+#s_kp, s_ki, s_kd = 0.075, 0.94, 0.022
+#a_kp, a_ki, a_kd = 3.03, 0.0096, 0.067
+#-----------------------------------------------------------------------
+
+#------------------------- Tuning for Earth -----------------------
+#s_kpo, s_kio, s_kdo = 0.006, 0.026, 0.0
+#a_kpo, a_kio, a_kdo = 12.115, 0.035, 0.003
+#
+#s_kp, s_ki, s_kd = 0.006, 0.023, 0.0
+#a_kp, a_ki, a_kd = 12.115, 0.035, 0.003
+#-----------------------------------------------------------------------
 
 speed_pid = pid.pid(s_kp, s_ki, s_kd,[-10,10],[-5,5],dt)
 angle_pid = pid.pid(a_kp, a_ki, a_kd,[6, 6],[-1,1],dt)
@@ -173,7 +197,11 @@ while not done:
             settheta = -speed_pid.output(targetvelocity,-velocity,dt)
             acc = -angle_pid.output(np.pi+settheta,(theta+noise[0]),dt)
     else:
+
         textPrint.abspos(screen, "Press the start button to reset.",(430,180))
+        if timeflag:
+            lasttime = time()-starttime
+            timeflag = 0
         
     pygame.draw.lines(screen, WHITE, False, (xydata_tup),1)
     pygame.draw.lines(screen, WHITE, False, (spokes_tup),1)
@@ -318,6 +346,8 @@ while not done:
         origin[0] = 500
         speed_pid.clear()
         angle_pid.clear()
+        starttime = time()
+        timeflag = 1
         
     if joystick.get_button(0) & joystick.get_button(1):
         screen.blit(bpadUR,posbpad)
@@ -382,8 +412,14 @@ while not done:
         screen.blit(R1R2,posR)
 
     
-
-    textPrint.abspos(screen, "Tuning Parameters",(10,10))
+    textPrint.setfontsize(20)
+    textPrint.abspos(screen, "T-Bot Simulator",(10,10))    
+    textPrint.setfontsize(15)
+    textPrint.tprint(screen, "www.klikrobotics.com")
+    textPrint.tprint(screen, " ")
+    textPrint.tprint(screen, "T: {:.3f}".format(time()-starttime))
+    textPrint.tprint(screen, "Last T: {:.3f}".format(lasttime))        
+    textPrint.abspos(screen, "Tuning Parameters",(10,400))
     textPrint.tprint(screen, " ")
     textPrint.tprint(screen, "s_kp: {:.3f}".format(speed_pid.get_PID()[0]))
     textPrint.tprint(screen, "s_ki: {:.3f}".format(speed_pid.get_PID()[1]))
@@ -392,14 +428,14 @@ while not done:
     textPrint.tprint(screen, "a_kp: {:.3f}".format(angle_pid.get_PID()[0]))
     textPrint.tprint(screen, "a_ki: {:.3f}".format(angle_pid.get_PID()[1]))
     textPrint.tprint(screen, "a_kd: {:.3f}".format(angle_pid.get_PID()[2]))
+    textPrint.tprint(screen, " ")
     if auto:
         textPrint.tprint(screen, "Auto - Press right stick for manual control")
     else:
         textPrint.tprint(screen, "Manual - Press left stick for automatic control")
+
     
-    textPrint.abspos(screen, "Speed Factor: {}".format(str(speedfactor)),(900,10))
-    textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
-    textPrint.tprint(screen, "theta: {:.2f}".format((theta)*180/np.pi))
+    textPrint.abspos(screen, "theta: {:.2f}".format((theta-np.pi)*180/np.pi),(890,10))
     textPrint.tprint(screen, "Alpha: {:.2f}".format(alpha))
     textPrint.tprint(screen, "Gamma: {:.2f}".format(gamma))    
     textPrint.tprint(screen, "Acceleration: {:.2f}".format(acc))
@@ -408,16 +444,14 @@ while not done:
     
     textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))  
     
-    textPrint.setfontsize(20)
-    textPrint.abspos(screen, "T-Bot Simulator",(10,400))    
-    textPrint.setfontsize(15)
-    textPrint.tprint(screen, " ")
-    textPrint.tprint(screen, "www.klikrobotics.com")
+    
+
+
     
     pygame.display.flip()
 
     # Limit to 30 frames per second.
-    clock.tick(30)
+    clock.tick(60)
 
 
 pygame.display.quit()
