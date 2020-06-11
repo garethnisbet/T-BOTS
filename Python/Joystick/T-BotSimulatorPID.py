@@ -97,12 +97,13 @@ clock = pygame.time.Clock()
 
 # Use convert for the large images. This is the fastest format for blitting
 # Background images
-bg = pygame.image.load(dirpath+'/Simple/BG_Simulator.png').convert() 
-bgG = pygame.image.load(dirpath+'/Simple/Offline.png').convert()
+bg = pygame.image.load(dirpath+'/Simple/Gray.jpg').convert() 
+
 
 # Do not use convert for the following images
 # Button images
-
+joystick_image = pygame.image.load(dirpath+'/Simple/joystick_only.png')
+track_image = pygame.image.load(dirpath+'/Simple/line.png')
 dpad = pygame.image.load(dirpath+'/Simple/dpad.png')
 dpadU = pygame.image.load(dirpath+'/Simple/dpadU.png')
 dpadD = pygame.image.load(dirpath+'/Simple/dpadD.png')
@@ -136,11 +137,12 @@ hoffset = 244
 voffset = 388
 posdpad = (102+hoffset, 75+voffset)
 posbpad = (327+hoffset, 75+voffset)
-posstickL = (165+hoffset, 130+voffset)
-posstickR = (289+hoffset, 130+voffset)
 posL = (108+hoffset,15+voffset)
 posR = (340+hoffset,15+voffset)
 
+pos_joystick = (298,420)
+posstickL = (164+hoffset, 130+voffset)
+posstickR = (287+hoffset, 130+voffset)
 # Get ready to print.
 textPrint = pgt.TextPrint(pygame.Color('white'))
 
@@ -173,7 +175,10 @@ bb=np.copy(aa)
 # -------- Main Program Loop -----------
 
 while not done:
-    screen.blit(bg, [0, 0])
+    #screen.fill((0, 0, 0))
+    screen.blit(bg,(0,0))
+    screen.blit(joystick_image, pos_joystick)
+    screen.blit(track_image, (0,360))
     if theta >= np.pi/1.845 and theta <= 1.43*np.pi:
         alpha =  -np.sin(theta)*g/h
         gamma =  -np.cos(theta)*acc/h
@@ -207,7 +212,6 @@ while not done:
     pygame.draw.lines(screen, WHITE, False, (spokes_tup),1)
     pygame.draw.circle(screen, WHITE, origin, 50, 1)
     pygame.draw.lines(screen, WHITE, False, (track_marks_tup),1)
-    
     
     pts.appendleft((iii,theta))
     iii+=1
@@ -411,7 +415,6 @@ while not done:
         screen.blit(L1L2,posL)
         screen.blit(R1R2,posR)
 
-    
     textPrint.setfontsize(20)
     textPrint.abspos(screen, "T-Bot Simulator",(10,10))    
     textPrint.setfontsize(15)
@@ -434,7 +437,6 @@ while not done:
     else:
         textPrint.tprint(screen, "Manual - Press left stick for automatic control")
 
-    
     textPrint.abspos(screen, "theta: {:.2f}".format((theta-np.pi)*180/np.pi),(890,10))
     textPrint.tprint(screen, "Alpha: {:.2f}".format(alpha))
     textPrint.tprint(screen, "Gamma: {:.2f}".format(gamma))    
@@ -442,11 +444,7 @@ while not done:
     textPrint.tprint(screen, "Velocity: {:.2f}".format(velocity))
     textPrint.tprint(screen, "Distance: {:.2f}".format(distance))
     
-    textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))  
-    
-    
-
-
+    textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))
     
     pygame.display.flip()
 
