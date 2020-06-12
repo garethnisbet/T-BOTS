@@ -18,8 +18,8 @@ GRAY = pygame.Color('gray')
 sf = 0.1
 #sf = 0.165 # For the moon
 #sf = 1 # For the Earth
-
-dt = 0.016 # From frame rate. Set to 0.033 for Raspberry Pi. It can't run at 60 fps
+framerate = 60 # set to 30 for Rasoberry pi
+dt = 1.0/framerate 
 g = 9.81 * sf
 h = 0.08
 auto_toggle = 0
@@ -449,7 +449,7 @@ while not done:
     pygame.display.flip()
 
     # Limit to 60 frames per second. Set to 30 for Raspberry Pi. It can't run at 60 fps
-    clock.tick(60) 
+    clock.tick(framerate) 
 
 
 pygame.display.quit()
