@@ -5,6 +5,7 @@ sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
+import pygame.gfxdraw
 import pygame.locals as pgl
 from collections import deque
 clock = pygame.time.Clock()
@@ -18,7 +19,7 @@ GRAY = pygame.Color('gray')
 sf = 0.1
 #sf = 0.165 # For the moon
 #sf = 1 # For the Earth
-framerate = 60 # set to 30 for Rasoberry pi
+framerate = 30 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
 g = 9.81 * sf
 h = 0.08
@@ -195,6 +196,7 @@ while not done:
         origin[0] = np.mod(origin[0],1000)
         xydata_rot = np.array(geom.rotxy(theta,xydata))   
         xydata_tup = tuple(map(tuple, tuple((xydata_rot+origin).astype(int))))
+
         noise = np.random.rand(1)*np.pi/180*2
         spokes_rot = np.array(geom.rotxy(distance*1674/50,spokes))
         spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
@@ -207,10 +209,18 @@ while not done:
         if timeflag:
             lasttime = time()-starttime
             timeflag = 0
-        
-    pygame.draw.lines(screen, WHITE, False, (xydata_tup),1)
-    pygame.draw.lines(screen, WHITE, False, (spokes_tup),1)
-    pygame.draw.circle(screen, WHITE, origin, 50, 1)
+    #pygame.gfxdraw.filled_polygon(screen, (xydata_tup), (255, 102, 0,150))  
+    pygame.gfxdraw.filled_polygon(screen, (xydata_tup), (0, 249, 249, 100))         
+    #pygame.draw.lines(screen, WHITE, False, (xydata_tup),1)
+    pygame.gfxdraw.aapolygon(screen, (xydata_tup), WHITE)
+
+
+    #pygame.draw.lines(screen, WHITE, False, (spokes_tup),1)
+    pygame.gfxdraw.aapolygon(screen, (spokes_tup), WHITE)
+    #pygame.gfxdraw.filled_circle(screen, origin[0], origin[1], 49, (0,0,0,150))
+    #pygame.draw.circle(screen, WHITE, origin, 50, 1)
+    pygame.gfxdraw.aacircle(screen, origin[0], origin[1], 49, WHITE)
+    
     pygame.draw.lines(screen, WHITE, False, (track_marks_tup),1)
     
     pts.appendleft((iii,theta))
