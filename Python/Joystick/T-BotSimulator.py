@@ -19,7 +19,7 @@ GRAY = pygame.Color('gray')
 sf = 0.1
 #sf = 0.165 # For the moon
 #sf = 1 # For the Earth
-framerate = 30 # set to 30 for Rasoberry pi
+framerate = 60 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
 g = 9.81 * sf
 h = 0.08
@@ -198,7 +198,7 @@ while not done:
         xydata_tup = tuple(map(tuple, tuple((xydata_rot+origin).astype(int))))
 
         noise = np.random.rand(1)*np.pi/180*2
-        spokes_rot = np.array(geom.rotxy(distance*1674/50,spokes))
+        spokes_rot = np.array(geom.rotxy((distance*1674/50)+theta,spokes))
         spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
         if auto:
             settheta = -speed_pid.output(targetvelocity,-velocity,dt)
