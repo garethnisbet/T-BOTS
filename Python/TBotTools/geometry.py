@@ -88,3 +88,14 @@ class geometry(object):
     def rotxy(self,theta,v1):
         return (np.matrix([[np.cos(theta),-np.sin(theta)],[np.sin(theta),np.cos(theta)]])*v1.T).T
 
+    def v2ang(self,h,g,v):
+        if v < 0:
+            angout = -np.arccos(1-((v*v)/(2*g*h)))
+        elif v > 0:
+            angout = np.arccos(1-((v*v)/(2*g*h)))
+        else:
+            angout = 0
+        if np.isnan(angout):
+            angout = 0
+        return angout
+
