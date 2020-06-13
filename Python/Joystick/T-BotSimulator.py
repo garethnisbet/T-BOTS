@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
@@ -15,7 +15,15 @@ BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
 
+
 # ------------------------- Physics and Controls -----------------------
+#
+#   Note, the T-Bot motor is geared so when the robot falls over, the   
+#   lateral force exerted on the wheel is insufficient to turn the motor 
+#   which simplifies the equations.   
+#
+# ---------------------------------------------------------------------- 
+
 sf = 0.1
 #sf = 0.165 # For the moon
 #sf = 1 # For the Earth
@@ -41,10 +49,10 @@ starttime = time()
 lasttime = 0
 timeflag = 1
 #------------------------- Tuning for g = g *0.1 -----------------------
-s_kpo, s_kio, s_kdo = 0.047, 0.59, 0.022
+s_kpo, s_kio, s_kdo = 0.028, 0.35, 0.022
 a_kpo, a_kio, a_kdo = 1.898, 0.006, 0.067
 
-s_kp, s_ki, s_kd = 0.047, 0.59, 0.022
+s_kp, s_ki, s_kd = 0.028, 0.35, 0.022
 a_kp, a_ki, a_kd = 1.898, 0.006, 0.067
 #-----------------------------------------------------------------------
 
@@ -141,6 +149,10 @@ posbpad = (327+hoffset, 75+voffset)
 posL = (108+hoffset,15+voffset)
 posR = (340+hoffset,15+voffset)
 
+show_arrows = 0
+
+arrow = np.array([[1,0],[1,150],[5,150],[0,165],[-5,150],[-1,150],[-1,0],[1,0]])
+
 pos_joystick = (298,420)
 posstickL = (164+hoffset, 130+voffset)
 posstickR = (287+hoffset, 130+voffset)
@@ -194,15 +206,22 @@ while not done:
         distance += velocity*dt
         origin[0] = 500+int(distance*1674)+int(((theta-np.pi)*np.pi)*25/2)
         origin[0] = np.mod(origin[0],1000)
-        xydata_rot = np.array(geom.rotxy(theta,xydata))   
+        xydata_rot = np.array(geom.rotxy(theta,xydata))
         xydata_tup = tuple(map(tuple, tuple((xydata_rot+origin).astype(int))))
 
         noise = np.random.rand(1)*np.pi/180*2
         spokes_rot = np.array(geom.rotxy((distance*1674/50)+theta,spokes))
         spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
-        if auto:
-            settheta = -speed_pid.output(targetvelocity,-velocity,dt)
+        if auto:          
+            #settheta = -speed_pid.output(targetvelocity,-velocity,dt) # The T-Bot does not have motor encoders
+            settheta = -speed_pid.output(geom.v2ang(h,g,targetvelocity),-geom.v2ang(h,g,velocity),dt)
+            # so the velocity is is calculated as a function of angle
             acc = -angle_pid.output(np.pi+settheta,(theta+noise[0]),dt)
+            if show_arrows:
+                arrow_rot1 = np.array(geom.rotxy(theta,arrow))
+                arrow1_tup = tuple(map(tuple, tuple((arrow_rot1+origin).astype(int))))
+                arrow_rot2 = np.array(geom.rotxy(np.pi+settheta,arrow))
+                arrow2_tup = tuple(map(tuple, tuple((arrow_rot2+origin).astype(int))))           
     else:
 
         textPrint.abspos(screen, "Press the start button to reset.",(430,180))
@@ -213,12 +232,15 @@ while not done:
     pygame.gfxdraw.filled_polygon(screen, (xydata_tup), (0, 249, 249, 100))         
     #pygame.draw.lines(screen, WHITE, False, (xydata_tup),1)
     pygame.gfxdraw.aapolygon(screen, (xydata_tup), WHITE)
-
+    if show_arrows:
+        pygame.gfxdraw.aapolygon(screen, (arrow1_tup), (255,0,0,255))        
+        pygame.gfxdraw.aapolygon(screen, (arrow2_tup), (0,255,0,255)) 
 
     #pygame.draw.lines(screen, WHITE, False, (spokes_tup),1)
     pygame.gfxdraw.aapolygon(screen, (spokes_tup), WHITE)
     #pygame.gfxdraw.filled_circle(screen, origin[0], origin[1], 49, (0,0,0,150))
     #pygame.draw.circle(screen, WHITE, origin, 50, 1)
+    pygame.gfxdraw.aacircle(screen, origin[0], origin[1], 46, WHITE)
     pygame.gfxdraw.aacircle(screen, origin[0], origin[1], 49, WHITE)
     
     pygame.draw.lines(screen, WHITE, False, (track_marks_tup),1)
