@@ -90,12 +90,17 @@ class geometry(object):
 
     def v2ang(self,h,g,v):
         if v < 0:
-            angout = -np.arccos(1-((v*v)/(2*g*h)))
+            angout = -np.arccos(1-((v**2)/(2*g*h)))
         elif v > 0:
-            angout = np.arccos(1-((v*v)/(2*g*h)))
+            angout = np.arccos(1-((v**2)/(2*g*h)))
         else:
             angout = 0
         if np.isnan(angout):
             angout = 0
         return angout
 
+    def v(self,l,g,theta):
+        if theta != 0:
+            return np.sqrt(2*g*(l-l*np.cos(theta)))*theta/np.abs(theta)
+        else:
+            return 0.0

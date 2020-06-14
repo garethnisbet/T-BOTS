@@ -15,6 +15,7 @@ BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
 
+show_arrows = 0
 
 # ------------------------- Physics and Controls -----------------------
 #
@@ -27,7 +28,7 @@ GRAY = pygame.Color('gray')
 sf = 0.1
 #sf = 0.165 # For the moon
 #sf = 1 # For the Earth
-framerate = 30 # set to 30 for Rasoberry pi
+framerate = 60 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
 g = 9.81 * sf
 h = 0.08
@@ -149,7 +150,7 @@ posbpad = (327+hoffset, 75+voffset)
 posL = (108+hoffset,15+voffset)
 posR = (340+hoffset,15+voffset)
 
-show_arrows = 0
+
 
 arrow = np.array([[1,0],[1,150],[5,150],[0,165],[-5,150],[-1,150],[-1,0],[1,0]])
 
@@ -217,11 +218,14 @@ while not done:
             settheta = -speed_pid.output(geom.v2ang(h,g,targetvelocity),-geom.v2ang(h,g,velocity),dt)
             # so the velocity is is calculated as a function of angle
             acc = -angle_pid.output(np.pi+settheta,(theta+noise[0]),dt)
+            #acc = -angle_pid.output(np.pi-geom.v2ang(h,g,targetvelocity),(theta+noise[0]),dt)
             if show_arrows:
                 arrow_rot1 = np.array(geom.rotxy(theta,arrow))
                 arrow1_tup = tuple(map(tuple, tuple((arrow_rot1+origin).astype(int))))
                 arrow_rot2 = np.array(geom.rotxy(np.pi+settheta,arrow))
-                arrow2_tup = tuple(map(tuple, tuple((arrow_rot2+origin).astype(int))))           
+                arrow2_tup = tuple(map(tuple, tuple((arrow_rot2+origin).astype(int))))
+                arrow_rot3 = np.array(geom.rotxy(np.pi+geom.v2ang(h,g,targetvelocity),arrow))
+                arrow3_tup = tuple(map(tuple, tuple((arrow_rot3+origin).astype(int))))         
     else:
 
         textPrint.abspos(screen, "Press the start button to reset.",(430,180))
@@ -235,6 +239,7 @@ while not done:
     if show_arrows:
         pygame.gfxdraw.aapolygon(screen, (arrow1_tup), (255,0,0,255))        
         pygame.gfxdraw.aapolygon(screen, (arrow2_tup), (0,255,0,255)) 
+        pygame.gfxdraw.aapolygon(screen, (arrow3_tup), (0,0,255,255)) 
 
     #pygame.draw.lines(screen, WHITE, False, (spokes_tup),1)
     pygame.gfxdraw.aapolygon(screen, (spokes_tup), WHITE)
