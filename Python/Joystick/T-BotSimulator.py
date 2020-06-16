@@ -8,13 +8,15 @@ import pygame
 import pygame.gfxdraw
 import pygame.locals as pgl
 from collections import deque
+from datetime import datetime
 clock = pygame.time.Clock()
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
-
+RED = pygame.Color('red')
+save = 0
 show_arrows = 0
 
 # ------------------------- Physics and Controls -----------------------
@@ -28,7 +30,7 @@ show_arrows = 0
 sf = 0.1
 #sf = 0.165 # For the moon
 #sf = 1 # For the Earth
-framerate = 60 # set to 30 for Rasoberry pi
+framerate = 30 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
 g = 9.81 * sf
 h = 0.08
@@ -50,10 +52,10 @@ starttime = time()
 lasttime = 0
 timeflag = 1
 #------------------------- Tuning for g = g *0.1 -----------------------
-s_kpo, s_kio, s_kdo = 0.028, 0.35, 0.022
+s_kpo, s_kio, s_kdo = 0.050, 0.147, 0.041
 a_kpo, a_kio, a_kdo = 1.898, 0.006, 0.067
 
-s_kp, s_ki, s_kd = 0.028, 0.35, 0.022
+s_kp, s_ki, s_kd = 0.050, 0.147, 0.041
 a_kp, a_ki, a_kd = 1.898, 0.006, 0.067
 #-----------------------------------------------------------------------
 
@@ -147,8 +149,8 @@ hoffset = 244
 voffset = 388
 posdpad = (102+hoffset, 75+voffset)
 posbpad = (327+hoffset, 75+voffset)
-posL = (108+hoffset,15+voffset)
-posR = (340+hoffset,15+voffset)
+posL = (106+hoffset,15+voffset)
+posR = (338+hoffset,15+voffset)
 
 
 
@@ -179,13 +181,20 @@ xdatarange = [760,950]
 y_origin = 500
 yscale = 100
 pts = deque(maxlen=xdatarange[1]-xdatarange[0])
+pts2 = deque(maxlen=xdatarange[1]-xdatarange[0])
 for ii in range(xdatarange[0],xdatarange[1]):
-    pts.appendleft((ii,np.random.rand(1)))
+    pts.appendleft((ii,0))
+    pts2.appendleft((ii,0))
 iii = 200
 aa = np.zeros((len(pts),2))
 aa[:,1]=np.array(pts)[:,1]
 aa[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
+
+cc = np.zeros((len(pts),2))
+cc[:,1]=np.array(pts2)[:,1]
+cc[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
 bb=np.copy(aa)
+dd=np.copy(cc)
 # -------- Main Program Loop -----------
 
 while not done:
@@ -210,7 +219,7 @@ while not done:
         xydata_rot = np.array(geom.rotxy(theta,xydata))
         xydata_tup = tuple(map(tuple, tuple((xydata_rot+origin).astype(int))))
 
-        noise = np.random.rand(1)*np.pi/180*2
+        noise = np.random.rand(1)*np.pi/180
         spokes_rot = np.array(geom.rotxy((distance*1674/50)+theta,spokes))
         spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
         if auto:          
@@ -219,13 +228,13 @@ while not done:
             # so the velocity is is calculated as a function of angle
             acc = -angle_pid.output(np.pi+settheta,(theta+noise[0]),dt)
             #acc = -angle_pid.output(np.pi-geom.v2ang(h,g,targetvelocity),(theta+noise[0]),dt)
-            if show_arrows:
-                arrow_rot1 = np.array(geom.rotxy(theta,arrow))
-                arrow1_tup = tuple(map(tuple, tuple((arrow_rot1+origin).astype(int))))
-                arrow_rot2 = np.array(geom.rotxy(np.pi+settheta,arrow))
-                arrow2_tup = tuple(map(tuple, tuple((arrow_rot2+origin).astype(int))))
-                arrow_rot3 = np.array(geom.rotxy(np.pi+geom.v2ang(h,g,targetvelocity),arrow))
-                arrow3_tup = tuple(map(tuple, tuple((arrow_rot3+origin).astype(int))))         
+        if show_arrows:
+            arrow_rot1 = np.array(geom.rotxy(theta,arrow))
+            arrow1_tup = tuple(map(tuple, tuple((arrow_rot1+origin).astype(int))))
+            arrow_rot2 = np.array(geom.rotxy(np.pi+settheta,arrow))
+            arrow2_tup = tuple(map(tuple, tuple((arrow_rot2+origin).astype(int))))
+            arrow_rot3 = np.array(geom.rotxy(np.pi+geom.v2ang(h,g,targetvelocity),arrow))
+            arrow3_tup = tuple(map(tuple, tuple((arrow_rot3+origin).astype(int))))         
     else:
 
         textPrint.abspos(screen, "Press the start button to reset.",(430,180))
@@ -237,7 +246,7 @@ while not done:
     #pygame.draw.lines(screen, WHITE, False, (xydata_tup),1)
     pygame.gfxdraw.aapolygon(screen, (xydata_tup), WHITE)
     if show_arrows:
-        pygame.gfxdraw.aapolygon(screen, (arrow1_tup), (255,0,0,255))        
+        pygame.gfxdraw.aapolygon(screen, (arrow1_tup), (255,255,255,255))        
         pygame.gfxdraw.aapolygon(screen, (arrow2_tup), (0,255,0,255)) 
         pygame.gfxdraw.aapolygon(screen, (arrow3_tup), (0,0,255,255)) 
 
@@ -250,23 +259,35 @@ while not done:
     
     pygame.draw.lines(screen, WHITE, False, (track_marks_tup),1)
     
-    pts.appendleft((iii,theta))
+    pts.appendleft((iii,theta-np.pi))
+    pts2.appendleft((iii,velocity))
     iii+=1
     pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
     pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
+    pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[-1],y_origin),(xdatarange[-1],y_origin+yscale)),1)
     if iii > xdatarange[1]:
         iii = xdatarange[0]
     aa[:,1]=np.array(pts)[:,1]
+    cc[:,1]=np.array(pts2)[:,1]
     try:  
         bb[:,1] = (yscale/((aa[:,1]-aa[:,1].max()).min())*(aa[:,1]-aa[:,1].max()))+y_origin
+        dd[:,1] = (yscale/((cc[:,1]-cc[:,1].max()).min())*(cc[:,1]-cc[:,1].max()))+y_origin
         gdata = tuple(map(tuple, tuple(bb)))
+        vdata = tuple(map(tuple, tuple(dd)))
         pygame.draw.lines(screen, WHITE, False, (gdata),1)
+        pygame.draw.lines(screen, RED, False, (vdata),1)
         
     except:
         b=1
                
     textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
     textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
+    textPrint.tprint(screen,'Angle')
+    textPrint.setColour(RED)
+    textPrint.abspos(screen, "{:+.2f}".format(cc[:,1].max()),[xdatarange[-1],y_origin-20])
+    textPrint.abspos(screen, "{:+.2f}".format(cc[:,1].min()),[xdatarange[-1],y_origin+yscale+5])
+    textPrint.tprint(screen,'Velocity')
+    textPrint.setColour(WHITE)
     
     if pygame.event.get(readdataevent):
         oldvals = [0,0,0,0]
@@ -305,18 +326,22 @@ while not done:
     axis1 = joystick.get_axis(1)
     axis2 = joystick.get_axis(2)
     axis3 = joystick.get_axis(3)
+ 
+    if event.type == pgl.KEYDOWN and event.key == pgl.K_UP:
+        show_arrows = 1
+    elif event.type == pgl.KEYDOWN and event.key == pgl.K_DOWN:
+        show_arrows = 0
+   
     
-    
-    
-    if joystick.get_button(10):
+    if event.type == pgl.KEYDOWN and event.key == pgl.K_a:
         auto = 1
-    elif joystick.get_button(11):
+    elif event.type == pgl.KEYDOWN and event.key == pgl.K_m:
         auto = 0
 #
     if auto:
         targetvelocity =  -axis0 * 0.2
     else:
-        acc = axis0   
+        acc = axis0  
 
     # ------------------ Highlight buttons ----------------#
     screen.blit(dpad,posdpad)
@@ -452,11 +477,14 @@ while not done:
         screen.blit(L1L2,posL)
         screen.blit(R1R2,posR)
 
-    textPrint.setfontsize(20)
-    textPrint.abspos(screen, "T-Bot Simulator",(10,10))    
-    textPrint.setfontsize(15)
+    textPrint.setfontsize(22)
+    textPrint.setColour(pygame.Color(0,255,255,255))
+    textPrint.abspos(screen, "T-Bot Simulator",(10,10))
+    textPrint.setColour(WHITE)
+    textPrint.setfontsize(16)
     textPrint.tprint(screen, "www.klikrobotics.com")
     textPrint.tprint(screen, " ")
+
     textPrint.tprint(screen, "T: {:.3f}".format(time()-starttime))
     textPrint.tprint(screen, "Last T: {:.3f}".format(lasttime))        
     textPrint.abspos(screen, "Tuning Parameters",(10,400))
@@ -470,9 +498,10 @@ while not done:
     textPrint.tprint(screen, "a_kd: {:.3f}".format(angle_pid.get_PID()[2]))
     textPrint.tprint(screen, " ")
     if auto:
-        textPrint.tprint(screen, "Auto - Press right stick for manual control")
+        textPrint.tprint(screen, "Auto - Press m for manual control")
     else:
-        textPrint.tprint(screen, "Manual - Press left stick for automatic control")
+        textPrint.tprint(screen, "Manual - Press a for automatic control")
+    textPrint.tprint(screen,'Press i for information')
 
     textPrint.abspos(screen, "theta: {:.2f}".format((theta-np.pi)*180/np.pi),(890,10))
     textPrint.tprint(screen, "Alpha: {:.2f}".format(alpha))
@@ -486,8 +515,80 @@ while not done:
     pygame.display.flip()
 
     # Limit to 60 frames per second. Set to 30 for Raspberry Pi. It can't run at 60 fps
-    clock.tick(framerate) 
+    clock.tick(framerate)
 
+    if event.type == pgl.KEYDOWN and event.key == pgl.K_p:
+        waiting = 1
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == pgl.KEYDOWN and event.key == pgl.K_s:
+                    save = 1
+                    if save:
+                        pygame.image.save(screen, datetime.now().strftime("TutorialImages/%m%d%Y_%H%M%S.png"))
+                        save = 0
+                if event.type == pgl.KEYDOWN and event.key == pgl.K_o:
+                    waiting = 0
+                if event.type == pgl.KEYDOWN and event.key == pgl.K_q:
+                    done = True
+                    waiting = 0
+    if event.type == pgl.KEYDOWN and event.key == pgl.K_i:
+        waiting = 1
+        while waiting:
+            for event in pygame.event.get():
+                screen.blit(bg,(0,0))
+
+                textPrint.setfontsize(22)
+                textPrint.setColour(pygame.Color(0,255,255,255))
+                textPrint.abspos(screen, "T-Bot Simulator",(10,10))
+                textPrint.setColour(WHITE)
+                textPrint.setfontsize(16)
+                textPrint.tprint(screen, "www.klikrobotics.com")
+                textPrint.abspos(screen, "Keyboard",(200,80))
+                textPrint.tprint(screen, "p -> Pause")
+                textPrint.tprint(screen, "o -> Resume")
+                textPrint.tprint(screen, "s -> Save paused frame")
+                textPrint.tprint(screen, "i -> For information")
+                textPrint.tprint(screen, "m -> For manual control")
+                textPrint.tprint(screen, "a -> For automatic PID control")
+                textPrint.tprint(screen, "Up arrow to show arrows")
+                textPrint.tprint(screen, "Down arrow to hide arrows")
+                textPrint.setfontsize(20)
+                textPrint.abspos(screen, "Joystick",(600,80))
+                textPrint.tprint(screen, "")
+                textPrint.setfontsize(16)
+                textPrint.tprint(screen, "Left side of the controller")
+                textPrint.tprint(screen, "")
+                textPrint.tprint(screen, "Up -> Increase speed proportional gain")
+                textPrint.tprint(screen, "Down -> Decrease speed proportional gain")
+                textPrint.tprint(screen, "Left -> Increase speed integral gain")
+                textPrint.tprint(screen, "Right -> Decrease speed integral gain")
+                textPrint.tprint(screen, "L1 -> Increase speed derivitive gain")
+                textPrint.tprint(screen, "L2 -> Decrease speed derivitive gain")
+
+                textPrint.tprint(screen, "Right side of the controller")
+                textPrint.tprint(screen, "")
+                textPrint.tprint(screen, "Triangle -> Increase angle proportional gain")
+                textPrint.tprint(screen, "X -> Decrease angle proportional gain")
+                textPrint.tprint(screen, "Square -> Increase angle integral gain")
+                textPrint.tprint(screen, "Circle -> Decrease angle integral gain")
+                textPrint.tprint(screen, "R1 -> Increase angle derivitive gain")
+                textPrint.tprint(screen, "R2 -> Decrease angle derivitive gain")
+
+
+                textPrint.setfontsize(40)
+                textPrint.abspos(screen, "Press o to return to simulator",(290,500))
+                
+                
+                
+
+
+
+                pygame.display.flip()
+                if event.type == pgl.KEYDOWN and event.key == pgl.K_o:
+                    waiting = 0
+                if event.type == pgl.KEYDOWN and event.key == pgl.K_q:
+                    done = True
+                    waiting = 0
 
 pygame.display.quit()
 pygame.quit()
