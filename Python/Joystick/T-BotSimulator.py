@@ -302,25 +302,6 @@ while not done:
   
     for i in range(hats):
         hat = joystick.get_hat(i)
-        
-        if hat[1] == 1:
-            speedfactor += 0.05
-        elif hat[1] == -1:
-            speedfactor -= 0.05
-        elif hat[0] == -1:
-            speedlimit -= 5
-        elif hat[0] == 1:
-            speedlimit += 5
-            
-        if speedlimit >= 100:
-            speedlimit = 100
-        if speedlimit <= 0:
-            speedlimit = 0
-        if speedfactor >= 5:
-            speedfactor = 5
-        if speedfactor <= 0:
-            speedfactor = 0
-
 
     axis0 = joystick.get_axis(0)
     axis1 = joystick.get_axis(1)
@@ -356,6 +337,8 @@ while not done:
     elif hat[0] == -1:
         screen.blit(dpadL,posdpad)
         s_ki -= 0.001
+        if s_ki < 0:
+            s_ki = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
     elif hat[1] == 1:
         screen.blit(dpadU,posdpad)
@@ -364,6 +347,8 @@ while not done:
     elif hat[1] == -1:
         screen.blit(dpadD,posdpad)
         s_kp -= 0.001
+        if s_kp < 0:
+            s_kp = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
     else:
         screen.blit(dpad,posdpad)
@@ -388,11 +373,15 @@ while not done:
     elif joystick.get_button(2):
         screen.blit(bpadD,posbpad)
         a_kp -= 0.001
+        if a_kp < 0:
+            a_kp = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
         
     elif joystick.get_button(3):
         screen.blit(bpadL,posbpad)
         a_ki -= 0.001
+        if a_ki < 0:
+            a_ki = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
     else:
         screen.blit(bpad,posbpad)
@@ -431,6 +420,8 @@ while not done:
     elif joystick.get_button(6):
         screen.blit(L2,posL)
         s_kd -= 0.001
+        if s_kd < 0:
+            s_kd = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
     elif joystick.get_button(5):
         screen.blit(R1,posR)
@@ -439,6 +430,8 @@ while not done:
     elif joystick.get_button(7):
         screen.blit(R2,posR)
         a_kd -= 0.001
+        if a_kd < 0:
+            a_kd = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
     else:
         screen.blit(bpad,posbpad)
@@ -578,11 +571,6 @@ while not done:
                 textPrint.setfontsize(40)
                 textPrint.abspos(screen, "Press o to return to simulator",(290,500))
                 
-                
-                
-
-
-
                 pygame.display.flip()
                 if event.type == pgl.KEYDOWN and event.key == pgl.K_o:
                     waiting = 0
