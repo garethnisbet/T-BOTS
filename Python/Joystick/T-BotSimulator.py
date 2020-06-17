@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
@@ -27,12 +27,14 @@ show_arrows = 0
 #
 # ---------------------------------------------------------------------- 
 
-sf = 0.1
+#sf = 0.1
 #sf = 0.165 # For the moon
-#sf = 1 # For the Earth
-framerate = 30 # set to 30 for Rasoberry pi
+sf = 1 # For the Earth
+framerate = 50 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
-g = 9.81 * sf
+acc_g = 9.81 
+
+
 h = 0.08
 auto_toggle = 0
 auto = 1
@@ -68,11 +70,11 @@ a_kp, a_ki, a_kd = 1.898, 0.006, 0.067
 #-----------------------------------------------------------------------
 
 #------------------------- Tuning for Earth -----------------------
-#s_kpo, s_kio, s_kdo = 0.006, 0.026, 0.0
-#a_kpo, a_kio, a_kdo = 12.115, 0.035, 0.003
+s_kpo, s_kio, s_kdo = 0.006, 0.026, 0.0
+a_kpo, a_kio, a_kdo = 12.115, 0.035, 0.003
 #
-#s_kp, s_ki, s_kd = 0.006, 0.023, 0.0
-#a_kp, a_ki, a_kd = 12.115, 0.035, 0.003
+s_kp, s_ki, s_kd = 0.006, 0.023, 0.0
+a_kp, a_ki, a_kd = 12.115, 0.035, 0.003
 #-----------------------------------------------------------------------
 
 speed_pid = pid.pid(s_kp, s_ki, s_kd,[-10,10],[-5,5],dt)
@@ -198,6 +200,7 @@ dd=np.copy(cc)
 # -------- Main Program Loop -----------
 
 while not done:
+    g = acc_g * sf
     #screen.fill((0, 0, 0))
     screen.blit(bg,(0,0))
     screen.blit(joystick_image, pos_joystick)
@@ -295,8 +298,15 @@ while not done:
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
+
+    keys = pygame.key.get_pressed()
+
+    if keys[pgl.K_g]:
+        sf += 0.001
+    elif keys[pgl.K_f]:
+        sf -= 0.001
             
-    if event.type == pgl.KEYDOWN and event.key == pgl.K_q:
+    if keys[pgl.K_q]:
         done = True
 
   
@@ -308,19 +318,19 @@ while not done:
     axis2 = joystick.get_axis(2)
     axis3 = joystick.get_axis(3)
  
-    if event.type == pgl.KEYDOWN and event.key == pgl.K_UP:
+    if keys[pgl.K_UP]:
         show_arrows = 1
-    elif event.type == pgl.KEYDOWN and event.key == pgl.K_DOWN:
+    elif keys[pgl.K_DOWN]:
         show_arrows = 0
    
     
-    if event.type == pgl.KEYDOWN and event.key == pgl.K_a:
+    if keys[pgl.K_a]:
         auto = 1
-    elif event.type == pgl.KEYDOWN and event.key == pgl.K_m:
+    elif keys[pgl.K_m]:
         auto = 0
 #
     if auto:
-        targetvelocity =  -axis0 * 0.2
+        targetvelocity =  -axis0 * 0.1
     else:
         acc = axis0  
 
@@ -495,8 +505,8 @@ while not done:
     else:
         textPrint.tprint(screen, "Manual - Press a for automatic control")
     textPrint.tprint(screen,'Press i for information')
-
-    textPrint.abspos(screen, "theta: {:.2f}".format((theta-np.pi)*180/np.pi),(890,10))
+    textPrint.abspos(screen, "g: {:.2f}".format((g)),(890,10))
+    textPrint.tprint(screen, "theta: {:.2f}".format((theta-np.pi)*180/np.pi))
     textPrint.tprint(screen, "Alpha: {:.2f}".format(alpha))
     textPrint.tprint(screen, "Gamma: {:.2f}".format(gamma))    
     textPrint.tprint(screen, "Acceleration: {:.2f}".format(acc))
@@ -510,21 +520,21 @@ while not done:
     # Limit to 60 frames per second. Set to 30 for Raspberry Pi. It can't run at 60 fps
     clock.tick(framerate)
 
-    if event.type == pgl.KEYDOWN and event.key == pgl.K_p:
+    if keys[pgl.K_p]:
         waiting = 1
         while waiting:
             for event in pygame.event.get():
-                if event.type == pgl.KEYDOWN and event.key == pgl.K_s:
+                if keys[pgl.K_s]:
                     save = 1
                     if save:
                         pygame.image.save(screen, datetime.now().strftime("TutorialImages/%m%d%Y_%H%M%S.png"))
                         save = 0
-                if event.type == pgl.KEYDOWN and event.key == pgl.K_o:
+                if keys[pgl.K_o]:
                     waiting = 0
-                if event.type == pgl.KEYDOWN and event.key == pgl.K_q:
+                if keys[pgl.K_q]:
                     done = True
                     waiting = 0
-    if event.type == pgl.KEYDOWN and event.key == pgl.K_i:
+    if keys[pgl.K_i]:
         waiting = 1
         while waiting:
             for event in pygame.event.get():
@@ -536,13 +546,18 @@ while not done:
                 textPrint.setColour(WHITE)
                 textPrint.setfontsize(16)
                 textPrint.tprint(screen, "www.klikrobotics.com")
+                textPrint.setfontsize(20)
                 textPrint.abspos(screen, "Keyboard",(200,80))
+                textPrint.tprint(screen, "")
+                textPrint.setfontsize(16)
                 textPrint.tprint(screen, "p -> Pause")
                 textPrint.tprint(screen, "o -> Resume")
                 textPrint.tprint(screen, "s -> Save paused frame")
                 textPrint.tprint(screen, "i -> For information")
                 textPrint.tprint(screen, "m -> For manual control")
                 textPrint.tprint(screen, "a -> For automatic PID control")
+                textPrint.tprint(screen, "g -> increase g")
+                textPrint.tprint(screen, "f -> decrease g")
                 textPrint.tprint(screen, "Up arrow to show arrows")
                 textPrint.tprint(screen, "Down arrow to hide arrows")
                 textPrint.setfontsize(20)
@@ -557,7 +572,7 @@ while not done:
                 textPrint.tprint(screen, "Right -> Decrease speed integral gain")
                 textPrint.tprint(screen, "L1 -> Increase speed derivitive gain")
                 textPrint.tprint(screen, "L2 -> Decrease speed derivitive gain")
-
+                textPrint.tprint(screen, "")
                 textPrint.tprint(screen, "Right side of the controller")
                 textPrint.tprint(screen, "")
                 textPrint.tprint(screen, "Triangle -> Increase angle proportional gain")
@@ -572,9 +587,9 @@ while not done:
                 textPrint.abspos(screen, "Press o to return to simulator",(290,500))
                 
                 pygame.display.flip()
-                if event.type == pgl.KEYDOWN and event.key == pgl.K_o:
+                if keys[pgl.K_o]:
                     waiting = 0
-                if event.type == pgl.KEYDOWN and event.key == pgl.K_q:
+                if keys[pgl.K_q]:
                     done = True
                     waiting = 0
 
