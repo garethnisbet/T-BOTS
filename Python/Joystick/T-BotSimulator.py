@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
@@ -30,13 +30,14 @@ show_arrows = 0
 #sf = 0.1
 #sf = 0.165 # For the moon
 sf = 1 # For the Earth
-framerate = 30 # set to 30 for Rasoberry pi
+framerate = 50 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
 acc_g = 9.81 
 
 
-h = 0.08
+l = 0.08
 R = 0.024
+h=l+R
 auto_toggle = 0
 auto = 1
 
