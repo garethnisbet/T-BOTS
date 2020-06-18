@@ -36,6 +36,7 @@ acc_g = 9.81
 
 
 h = 0.08
+R = 0.024
 auto_toggle = 0
 auto = 1
 
@@ -54,32 +55,22 @@ starttime = time()
 lasttime = 0
 timeflag = 1
 #------------------------- Tuning for g = g *0.1 -----------------------
-s_kpo, s_kio, s_kdo = 0.050, 0.147, 0.041
-a_kpo, a_kio, a_kdo = 1.898, 0.006, 0.067
-
-s_kp, s_ki, s_kd = 0.050, 0.147, 0.041
-a_kp, a_ki, a_kd = 1.898, 0.006, 0.067
-#-----------------------------------------------------------------------
+#s_kpo, s_kio, s_kdo = 0.050, 0.147, 0.041
+#a_kpo, a_kio, a_kdo = 1.898, 0.006, 0.067
 
 #------------------------- Tuning for the Moon -----------------------
 #s_kpo, s_kio, s_kdo = 0.075, 0.94, 0.022
 #a_kpo, a_kio, a_kdo = 3.03, 0.0096, 0.067
 
-#s_kp, s_ki, s_kd = 0.075, 0.94, 0.022
-#a_kp, a_ki, a_kd = 3.03, 0.0096, 0.067
-#-----------------------------------------------------------------------
-
-#------------------------- Tuning for Earth -----------------------
-s_kpo, s_kio, s_kdo = 0.006, 0.026, 0.0
-a_kpo, a_kio, a_kdo = 12.115, 0.035, 0.003
+#------------------------- Tuning for Earth ----------------------------
+s_kpo, s_kio, s_kdo = 0.007, 0.156, 0.022
+a_kpo, a_kio, a_kdo = 12.061, 0.051, 0.137
 #
-s_kp, s_ki, s_kd = 0.006, 0.023, 0.0
-a_kp, a_ki, a_kd = 12.115, 0.035, 0.003
-#-----------------------------------------------------------------------
+s_kp, s_ki, s_kd = s_kpo, s_kio, s_kdo
+a_kp, a_ki, a_kd = a_kpo, a_kio, a_kdo
 
 speed_pid = pid.pid(s_kp, s_ki, s_kd,[-10,10],[-5,5],dt)
 angle_pid = pid.pid(a_kp, a_ki, a_kd,[6, 6],[-1,1],dt)
-
 
 origin = [500,319]
 tbot_drawing_offset = [-78,-10]
@@ -207,7 +198,9 @@ while not done:
     screen.blit(track_image, (0,360))
     if theta >= np.pi/1.845 and theta <= 1.43*np.pi:
         alpha =  -np.sin(theta)*g/h
-        gamma =  -np.cos(theta)*acc/h
+        h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
+                                # as the T-Bot falls (Gearbox prevents free rotation of the wheels)
+        gamma =  -np.cos(theta)*h_acc/h
         a_acc = alpha-gamma
         # integrate angular acceleration to get angular velocity
         omega += a_acc*dt
@@ -215,6 +208,7 @@ while not done:
         theta += omega*dt
         # integrate dt to get time
         t += dt
+ 
         velocity += acc*dt
         distance += velocity*dt
         origin[0] = 500+int(distance*1674)+int(((theta-np.pi)*np.pi)*25/2)
@@ -524,6 +518,7 @@ while not done:
         waiting = 1
         while waiting:
             for event in pygame.event.get():
+                keys = pygame.key.get_pressed()
                 if keys[pgl.K_s]:
                     save = 1
                     if save:
@@ -537,7 +532,9 @@ while not done:
     if keys[pgl.K_i]:
         waiting = 1
         while waiting:
+
             for event in pygame.event.get():
+                keys = pygame.key.get_pressed()
                 screen.blit(bg,(0,0))
 
                 textPrint.setfontsize(22)
