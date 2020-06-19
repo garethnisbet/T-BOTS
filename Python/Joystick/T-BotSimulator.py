@@ -59,9 +59,10 @@ show_arrows = 0
 #-----------------------------------------------------------------------
 
 acc_g = 9.81 
-l = 0.08
-R = 0.024
-h=l+R
+l = 0.08 # distance between the centre of gravity of the T-Bot and the axil
+R = 0.024 # Radius of wheels
+C = 0.99 # Friction
+h=l+R # Maximum distance between the centre of gravity and the ground 
 auto_toggle = 0
 auto = 1
 
@@ -104,7 +105,7 @@ pygame.init()
 
 # Set the width and height of the screen (width, height).
 screen = pygame.display.set_mode((1000, 700))
-pygame.display.set_caption("Player 1")
+pygame.display.set_caption("T-Bot Simulator")
 # Used to manage how fast the screen updates.
 clock = pygame.time.Clock()
 
@@ -156,7 +157,7 @@ posR = (338+hoffset,15+voffset)
 
 
 
-arrow = np.array([[1,0],[1,150],[5,150],[0,165],[-5,150],[-1,150],[-1,0],[1,0]])
+arrow = np.array([[2,0],[2,150],[7,150],[0,165],[-7,150],[-2,150],[-2,0],[2,0]])
 
 pos_joystick = (298,420)
 posstickL = (164+hoffset, 130+voffset)
@@ -212,6 +213,7 @@ while not done:
     #-------------------------------------------------------------------
 
     if theta >= np.pi/1.845 and theta <= 1.43*np.pi:
+    #if theta >= -6*np.pi and theta <= 6*np.pi: # Use to play with swing up
         alpha =  -np.sin(theta)*g/h
 
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
@@ -224,6 +226,7 @@ while not done:
  
        # integrate angular acceleration to get angular velocity
         omega += a_acc*dt
+        omega = omega*C
 
         # integrate angular velocity to get angle
         theta += omega*dt
@@ -245,12 +248,20 @@ while not done:
         noise = np.random.rand(1)*np.pi/180
         spokes_rot = np.array(geom.rotxy((distance*1674/50)+theta,spokes))
         spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
+        
+        #---------------------------------------------------------------
+        #                       The PID Controller
+        #---------------------------------------------------------------
+        
         if auto:          
-            #settheta = -speed_pid.output(targetvelocity,-velocity,dt) # The T-Bot does not have motor encoders
+            #settheta = -speed_pid.output(targetvelocity,-velocity,dt)
+            # The T-Bot does not have motor encoders so the velocity is is calculated as a function of angle
             settheta = -speed_pid.output(geom.v2ang(h,g,targetvelocity),-geom.v2ang(h,g,velocity),dt)
-            # so the velocity is is calculated as a function of angle
             acc = -angle_pid.output(np.pi+settheta,(theta+noise[0]),dt)
             #acc = -angle_pid.output(np.pi-geom.v2ang(h,g,targetvelocity),(theta+noise[0]),dt)
+            
+        #---------------------------------------------------------------
+        
         if show_arrows:
             arrow_rot1 = np.array(geom.rotxy(theta,arrow))
             arrow1_tup = tuple(map(tuple, tuple((arrow_rot1+origin).astype(int))))
@@ -264,22 +275,20 @@ while not done:
         if timeflag:
             lasttime = time()-starttime
             timeflag = 0
-    #pygame.gfxdraw.filled_polygon(screen, (xydata_tup), (255, 102, 0,150))  
+
     pygame.gfxdraw.filled_polygon(screen, (xydata_tup), (0, 249, 249, 100))         
-    #pygame.draw.lines(screen, WHITE, False, (xydata_tup),1)
     pygame.gfxdraw.aapolygon(screen, (xydata_tup), WHITE)
     if show_arrows:
-        pygame.gfxdraw.aapolygon(screen, (arrow1_tup), (255,255,255,255))        
-        pygame.gfxdraw.aapolygon(screen, (arrow2_tup), (0,255,0,255)) 
-        pygame.gfxdraw.aapolygon(screen, (arrow3_tup), (0,0,255,255)) 
+        pygame.gfxdraw.filled_polygon(screen, (arrow1_tup), (0,255,255,155)) 
+        pygame.gfxdraw.aapolygon(screen, (arrow1_tup), (0,255,255,200))        
+        pygame.gfxdraw.filled_polygon(screen, (arrow2_tup), (255,255,255,155)) 
+        pygame.gfxdraw.aapolygon(screen, (arrow2_tup), (255,255,255,200))
+        pygame.gfxdraw.filled_polygon(screen, (arrow3_tup), (255,0,0,155))
+        pygame.gfxdraw.aapolygon(screen, (arrow3_tup), (255,0,0,200)) 
 
-    #pygame.draw.lines(screen, WHITE, False, (spokes_tup),1)
     pygame.gfxdraw.aapolygon(screen, (spokes_tup), WHITE)
-    #pygame.gfxdraw.filled_circle(screen, origin[0], origin[1], 49, (0,0,0,150))
-    #pygame.draw.circle(screen, WHITE, origin, 50, 1)
     pygame.gfxdraw.aacircle(screen, origin[0], origin[1], 46, WHITE)
     pygame.gfxdraw.aacircle(screen, origin[0], origin[1], 49, WHITE)
-    
     pygame.draw.lines(screen, WHITE, False, (track_marks_tup),1)
     
     pts.appendleft((iii,theta-np.pi))
@@ -288,10 +297,12 @@ while not done:
     pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
     pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
     pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[-1],y_origin),(xdatarange[-1],y_origin+yscale)),1)
+    
     if iii > xdatarange[1]:
         iii = xdatarange[0]
     aa[:,1]=np.array(pts)[:,1]
     cc[:,1]=np.array(pts2)[:,1]
+
     try:  
         bb[:,1] = (yscale/((aa[:,1]-aa[:,1].max()).min())*(aa[:,1]-aa[:,1].max()))+y_origin
         dd[:,1] = (yscale/((cc[:,1]-cc[:,1].max()).min())*(cc[:,1]-cc[:,1].max()))+y_origin
@@ -328,7 +339,6 @@ while not done:
             
     if keys[pgl.K_q]:
         done = True
-
   
     for i in range(hats):
         hat = joystick.get_hat(i)
@@ -342,7 +352,6 @@ while not done:
         show_arrows = 1
     elif keys[pgl.K_DOWN]:
         show_arrows = 0
-   
     
     if keys[pgl.K_a]:
         auto = 1
@@ -350,10 +359,11 @@ while not done:
         auto = 0
 #
     if auto:
-        targetvelocity =  -axis0 * 0.1
+        targetvelocity =  -axis0 * 0.2
     else:
-        acc = axis0  
-
+        #acc = axis0
+        acc = axis0*2 # swing up
+        
     # ------------------ Highlight buttons ----------------#
     screen.blit(dpad,posdpad)
     screen.blit(bpad,posbpad)
@@ -604,7 +614,6 @@ while not done:
                 textPrint.tprint(screen, "Circle -> Decrease angle integral gain")
                 textPrint.tprint(screen, "R1 -> Increase angle derivitive gain")
                 textPrint.tprint(screen, "R2 -> Decrease angle derivitive gain")
-
 
                 textPrint.setfontsize(40)
                 textPrint.abspos(screen, "Press o to return to simulator",(290,500))
