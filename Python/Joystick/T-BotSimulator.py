@@ -12,6 +12,41 @@ from datetime import datetime
 clock = pygame.time.Clock()
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 
+framerate = 30 # set to 30 for Rasoberry pi
+dt = 1.0/framerate 
+
+#-----------------------------------------------------------------------
+#                           PID Tuning
+#-----------------------------------------------------------------------
+
+#------------------------- Tuning for g = g *0.1 -----------------------
+
+#sf = 0.1
+#s_kpo, s_kio, s_kdo = 0.050, 0.147, 0.041
+#a_kpo, a_kio, a_kdo = 1.898, 0.006, 0.067
+
+#----------------------- Tuning for the Moon ---------------------------
+
+#sf = 0.165
+#s_kpo, s_kio, s_kdo = 0.075, 0.94, 0.022
+#a_kpo, a_kio, a_kdo = 3.03, 0.0096, 0.067
+
+#------------------------ Tuning for Earth -----------------------------
+sf = 1
+s_kpo, s_kio, s_kdo = 0.007, 0.156, 0.022
+a_kpo, a_kio, a_kdo = 12.061, 0.051, 0.137
+
+#-----------------------------------------------------------------------
+
+
+s_kp, s_ki, s_kd = s_kpo, s_kio, s_kdo
+a_kp, a_ki, a_kd = a_kpo, a_kio, a_kdo
+
+speed_pid = pid.pid(s_kp, s_ki, s_kd,[-10,10],[-5,5],dt)
+angle_pid = pid.pid(a_kp, a_ki, a_kd,[6, 6],[-1,1],dt)
+
+
+
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
@@ -19,22 +54,11 @@ RED = pygame.Color('red')
 save = 0
 show_arrows = 0
 
-# ------------------------- Physics and Controls -----------------------
-#
-#   Note, the T-Bot motor is geared so when the robot falls over, the   
-#   lateral force exerted on the wheel is insufficient to turn the motor 
-#   which simplifies the equations.   
-#
-# ---------------------------------------------------------------------- 
+#-----------------------------------------------------------------------
+#                           Physical constants
+#-----------------------------------------------------------------------
 
-#sf = 0.1
-#sf = 0.165 # For the moon
-sf = 1 # For the Earth
-framerate = 30 # set to 30 for Rasoberry pi
-dt = 1.0/framerate 
 acc_g = 9.81 
-
-
 l = 0.08
 R = 0.024
 h=l+R
@@ -55,23 +79,7 @@ geom = geometry.geometry()
 starttime = time()
 lasttime = 0
 timeflag = 1
-#------------------------- Tuning for g = g *0.1 -----------------------
-#s_kpo, s_kio, s_kdo = 0.050, 0.147, 0.041
-#a_kpo, a_kio, a_kdo = 1.898, 0.006, 0.067
 
-#------------------------- Tuning for the Moon -----------------------
-#s_kpo, s_kio, s_kdo = 0.075, 0.94, 0.022
-#a_kpo, a_kio, a_kdo = 3.03, 0.0096, 0.067
-
-#------------------------- Tuning for Earth ----------------------------
-s_kpo, s_kio, s_kdo = 0.007, 0.156, 0.022
-a_kpo, a_kio, a_kdo = 12.061, 0.051, 0.137
-#
-s_kp, s_ki, s_kd = s_kpo, s_kio, s_kdo
-a_kp, a_ki, a_kd = a_kpo, a_kio, a_kdo
-
-speed_pid = pid.pid(s_kp, s_ki, s_kd,[-10,10],[-5,5],dt)
-angle_pid = pid.pid(a_kp, a_ki, a_kd,[6, 6],[-1,1],dt)
 
 origin = [500,319]
 tbot_drawing_offset = [-78,-10]
@@ -197,21 +205,38 @@ while not done:
     screen.blit(bg,(0,0))
     screen.blit(joystick_image, pos_joystick)
     screen.blit(track_image, (0,360))
+
+
+    #-------------------------------------------------------------------
+    #                            The Physics
+    #-------------------------------------------------------------------
+
     if theta >= np.pi/1.845 and theta <= 1.43*np.pi:
         alpha =  -np.sin(theta)*g/h
+
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
-                                # as the T-Bot falls (Gearbox prevents free rotation of the wheels)
+                                # produced from the rotation of the 
+                                # wheels as the T-Bot falls. The gearbox
+                                # prevents free rotation of the wheels.
+
         gamma =  -np.cos(theta)*h_acc/h
         a_acc = alpha-gamma
-        # integrate angular acceleration to get angular velocity
+ 
+       # integrate angular acceleration to get angular velocity
         omega += a_acc*dt
+
         # integrate angular velocity to get angle
         theta += omega*dt
+
         # integrate dt to get time
         t += dt
  
         velocity += acc*dt
         distance += velocity*dt
+
+        #---------------------------------------------------------------
+
+
         origin[0] = 500+int(distance*1674)+int(((theta-np.pi)*np.pi)*25/2)
         origin[0] = np.mod(origin[0],1000)
         xydata_rot = np.array(geom.rotxy(theta,xydata))
