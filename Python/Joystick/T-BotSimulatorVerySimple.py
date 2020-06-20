@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
@@ -22,10 +22,11 @@ sf = 1.0
 acc_g = 9.81 
 l = 0.08 # distance between the centre of gravity of the T-Bot and the axil
 R = 0.024 # Radius of wheels
-C = 0.997 # Friction
+C = 1.0 # Friction
 h=l+R # Maximum distance between the centre of gravity and the ground 
 #h = 828 # Tallest building
-h = 1.8 
+#h = 1.8 
+#h = 6
 
 t = 0
 alpha = 0
@@ -36,7 +37,7 @@ velocity = 0
 distance = 0
 theta = np.pi*1.01
 
-height_of_man = 1.8
+height_of_man = 0.1
 
 #T-Bot height in pixels is 216 - Actual height 120 mm = h * 1.5
 #stick_man height 342 px - Actual height 2000 mm
@@ -140,6 +141,10 @@ while not done:
     #                          Draw Stuff
     #-------------------------------------------------------------------
 
+    if draw_stick_man:
+        pygame.gfxdraw.filled_polygon(screen, (stick_man), (0, 249, 249, 20))         
+        #pygame.gfxdraw.aapolygon(screen, (stick_man), (255, 255, 255, 255))
+
     origin[0] = 500+int(distance*1674)+int(((theta-np.pi)*np.pi)*25/2)
     origin[0] = np.mod(origin[0],1000)
     tbot_rot = np.array(geom.rotxy(theta,tbot))
@@ -158,9 +163,7 @@ while not done:
     
     pygame.draw.lines(screen, (255, 255, 255, 255), False, (track_marks_tup),1)
     
-    if draw_stick_man:
-        pygame.gfxdraw.filled_polygon(screen, (stick_man), (0, 249, 249, 100))         
-        pygame.gfxdraw.aapolygon(screen, (stick_man), (255, 255, 255, 255))
+
     #-------------------------------------------------------------------
     #                          Get Key Pressed
     #------------------------------------------------------------------- 
@@ -170,6 +173,8 @@ while not done:
 
     if keys[pgl.K_s]:
         theta = np.pi+0.001
+        omega = 0
+        alpha = 0
             
     if keys[pgl.K_q]:
         done = True
