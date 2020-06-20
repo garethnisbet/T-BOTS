@@ -12,7 +12,7 @@ from datetime import datetime
 clock = pygame.time.Clock()
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 
-framerate = 30 # set to 30 for Rasoberry pi
+framerate = 60 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
 
 #-----------------------------------------------------------------------
@@ -22,8 +22,10 @@ sf = 1.0
 acc_g = 9.81 
 l = 0.08 # distance between the centre of gravity of the T-Bot and the axil
 R = 0.024 # Radius of wheels
-C = 0.95 # Friction
+C = 0.997 # Friction
 h=l+R # Maximum distance between the centre of gravity and the ground 
+#h = 828 # Tallest building
+h = 1.8 
 
 t = 0
 alpha = 0
@@ -32,7 +34,15 @@ acc = 0
 omega = 0
 velocity = 0
 distance = 0
-theta = np.pi*0.98
+theta = np.pi*1.01
+
+height_of_man = 1.8
+
+#T-Bot height in pixels is 216 - Actual height 120 mm = h * 1.5
+#stick_man height 342 px - Actual height 2000 mm
+
+scaled = height_of_man/(1.75*h)*342./216.
+draw_stick_man = 1
 
 #-----------------------------------------------------------------------
 #                          Drawing Geometry
@@ -42,16 +52,30 @@ geom = geometry.geometry()
 
 origin = [500,319]
 tbot_drawing_offset = [-78,-10]
-xydata = np.loadtxt('T-BotSideView.dat')
-xydata = np.vstack((xydata,xydata[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
+tbot = np.loadtxt('T-BotSideView.dat')
+tbot = np.vstack((tbot,tbot[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
 
-xydata_rot = np.array(geom.rotxy(theta,xydata))   
-xydata_tup = tuple(map(tuple, tuple((xydata_rot+origin).astype(int))))
+tbot_rot = np.array(geom.rotxy(theta,tbot))   
+tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
 
-spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0],[-0.8660254, -0.5 ],[0,0]])*45
+
+
+
+
+spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0],
+                    [-0.8660254, -0.5 ],[0,0]])*45
+
+
 
 trackmarksArray = np.array([[0,368],[1000,368]])
 track_marks_tup = tuple(map(tuple, tuple((trackmarksArray).astype(int))))
+
+stick_man_data = np.loadtxt('Man.dat')
+stick_man = np.vstack((stick_man_data,stick_man_data[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
+scaled_stick_man = stick_man*scaled
+stick_man=scaled_stick_man-[scaled_stick_man[:,0].min(),scaled_stick_man[:,1].min()]
+stick_man_h_centre = (stick_man[:,0].min()+stick_man[:,0].max())/2
+stick_man = tuple(map(tuple, tuple((stick_man+[750-stick_man_h_centre,368-stick_man[:,1].max()]).astype(int))))
 
 #-----------------------------------------------------------------------
 #                         Initialise Pygame
@@ -118,15 +142,15 @@ while not done:
 
     origin[0] = 500+int(distance*1674)+int(((theta-np.pi)*np.pi)*25/2)
     origin[0] = np.mod(origin[0],1000)
-    xydata_rot = np.array(geom.rotxy(theta,xydata))
-    xydata_tup = tuple(map(tuple, tuple((xydata_rot+origin).astype(int))))
+    tbot_rot = np.array(geom.rotxy(theta,tbot))
+    tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
 
     noise = np.random.rand(1)*np.pi/180
     spokes_rot = np.array(geom.rotxy((distance*1674/50)+theta,spokes))
     spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
 
-    pygame.gfxdraw.filled_polygon(screen, (xydata_tup), (0, 249, 249, 100))         
-    pygame.gfxdraw.aapolygon(screen, (xydata_tup), (255, 255, 255, 255))
+    pygame.gfxdraw.filled_polygon(screen, (tbot_tup), (0, 249, 249, 100))         
+    pygame.gfxdraw.aapolygon(screen, (tbot_tup), (255, 255, 255, 255))
 
     pygame.gfxdraw.aapolygon(screen, (spokes_tup), (255, 255, 255, 255))
     pygame.gfxdraw.aacircle(screen, origin[0], origin[1], 46, (255, 255, 255, 255))
@@ -134,7 +158,9 @@ while not done:
     
     pygame.draw.lines(screen, (255, 255, 255, 255), False, (track_marks_tup),1)
     
-    
+    if draw_stick_man:
+        pygame.gfxdraw.filled_polygon(screen, (stick_man), (0, 249, 249, 100))         
+        pygame.gfxdraw.aapolygon(screen, (stick_man), (255, 255, 255, 255))
     #-------------------------------------------------------------------
     #                          Get Key Pressed
     #------------------------------------------------------------------- 
@@ -149,6 +175,7 @@ while not done:
         done = True
 
     pygame.display.flip()
+    clock.tick(framerate)
 
 pygame.display.quit()
 pygame.quit()
