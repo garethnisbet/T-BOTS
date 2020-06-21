@@ -37,7 +37,7 @@ s_kpo, s_kio, s_kdo = 0.007, 0.156, 0.022
 a_kpo, a_kio, a_kdo = 12.061, 0.051, 0.137
 
 #-----------------------------------------------------------------------
-
+sf_original = sf
 
 s_kp, s_ki, s_kd = s_kpo, s_kio, s_kdo
 a_kp, a_ki, a_kd = a_kpo, a_kio, a_kdo
@@ -297,14 +297,6 @@ while not done:
         pygame.gfxdraw.filled_polygon(screen, (stick_man), (0, 249, 249, 20))         
         #pygame.gfxdraw.aapolygon(screen, (stick_man), (255, 255, 255, 255))
 
-    if show_arrows:
-        pygame.gfxdraw.filled_polygon(screen, (arrow1_tup), (0,255,255,155)) 
-        pygame.gfxdraw.aapolygon(screen, (arrow1_tup), (0,255,255,200))        
-        pygame.gfxdraw.filled_polygon(screen, (arrow2_tup), (255,255,255,155)) 
-        pygame.gfxdraw.aapolygon(screen, (arrow2_tup), (255,255,255,200))
-        pygame.gfxdraw.filled_polygon(screen, (arrow3_tup), (255,0,0,155))
-        pygame.gfxdraw.aapolygon(screen, (arrow3_tup), (255,0,0,200)) 
-
     pygame.gfxdraw.filled_polygon(screen, (tbot_tup), (0, 249, 249, 100))         
     pygame.gfxdraw.aapolygon(screen, (tbot_tup), WHITE)
     pygame.gfxdraw.aapolygon(screen, (spokes_tup), WHITE)
@@ -318,6 +310,14 @@ while not done:
     pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
     pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
     pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[-1],y_origin),(xdatarange[-1],y_origin+yscale)),1)
+    
+    if show_arrows:
+        pygame.gfxdraw.filled_polygon(screen, (arrow1_tup), (0,255,255,155)) 
+        pygame.gfxdraw.aapolygon(screen, (arrow1_tup), (0,255,255,200))        
+        pygame.gfxdraw.filled_polygon(screen, (arrow2_tup), (255,255,255,155)) 
+        pygame.gfxdraw.aapolygon(screen, (arrow2_tup), (255,255,255,200))
+        pygame.gfxdraw.filled_polygon(screen, (arrow3_tup), (255,0,0,155))
+        pygame.gfxdraw.aapolygon(screen, (arrow3_tup), (255,0,0,200)) 
     
     if iii > xdatarange[1]:
         iii = xdatarange[0]
@@ -354,9 +354,9 @@ while not done:
     keys = pygame.key.get_pressed()
 
     if keys[pgl.K_g]:
-        sf += 0.001
+        sf += 0.01
     elif keys[pgl.K_f]:
-        sf -= 0.001
+        sf -= 0.01
             
     if keys[pgl.K_q]:
         done = True
@@ -450,6 +450,7 @@ while not done:
     if joystick.get_button(8):
         speed_pid.set_PID(s_kpo,s_kio,s_kdo)
         angle_pid.set_PID(a_kpo,a_kio,a_kdo)
+        sf = sf_original
         
     elif joystick.get_button(9):
         alpha = 0
@@ -464,7 +465,7 @@ while not done:
         angle_pid.clear()
         starttime = time()
         timeflag = 1
-        
+   
     if joystick.get_button(0) & joystick.get_button(1):
         screen.blit(bpadUR,posbpad)
     elif joystick.get_button(1) & joystick.get_button(2):
@@ -649,6 +650,6 @@ while not done:
 pygame.display.quit()
 pygame.quit()
 
-print('Connection Closed')
+print('Simulation Closed')
 
         

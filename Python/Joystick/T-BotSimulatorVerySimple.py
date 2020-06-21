@@ -20,7 +20,7 @@ dt = 1.0/framerate
 #-----------------------------------------------------------------------
 sf = 1.0
 acc_g = 9.81 
-l = 0.08 # distance between the centre of gravity of the T-Bot and the axil
+l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
 R = 0.024 # Radius of wheels
 C = 0.99 # Friction
 h=l+R # Maximum distance between the centre of gravity and the ground 
@@ -127,9 +127,11 @@ while not done:
     gamma =  -np.cos(theta)*h_acc/h
     a_acc = alpha-gamma
 
-   # integrate angular acceleration to get angular velocity
+    # integrate angular acceleration to get angular velocity
+   
     omega += a_acc*dt
     omega = omega*C
+   
     # integrate angular velocity to get angle
     theta += omega*dt
 
@@ -187,6 +189,6 @@ while not done:
 pygame.display.quit()
 pygame.quit()
 
-print('Connection Closed')
+print('Simulation Closed')
 
         
