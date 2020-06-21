@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
+sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
@@ -22,7 +22,7 @@ sf = 1.0
 acc_g = 9.81 
 l = 0.08 # distance between the centre of gravity of the T-Bot and the axil
 R = 0.024 # Radius of wheels
-C = 1.0 # Friction
+C = 0.99 # Friction
 h=l+R # Maximum distance between the centre of gravity and the ground 
 #h = 828 # Tallest building
 #h = 1.8 
@@ -37,7 +37,9 @@ velocity = 0
 distance = 0
 theta = np.pi*1.01
 
-height_of_man = 0.1
+#height_of_man = 1.8923 # Me
+#height_of_man = 0.1524 # 1:12 Scale (approx. 5-6") Action Figure
+height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
 
 #T-Bot height in pixels is 216 - Actual height 120 mm = h * 1.5
 #stick_man height 342 px - Actual height 2000 mm
