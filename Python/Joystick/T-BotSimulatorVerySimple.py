@@ -1,23 +1,22 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
 import pygame.gfxdraw
 import pygame.locals as pgl
-from collections import deque
 from datetime import datetime
 clock = pygame.time.Clock()
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 
 framerate = 60 # set to 30 for Rasoberry pi
-dt = 1.0/framerate 
 
 #-----------------------------------------------------------------------
 #                           Physical constants
 #-----------------------------------------------------------------------
+dt = 1.0/framerate 
 sf = 1.0
 acc_g = 9.81 
 l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
@@ -25,8 +24,7 @@ R = 0.024 # Radius of wheels
 C = 0.99 # Friction
 h=l+R # Maximum distance between the centre of gravity and the ground 
 #h = 828 # Tallest building
-#h = 1.8 
-#h = 6
+#h = 5
 
 t = 0
 alpha = 0
@@ -37,14 +35,12 @@ velocity = 0
 distance = 0
 theta = np.pi*1.01
 
-#height_of_man = 1.8923 # Me
+height_of_man = 1.8923 # Me
 #height_of_man = 0.1524 # 1:12 Scale (approx. 5-6") Action Figure
 height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
 
-#T-Bot height in pixels is 216 - Actual height 120 mm = h * 1.5
-#stick_man height 342 px - Actual height 2000 mm
-
-scaled = height_of_man/(1.75*h)*342./216.
+Tbot_scalefactor = 216
+Man_scalefactor = (height_of_man/h)*Tbot_scalefactor
 draw_stick_man = 1
 
 #-----------------------------------------------------------------------
@@ -57,26 +53,18 @@ origin = [500,319]
 tbot_drawing_offset = [-78,-10]
 tbot = np.loadtxt('T-BotSideView.dat')
 tbot = np.vstack((tbot,tbot[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
+tbot = tbot/(tbot[:,1].max()-tbot[:,1].min())*Tbot_scalefactor
 
-tbot_rot = np.array(geom.rotxy(theta,tbot))   
-tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
-
-
-
-
-
-spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0],
-                    [-0.8660254, -0.5 ],[0,0]])*45
-
-
+spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0], [-0.8660254, -0.5 ],[0,0]])*45
 
 trackmarksArray = np.array([[0,368],[1000,368]])
 track_marks_tup = tuple(map(tuple, tuple((trackmarksArray).astype(int))))
 
 stick_man_data = np.loadtxt('Man.dat')
 stick_man = np.vstack((stick_man_data,stick_man_data[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
-scaled_stick_man = stick_man*scaled
-stick_man=scaled_stick_man-[scaled_stick_man[:,0].min(),scaled_stick_man[:,1].min()]
+stick_man = stick_man/(stick_man[:,1].max()-stick_man[:,1].min())*Man_scalefactor
+scaled_stick_man = stick_man
+stick_man=stick_man-[stick_man[:,0].min(),stick_man[:,1].min()]
 stick_man_h_centre = (stick_man[:,0].min()+stick_man[:,0].max())/2
 stick_man = tuple(map(tuple, tuple((stick_man+[750-stick_man_h_centre,368-stick_man[:,1].max()]).astype(int))))
 

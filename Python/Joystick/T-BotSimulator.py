@@ -73,6 +73,7 @@ auto = 1
 #height_of_man = 0.1524 # 1:12 Scale (approx. 5-6") Action Figure
 height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
 
+
 t = 0
 alpha = 0
 gamma = 0
@@ -88,22 +89,22 @@ starttime = time()
 lasttime = 0
 timeflag = 1
 
-
 origin = [500,319]
 tbot_drawing_offset = [-78,-10]
+Tbot_scalefactor = 216
+Man_scalefactor = (height_of_man/h)*Tbot_scalefactor
+
+tbot_drawing_offset = [-78,-10]
 tbot = np.loadtxt('T-BotSideView.dat')
-tbot = np.vstack((tbot,tbot[0,:]))+tbot_drawing_offset
-
-tbot_rot = np.array(geom.rotxy(theta,tbot))   
-tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
+tbot = np.vstack((tbot,tbot[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
+tbot = tbot/(tbot[:,1].max()-tbot[:,1].min())*Tbot_scalefactor
 
 
-
-scaled = height_of_man/(1.75*h)*342./216.
 stick_man_data = np.loadtxt('Man.dat')
 stick_man = np.vstack((stick_man_data,stick_man_data[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
-scaled_stick_man = stick_man*scaled
-stick_man=scaled_stick_man-[scaled_stick_man[:,0].min(),scaled_stick_man[:,1].min()]
+stick_man = stick_man/(stick_man[:,1].max()-stick_man[:,1].min())*Man_scalefactor
+scaled_stick_man = stick_man
+stick_man=stick_man-[stick_man[:,0].min(),stick_man[:,1].min()]
 stick_man_h_centre = (stick_man[:,0].min()+stick_man[:,0].max())/2
 stick_man = tuple(map(tuple, tuple((stick_man+[750-stick_man_h_centre,368-stick_man[:,1].max()]).astype(int))))
 
