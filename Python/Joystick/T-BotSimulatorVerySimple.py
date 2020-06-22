@@ -11,7 +11,7 @@ from datetime import datetime
 clock = pygame.time.Clock()
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 
-framerate = 60 # set to 30 for Rasoberry pi
+framerate = 30 # set to 30 for Rasoberry pi
 
 #-----------------------------------------------------------------------
 #                           Physical constants
@@ -40,8 +40,12 @@ height_of_man = 1.8923 # Me
 height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
 
 Tbot_scalefactor = 216
-Man_scalefactor = (height_of_man/h)*Tbot_scalefactor
-draw_stick_man = 1
+
+Man_scalefactor = (height_of_man/h/2)*Tbot_scalefactor
+wheel_radius = int(R/l*Tbot_scalefactor/2.2)
+draw_stick_man = 0
+
+tyre = 4
 
 #-----------------------------------------------------------------------
 #                          Drawing Geometry
@@ -55,9 +59,9 @@ tbot = np.loadtxt('T-BotSideView.dat')
 tbot = np.vstack((tbot,tbot[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
 tbot = tbot/(tbot[:,1].max()-tbot[:,1].min())*Tbot_scalefactor
 
-spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0], [-0.8660254, -0.5 ],[0,0]])*45
+spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0], [-0.8660254, -0.5 ],[0,0]])*(wheel_radius-tyre)
 
-trackmarksArray = np.array([[0,368],[1000,368]])
+trackmarksArray = np.array([[0,origin[1]+wheel_radius],[1000,origin[1]+wheel_radius]])
 track_marks_tup = tuple(map(tuple, tuple((trackmarksArray).astype(int))))
 
 stick_man_data = np.loadtxt('Man.dat')
@@ -97,37 +101,38 @@ done = False
 while not done:
     
     screen.blit(bg,(0,0))
-    screen.blit(track_image, (0,360))
+    screen.blit(track_image, (0,origin[1]+wheel_radius-8))
     
     #-------------------------------------------------------------------
     #                            The Physics
     #-------------------------------------------------------------------
+    if theta >= np.pi/1.845 and theta <= 1.43*np.pi:
+    #if theta >= -6*np.pi and theta <= 6*np.pi: # Use to play with swing up
+        g = acc_g * sf
 
-    g = acc_g * sf
+        alpha =  -np.sin(theta)*g/h 
 
-    alpha =  -np.sin(theta)*g/h 
+        h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
+                                # produced from the rotation of the 
+                                # wheels as the T-Bot falls. The gearbox
+                                # prevents free rotation of the wheels.
 
-    h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
-                            # produced from the rotation of the 
-                            # wheels as the T-Bot falls. The gearbox
-                            # prevents free rotation of the wheels.
+        gamma =  -np.cos(theta)*h_acc/h
+        a_acc = alpha-gamma
 
-    gamma =  -np.cos(theta)*h_acc/h
-    a_acc = alpha-gamma
+        # integrate angular acceleration to get angular velocity
+       
+        omega += a_acc*dt
+        omega = omega*C
+       
+        # integrate angular velocity to get angle
+        theta += omega*dt
 
-    # integrate angular acceleration to get angular velocity
-   
-    omega += a_acc*dt
-    omega = omega*C
-   
-    # integrate angular velocity to get angle
-    theta += omega*dt
+        # integrate dt to get time
+        t += dt
 
-    # integrate dt to get time
-    t += dt
-
-    velocity += acc*dt
-    distance += velocity*dt
+        velocity += acc*dt
+        distance += velocity*dt
 
     #-------------------------------------------------------------------
     #                          Draw Stuff
@@ -143,15 +148,15 @@ while not done:
     tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
 
     noise = np.random.rand(1)*np.pi/180
-    spokes_rot = np.array(geom.rotxy((distance*1674/50)+theta,spokes))
+    spokes_rot = np.array(geom.rotxy((distance*1674/wheel_radius)+theta,spokes))
     spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
 
     pygame.gfxdraw.filled_polygon(screen, (tbot_tup), (0, 249, 249, 100))         
     pygame.gfxdraw.aapolygon(screen, (tbot_tup), (255, 255, 255, 255))
 
     pygame.gfxdraw.aapolygon(screen, (spokes_tup), (255, 255, 255, 255))
-    pygame.gfxdraw.aacircle(screen, origin[0], origin[1], 46, (255, 255, 255, 255))
-    pygame.gfxdraw.aacircle(screen, origin[0], origin[1], 49, (255, 255, 255, 255))
+    pygame.gfxdraw.aacircle(screen, origin[0], origin[1], wheel_radius-tyre, (255, 255, 255, 255))
+    pygame.gfxdraw.aacircle(screen, origin[0], origin[1], wheel_radius, (255, 255, 255, 255))
     
     pygame.draw.lines(screen, (255, 255, 255, 255), False, (track_marks_tup),1)
     

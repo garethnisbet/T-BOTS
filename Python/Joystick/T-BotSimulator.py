@@ -59,12 +59,15 @@ draw_stick_man = 1
 #                           Physical constants
 #-----------------------------------------------------------------------
 
+
+sf = 1.0
 acc_g = 9.81 
-l = 0.08 # distance between the centre of gravity of the T-Bot and the axil
+l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
 R = 0.024 # Radius of wheels
-C = 1.0 # Friction
+C = 0.99 # Friction
 h=l+R # Maximum distance between the centre of gravity and the ground 
-#h=10
+#h = 828 # Tallest building
+#h = 5
 
 auto_toggle = 0
 auto = 1
@@ -73,7 +76,7 @@ auto = 1
 #height_of_man = 0.1524 # 1:12 Scale (approx. 5-6") Action Figure
 height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
 
-
+tyre = 4
 t = 0
 alpha = 0
 gamma = 0
@@ -88,17 +91,34 @@ geom = geometry.geometry()
 starttime = time()
 lasttime = 0
 timeflag = 1
+draw_stick_man = 1
 
-origin = [500,319]
+
+#-----------------------------------------------------------------------
+#                          Drawing Geometry
+#-----------------------------------------------------------------------
+
+geom = geometry.geometry()
+
+
+origin = [500,320]
 tbot_drawing_offset = [-78,-10]
 Tbot_scalefactor = 216
-Man_scalefactor = (height_of_man/h)*Tbot_scalefactor
 
-tbot_drawing_offset = [-78,-10]
+
+Man_scalefactor = (height_of_man/h/2)*Tbot_scalefactor
+wheel_radius = int(R/l*Tbot_scalefactor/2.2)
+
+
+
 tbot = np.loadtxt('T-BotSideView.dat')
 tbot = np.vstack((tbot,tbot[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
 tbot = tbot/(tbot[:,1].max()-tbot[:,1].min())*Tbot_scalefactor
 
+spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0], [-0.8660254, -0.5 ],[0,0]])*(wheel_radius-tyre)
+
+trackmarksArray = np.array([[0,origin[1]+wheel_radius],[1000,origin[1]+wheel_radius]])
+track_marks_tup = tuple(map(tuple, tuple((trackmarksArray).astype(int))))
 
 stick_man_data = np.loadtxt('Man.dat')
 stick_man = np.vstack((stick_man_data,stick_man_data[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
@@ -106,12 +126,7 @@ stick_man = stick_man/(stick_man[:,1].max()-stick_man[:,1].min())*Man_scalefacto
 scaled_stick_man = stick_man
 stick_man=stick_man-[stick_man[:,0].min(),stick_man[:,1].min()]
 stick_man_h_centre = (stick_man[:,0].min()+stick_man[:,0].max())/2
-stick_man = tuple(map(tuple, tuple((stick_man+[750-stick_man_h_centre,368-stick_man[:,1].max()]).astype(int))))
-
-spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0],[-0.8660254, -0.5 ],[0,0]])*45
-
-trackmarksArray = np.array([[0,368],[1000,368]])
-track_marks_tup = tuple(map(tuple, tuple((trackmarksArray).astype(int))))
+stick_man = tuple(map(tuple, tuple((stick_man+[750-stick_man_h_centre,origin[1]+wheel_radius-stick_man[:,1].max()]).astype(int))))
 
 speedfactor = 0.6
 speedlimit = 65
@@ -223,7 +238,7 @@ while not done:
     #screen.fill((0, 0, 0))
     screen.blit(bg,(0,0))
     screen.blit(joystick_image, pos_joystick)
-    screen.blit(track_image, (0,360))
+    screen.blit(track_image, (0,origin[1]+wheel_radius-8))
 
 
     #-------------------------------------------------------------------
@@ -253,7 +268,7 @@ while not done:
         t += dt
  
         velocity += acc*dt
-        distance += (velocity*dt)*0.104/h
+        distance += (velocity*dt)
 
         #---------------------------------------------------------------
 
@@ -264,7 +279,7 @@ while not done:
         tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
 
         noise = np.random.rand(1)*np.pi/180
-        spokes_rot = np.array(geom.rotxy((distance*1674/50)+theta,spokes))
+        spokes_rot = np.array(geom.rotxy((distance*1674/wheel_radius)+theta,spokes))
         spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
         
         #---------------------------------------------------------------
@@ -301,8 +316,8 @@ while not done:
     pygame.gfxdraw.filled_polygon(screen, (tbot_tup), (0, 249, 249, 100))         
     pygame.gfxdraw.aapolygon(screen, (tbot_tup), WHITE)
     pygame.gfxdraw.aapolygon(screen, (spokes_tup), WHITE)
-    pygame.gfxdraw.aacircle(screen, origin[0], origin[1], 46, WHITE)
-    pygame.gfxdraw.aacircle(screen, origin[0], origin[1], 49, WHITE)
+    pygame.gfxdraw.aacircle(screen, origin[0], origin[1], wheel_radius-tyre, WHITE)
+    pygame.gfxdraw.aacircle(screen, origin[0], origin[1], wheel_radius, WHITE)
     pygame.draw.lines(screen, WHITE, False, (track_marks_tup),1)
     
     pts.appendleft((iii,theta-np.pi))
