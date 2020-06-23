@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
+sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
@@ -40,10 +40,9 @@ height_of_man = 1.8923 # Me
 height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
 
 Tbot_scalefactor = 216
-
-Man_scalefactor = (height_of_man/h/2)*Tbot_scalefactor
+Man_scalefactor = (height_of_man/(l*2))*Tbot_scalefactor
 wheel_radius = int(R/l*Tbot_scalefactor/2.2)
-draw_stick_man = 0
+draw_stick_man = 1
 
 tyre = 4
 

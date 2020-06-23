@@ -105,7 +105,8 @@ origin = [500,320]
 tbot_drawing_offset = [-78,-10]
 Tbot_scalefactor = 216
 
-Man_scalefactor = (height_of_man/(l*2))*Tbot_scalefactor
+
+Man_scalefactor = (height_of_man/h/2)*Tbot_scalefactor
 wheel_radius = int(R/l*Tbot_scalefactor/2.2)
 
 

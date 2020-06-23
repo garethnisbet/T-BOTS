@@ -322,7 +322,6 @@ while not done:
         
         if c1==1:
             sendstring = str(jx)+str(jy)
-            
         else:
             if np.sum(keys)==0:
                 sendstring = '200200Z'      
