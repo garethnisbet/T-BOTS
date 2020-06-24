@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
@@ -72,9 +72,9 @@ h=l+R # Maximum distance between the centre of gravity and the ground
 auto_toggle = 0
 auto = 1
 
-#height_of_man = 1.8923 # Me
+height_of_man = 1.8923 # Me
 #height_of_man = 0.1524 # 1:12 Scale (approx. 5-6") Action Figure
-height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
+#height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
 
 tyre = 4
 t = 0

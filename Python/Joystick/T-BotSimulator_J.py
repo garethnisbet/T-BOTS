@@ -33,8 +33,8 @@ dt = 1.0/framerate
 
 #------------------------ Tuning for Earth -----------------------------
 sf = 1
-s_kpo, s_kio, s_kdo = 0.007, 0.156, 0.022
-a_kpo, a_kio, a_kdo = 12.061, 0.051, 0.137
+s_kpo, s_kio, s_kdo = 0.090, 0.256, 0.00
+a_kpo, a_kio, a_kdo = 12.651, 0.00, 0.26
 
 #-----------------------------------------------------------------------
 sf_original = sf
@@ -548,6 +548,13 @@ while not done:
         screen.blit(L1L2,posL)
         screen.blit(R1R2,posR)
 
+    
+    s_kp = speed_pid.get_PID()[0]
+    s_ki = speed_pid.get_PID()[1]
+    s_kd = speed_pid.get_PID()[2]
+    a_kp = angle_pid.get_PID()[0]
+    a_ki = angle_pid.get_PID()[1]
+    a_kd = angle_pid.get_PID()[2]
     textPrint.setfontsize(22)
     textPrint.setColour(pygame.Color(0,255,255,255))
     textPrint.abspos(screen, "T-Bot Simulator",(10,10))
@@ -560,13 +567,13 @@ while not done:
     textPrint.tprint(screen, "Last T: {:.3f}".format(lasttime))        
     textPrint.abspos(screen, "Tuning Parameters",(10,400))
     textPrint.tprint(screen, " ")
-    textPrint.tprint(screen, "s_kp: {:.3f}".format(speed_pid.get_PID()[0]))
-    textPrint.tprint(screen, "s_ki: {:.3f}".format(speed_pid.get_PID()[1]))
-    textPrint.tprint(screen, "s_kd: {:.3f}".format(speed_pid.get_PID()[2]))
+    textPrint.tprint(screen, "s_kp: {:.3f}".format(s_kp))
+    textPrint.tprint(screen, "s_ki: {:.3f}".format(s_ki))
+    textPrint.tprint(screen, "s_kd: {:.3f}".format(s_kd))
     textPrint.tprint(screen, " ")
-    textPrint.tprint(screen, "a_kp: {:.3f}".format(angle_pid.get_PID()[0]))
-    textPrint.tprint(screen, "a_ki: {:.3f}".format(angle_pid.get_PID()[1]))
-    textPrint.tprint(screen, "a_kd: {:.3f}".format(angle_pid.get_PID()[2]))
+    textPrint.tprint(screen, "a_kp: {:.3f}".format(a_kp))
+    textPrint.tprint(screen, "a_ki: {:.3f}".format(a_ki))
+    textPrint.tprint(screen, "a_kd: {:.3f}".format(a_kd))
     textPrint.tprint(screen, " ")
     if auto:
         textPrint.tprint(screen, "Auto - Press m for manual control")

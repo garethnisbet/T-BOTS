@@ -33,8 +33,8 @@ dt = 1.0/framerate
 
 #------------------------ Tuning for Earth -----------------------------
 sf = 1
-s_kpo, s_kio, s_kdo = 0.007, 0.156, 0.022
-a_kpo, a_kio, a_kdo = 12.061, 0.051, 0.137
+s_kpo, s_kio, s_kdo = 0.090, 0.256, 0.00
+a_kpo, a_kio, a_kdo = 12.651, 0.00, 0.26
 
 #-----------------------------------------------------------------------
 sf_original = sf
@@ -64,7 +64,11 @@ sf = 1.0
 acc_g = 9.81 
 l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
 R = 0.024 # Radius of wheels
-C = 0.99 # Friction
+C = 1 # Friction
+
+#l = l*12000# Tallest building
+#R=R*12000# Tallest building
+
 h=l+R # Maximum distance between the centre of gravity and the ground 
 #h = 828 # Tallest building
 #h = 5
@@ -350,7 +354,6 @@ while not done:
     if auto:
         if c1==1:
             targetvelocity =  jx * 0.01
-            print(targetvelocity)
     else:
         if c1==1:
             acc = jx*2  
@@ -417,18 +420,24 @@ while not done:
         speed_pid.set_PID(s_kp,s_ki,s_kd)
     elif keys[pgl.K_f]:
         s_kp -= 0.01
+        if s_kp <= 0:
+            s_kp = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
     if keys[pgl.K_y]:
         s_ki += 0.01
         speed_pid.set_PID(s_kp,s_ki,s_kd)
     elif keys[pgl.K_g]:
         s_ki -= 0.01
+        if s_ki <= 0:
+            s_ki = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
     if keys[pgl.K_u]:
         s_kd += 0.01
         speed_pid.set_PID(s_kp,s_ki,s_kd)
     elif keys[pgl.K_h]:
         s_kd -= 0.01
+        if s_kd <= 0:
+            s_kd = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
         
     if keys[pgl.K_i]:
@@ -436,18 +445,24 @@ while not done:
         angle_pid.set_PID(a_kp,a_ki,a_kd)
     elif keys[pgl.K_j]:
         a_kp -= 0.01
+        if a_kp <= 0:
+            a_kp = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
     if keys[pgl.K_o]:
         a_ki += 0.01
         angle_pid.set_PID(a_kp,a_ki,a_kd)
     elif keys[pgl.K_k]:
         a_ki -= 0.01
+        if a_ki <= 0:
+            a_ki = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
     if keys[pgl.K_p]:
         a_kd += 0.01
         angle_pid.set_PID(a_kp,a_ki,a_kd)
     elif keys[pgl.K_l]:
         a_kd -= 0.01
+        if a_kd <= 0:
+            a_kd = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
         
     if keys[pgl.K_b]:
@@ -495,17 +510,24 @@ while not done:
     textPrint.tprint(screen, "www.klikrobotics.com")
     textPrint.tprint(screen, " ")
 
+    s_kp = speed_pid.get_PID()[0]
+    s_ki = speed_pid.get_PID()[1]
+    s_kd = speed_pid.get_PID()[2]
+    a_kp = angle_pid.get_PID()[0]
+    a_ki = angle_pid.get_PID()[1]
+    a_kd = angle_pid.get_PID()[2]
+
     textPrint.tprint(screen, "T: {:.3f}".format(time()-starttime))
     textPrint.tprint(screen, "Last T: {:.3f}".format(lasttime))        
     textPrint.abspos(screen, "Tuning Parameters",(10,420))
     textPrint.tprint(screen, " ")
-    textPrint.tprint(screen, "s_kp: {:.3f}".format(speed_pid.get_PID()[0]))
-    textPrint.tprint(screen, "s_ki: {:.3f}".format(speed_pid.get_PID()[1]))
-    textPrint.tprint(screen, "s_kd: {:.3f}".format(speed_pid.get_PID()[2]))
+    textPrint.tprint(screen, "s_kp: {:.3f}".format(s_kp))
+    textPrint.tprint(screen, "s_ki: {:.3f}".format(s_ki))
+    textPrint.tprint(screen, "s_kd: {:.3f}".format(s_kd))
     textPrint.tprint(screen, " ")
-    textPrint.tprint(screen, "a_kp: {:.3f}".format(angle_pid.get_PID()[0]))
-    textPrint.tprint(screen, "a_ki: {:.3f}".format(angle_pid.get_PID()[1]))
-    textPrint.tprint(screen, "a_kd: {:.3f}".format(angle_pid.get_PID()[2]))
+    textPrint.tprint(screen, "a_kp: {:.3f}".format(a_kp))
+    textPrint.tprint(screen, "a_ki: {:.3f}".format(a_ki))
+    textPrint.tprint(screen, "a_kd: {:.3f}".format(a_kd))
     textPrint.tprint(screen, " ")
     if auto:
         textPrint.tprint(screen, "Auto - Press m for manual control")
