@@ -59,8 +59,6 @@ draw_stick_man = 1
 #                           Physical constants
 #-----------------------------------------------------------------------
 
-
-sf = 1.0
 acc_g = 9.81 
 l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
 R = 0.024 # Radius of wheels
@@ -245,10 +243,10 @@ while not done:
     #                            The Physics
     #-------------------------------------------------------------------
 
-    #if theta >= np.pi/1.845 and theta <= 1.43*np.pi:
-    if theta >= -np.pi/2 and theta <= np.pi/2: # Use to play with swing up
-        alpha =  np.sin(theta)*g/h
 
+    if theta >= -np.pi/2.2 and theta <= np.pi/2.2:
+        #theta_c = np.arctan2(l*np.sin(theta),l*np.cos(theta)+R)+np.pi
+        alpha =  np.sin(theta)*g/h
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
                                 # produced from the rotation of the 
                                 # wheels as the T-Bot falls. The gearbox
@@ -263,6 +261,7 @@ while not done:
 
         # integrate angular velocity to get angle
         theta += omega*dt
+        #theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))*np.sin(theta_c))/l)
 
         # integrate dt to get time
         t += dt
