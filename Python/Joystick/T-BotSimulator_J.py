@@ -84,7 +84,7 @@ acc = 0
 omega = 0
 velocity = 0
 distance = 0
-theta = np.pi+0.001
+theta = 0.001
 targetvelocity = 0
 
 geom = geometry.geometry()
@@ -245,16 +245,16 @@ while not done:
     #                            The Physics
     #-------------------------------------------------------------------
 
-    if theta >= np.pi/1.845 and theta <= 1.43*np.pi:
-    #if theta >= -6*np.pi and theta <= 6*np.pi: # Use to play with swing up
-        alpha =  -np.sin(theta)*g/h
+    #if theta >= np.pi/1.845 and theta <= 1.43*np.pi:
+    if theta >= -np.pi/2 and theta <= np.pi/2: # Use to play with swing up
+        alpha =  np.sin(theta)*g/h
 
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
                                 # produced from the rotation of the 
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
 
-        gamma =  -np.cos(theta)*h_acc/h
+        gamma =  np.cos(theta)*h_acc/h
         a_acc = alpha-gamma
  
        # integrate angular acceleration to get angular velocity
@@ -273,9 +273,9 @@ while not done:
         #---------------------------------------------------------------
 
 
-        origin[0] = 500+int(distance*1674)+int(((theta-np.pi)*np.pi)*25/2)
+        origin[0] = 500+int(distance*1674)+int(((theta)*np.pi)*25/2)
         origin[0] = np.mod(origin[0],1000)
-        tbot_rot = np.array(geom.rotxy(theta,tbot))
+        tbot_rot = np.array(geom.rotxy(theta+np.pi,tbot))
         tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
 
         noise = np.random.rand(1)*np.pi/180
@@ -290,7 +290,7 @@ while not done:
             #settheta = -speed_pid.output(targetvelocity,-velocity,dt)
             # The T-Bot does not have motor encoders so the velocity is is calculated as a function of angle
             settheta = -speed_pid.output(geom.v2ang(h,g,targetvelocity),-geom.v2ang(h,g,velocity),dt)
-            acc = -angle_pid.output(np.pi+settheta,(theta+noise[0]),dt)
+            acc = -angle_pid.output(settheta,(theta+noise[0]),dt)
             #acc = -angle_pid.output(np.pi-geom.v2ang(h,g,targetvelocity),(theta+noise[0]),dt)
             
         #---------------------------------------------------------------
@@ -475,7 +475,7 @@ while not done:
         omega = 0
         velocity = 0
         distance = 0
-        theta = np.pi+0.001
+        theta = 0.001
         origin[0] = 500
         speed_pid.clear()
         angle_pid.clear()
