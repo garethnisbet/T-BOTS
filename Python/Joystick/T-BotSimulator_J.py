@@ -581,7 +581,7 @@ while not done:
         textPrint.tprint(screen, "Manual - Press a for automatic control")
     textPrint.tprint(screen,'Press i for information')
     textPrint.abspos(screen, "g: {:.2f}".format((g)),(890,10))
-    textPrint.tprint(screen, "theta: {:.2f}".format((theta-np.pi)*180/np.pi))
+    textPrint.tprint(screen, "theta: {:.2f}".format((theta)*180/np.pi))
     textPrint.tprint(screen, "Alpha: {:.2f}".format(alpha))
     textPrint.tprint(screen, "Gamma: {:.2f}".format(gamma))    
     textPrint.tprint(screen, "Acceleration: {:.2f}".format(acc))
