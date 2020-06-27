@@ -219,6 +219,7 @@ while not done:
 
 
     if theta >= -np.pi/2 and theta <= np.pi/2: # Use to play with swing up
+        #theta_c = np.arctan2(l*np.sin(theta),l*np.cos(theta)+R)+np.pi
         alpha =  np.sin(theta)*g/h
 
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
@@ -235,12 +236,9 @@ while not done:
 
         # integrate angular velocity to get angle
         theta += omega*dt
-
+        #theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))*np.sin(theta_c))/l)
         # integrate dt to get time
         t += dt
- 
-        velocity += acc*dt
-        distance += (velocity*dt)
 
         #---------------------------------------------------------------
 
