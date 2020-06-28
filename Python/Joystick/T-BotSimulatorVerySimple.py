@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
+sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
@@ -11,7 +11,7 @@ from datetime import datetime
 clock = pygame.time.Clock()
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 
-framerate = 60 # set to 30 for Rasoberry pi
+framerate = 30 # set to 30 for Rasoberry pi
 
 #-----------------------------------------------------------------------
 #                           Physical constants
@@ -33,7 +33,7 @@ acc = 0
 omega = 0
 velocity = 0
 distance = 0
-theta = np.pi*1.01
+theta = 1.01
 
 height_of_man = 1.8923 # Me
 #height_of_man = 0.1524 # 1:12 Scale (approx. 5-6") Action Figure
@@ -98,40 +98,39 @@ done = False
 # -------- Main Program Loop -----------
 
 while not done:
-    
+    g = acc_g * sf
     screen.blit(bg,(0,0))
     screen.blit(track_image, (0,origin[1]+wheel_radius-8))
     
     #-------------------------------------------------------------------
     #                            The Physics
     #-------------------------------------------------------------------
-    if theta >= np.pi/1.845 and theta <= 1.43*np.pi:
-    #if theta >= -6*np.pi and theta <= 6*np.pi: # Use to play with swing up
-        g = acc_g * sf
-
-        alpha =  -np.sin(theta)*g/h 
+    if theta >= -np.pi/2.2 and theta <= np.pi/2.2:
+        
+        theta_c = np.arctan2(l*np.sin(theta),l*np.cos(theta)+R)
+        alpha =  np.sin(theta_c)*g/h
 
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
                                 # produced from the rotation of the 
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
 
-        gamma =  -np.cos(theta)*h_acc/h
+        gamma =  np.cos(theta)*h_acc/h
         a_acc = alpha-gamma
-
-        # integrate angular acceleration to get angular velocity
-       
+ 
+       # integrate angular acceleration to get angular velocity
         omega += a_acc*dt
         omega = omega*C
-       
+
         # integrate angular velocity to get angle
-        theta += omega*dt
+        theta_c += omega*dt
+        theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))*np.sin(theta_c))/l)
 
         # integrate dt to get time
         t += dt
-
+ 
         velocity += acc*dt
-        distance += velocity*dt
+        distance += (velocity*dt)
 
     #-------------------------------------------------------------------
     #                          Draw Stuff
@@ -141,9 +140,9 @@ while not done:
         pygame.gfxdraw.filled_polygon(screen, (stick_man), (0, 249, 249, 20))         
         #pygame.gfxdraw.aapolygon(screen, (stick_man), (255, 255, 255, 255))
 
-    origin[0] = 500+int(distance*1674)+int(((theta-np.pi)*np.pi)*25/2)
+    origin[0] = 500+int(distance*1674)+int(((theta)*np.pi)*25/2)
     origin[0] = np.mod(origin[0],1000)
-    tbot_rot = np.array(geom.rotxy(theta,tbot))
+    tbot_rot = np.array(geom.rotxy(theta+np.pi,tbot))
     tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
 
     noise = np.random.rand(1)*np.pi/180
@@ -168,7 +167,7 @@ while not done:
         keys = pygame.key.get_pressed()
 
     if keys[pgl.K_s]:
-        theta = np.pi+0.001
+        theta = 0.001
         omega = 0
         alpha = 0
             

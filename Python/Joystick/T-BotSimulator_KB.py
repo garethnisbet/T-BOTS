@@ -218,8 +218,8 @@ while not done:
 
     if theta >= -np.pi/2.2 and theta <= np.pi/2.2:
         
-        #theta_c = np.arctan2(l*np.sin(theta),l*np.cos(theta)+R)+np.pi
-        alpha =  np.sin(theta)*g/h
+        theta_c = np.arctan2(l*np.sin(theta),l*np.cos(theta)+R)
+        alpha =  np.sin(theta_c)*g/h
 
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
                                 # produced from the rotation of the 
@@ -234,8 +234,8 @@ while not done:
         omega = omega*C
 
         # integrate angular velocity to get angle
-        theta += omega*dt
-        #theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))*np.sin(theta_c))/l)
+        theta_c += omega*dt
+        theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))*np.sin(theta_c))/l)
 
         # integrate dt to get time
         t += dt
