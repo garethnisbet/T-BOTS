@@ -290,7 +290,7 @@ while not done:
 
         # integrate angular velocity to get angle
         theta_c += omega*dt
-        theta = np.arcsin(   (  (R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))  *np.sin(theta_c))   /l)
+        theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))  *np.sin(theta_c))/l) # only good for  -90 > theta_c < 90
 
         # integrate dt to get time
         t += dt

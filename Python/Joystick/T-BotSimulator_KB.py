@@ -241,9 +241,8 @@ while not done:
  
         velocity += acc*dt
         distance += (velocity*dt)
+
         '''
-        
-        
         theta_c = np.arctan2(l*np.sin(theta),l*np.cos(theta)+R)
         h_c = np.sqrt((l*np.sin(theta))**2+(l*np.cos(theta)+R)**2)
         
@@ -263,7 +262,7 @@ while not done:
 
         # integrate angular velocity to get angle
         theta_c += omega*dt
-        theta = np.arcsin(   (  (R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))  *np.sin(theta_c))   /l)
+        theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))*np.sin(theta_c))/l) #only good for values < 90
 
         # integrate dt to get time
         t += dt
@@ -271,6 +270,7 @@ while not done:
         velocity += acc*dt
         distance += (velocity*dt)
 		'''
+
         #---------------------------------------------------------------
 
 
