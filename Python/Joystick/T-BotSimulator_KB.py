@@ -218,15 +218,43 @@ while not done:
 
     if theta >= -np.pi/2.2 and theta <= np.pi/2.2:
         
-        theta_c = np.arctan2(l*np.sin(theta),l*np.cos(theta)+R)
-        alpha =  np.sin(theta_c)*g/h
+        
+        alpha =  np.sin(theta)*g/h
 
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
                                 # produced from the rotation of the 
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
 
-        gamma =  np.cos(theta)*h_acc/h
+        gamma =  np.cos(theta)*h_acc/l
+        a_acc = alpha-gamma
+ 
+       # integrate angular acceleration to get angular velocity
+        omega += a_acc*dt
+        omega = omega*C
+
+        # integrate angular velocity to get angle
+        theta += omega*dt
+
+        # integrate dt to get time
+        t += dt
+ 
+        velocity += acc*dt
+        distance += (velocity*dt)
+        '''
+        
+        
+        theta_c = np.arctan2(l*np.sin(theta),l*np.cos(theta)+R)
+        h_c = np.sqrt((l*np.sin(theta))**2+(l*np.cos(theta)+R)**2)
+        
+        alpha =  np.sin(theta_c)*g/h_c
+
+        h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
+                                # produced from the rotation of the 
+                                # wheels as the T-Bot falls. The gearbox
+                                # prevents free rotation of the wheels.
+
+        gamma =  np.cos(theta)*h_acc/l
         a_acc = alpha-gamma
  
        # integrate angular acceleration to get angular velocity
@@ -235,14 +263,14 @@ while not done:
 
         # integrate angular velocity to get angle
         theta_c += omega*dt
-        theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))*np.sin(theta_c))/l)
+        theta = np.arcsin(   (  (R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))  *np.sin(theta_c))   /l)
 
         # integrate dt to get time
         t += dt
  
         velocity += acc*dt
         distance += (velocity*dt)
-
+		'''
         #---------------------------------------------------------------
 
 
