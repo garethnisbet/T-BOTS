@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import sys
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
 from TBotTools import tbt, pgt
 import pygame
 import pygame.locals as pgl

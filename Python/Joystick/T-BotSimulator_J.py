@@ -102,6 +102,7 @@ geom = geometry.geometry()
 origin = [500,320]
 tbot_drawing_offset = [-78,-10]
 Tbot_scalefactor = 216
+height_of_TBot_body = 120E-3
 
 
 Man_scalefactor = (height_of_man/h/2)*Tbot_scalefactor
@@ -302,13 +303,14 @@ while not done:
         #---------------------------------------------------------------
 
 
-        origin[0] = 500+int(distance*1674)+int(((theta)*np.pi)*25/2)
+        mm2px = Tbot_scalefactor/height_of_TBot_body
+        origin[0] = 500+int(distance*mm2px)+int(((theta)*np.pi)*wheel_radius/4)       
         origin[0] = np.mod(origin[0],1000)
         tbot_rot = np.array(geom.rotxy(theta+np.pi,tbot))
         tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
 
         noise = np.random.rand(1)*np.pi/180
-        spokes_rot = np.array(geom.rotxy((distance*1674/wheel_radius)+theta,spokes))
+        spokes_rot = np.array(geom.rotxy((distance*mm2px/wheel_radius)+theta,spokes))
         spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
         
         #---------------------------------------------------------------

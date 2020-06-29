@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
@@ -12,7 +12,7 @@ from datetime import datetime
 clock = pygame.time.Clock()
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 
-framerate = 30 # set to 30 for Rasoberry pi
+framerate = 60 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
 
 #-----------------------------------------------------------------------
@@ -44,7 +44,6 @@ a_kp, a_ki, a_kd = a_kpo, a_kio, a_kdo
 
 speed_pid = pid.pid(s_kp, s_ki, s_kd,[-10,10],[-5,5],dt)
 angle_pid = pid.pid(a_kp, a_ki, a_kd,[6, 6],[-1,1],dt)
-
 
 
 BLACK = pygame.Color('black')
@@ -96,23 +95,19 @@ lasttime = 0
 timeflag = 1
 draw_stick_man = 1
 
-
 #-----------------------------------------------------------------------
 #                          Drawing Geometry
 #-----------------------------------------------------------------------
 
 geom = geometry.geometry()
 
-
 origin = [500,320]
 tbot_drawing_offset = [-78,-10]
 Tbot_scalefactor = 216
-
+height_of_TBot_body = 120E-3
 
 Man_scalefactor = (height_of_man/(l*2))*Tbot_scalefactor
 wheel_radius = int(R/l*Tbot_scalefactor/2.2)
-
-
 
 tbot = np.loadtxt('T-BotSideView.dat')
 tbot = np.vstack((tbot,tbot[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
@@ -166,9 +161,7 @@ joybase = pygame.image.load(dirpath+'/joystickbase_250.png')
 # Button images
 posarrows = (815,620)
 
-
 arrow = np.array([[2,0],[2,150],[7,150],[0,165],[-7,150],[-2,150],[-2,0],[2,0]])
-
 
 # Get ready to print.
 textPrint = pgt.TextPrint(pygame.Color('white'))
@@ -214,7 +207,6 @@ while not done:
     #-------------------------------------------------------------------
     #                            The Physics
     #-------------------------------------------------------------------
-
 
     if theta >= -np.pi/2.2 and theta <= np.pi/2.2:
         
@@ -262,7 +254,7 @@ while not done:
 
         # integrate angular velocity to get angle
         theta_c += omega*dt
-        theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))*np.sin(theta_c))/l) #only good for values < 90
+        theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))*np.sin(theta_c))/l) # only good for  -90 > theta_c < 90
 
         # integrate dt to get time
         t += dt
@@ -273,14 +265,14 @@ while not done:
 
         #---------------------------------------------------------------
 
-
-        origin[0] = 500+int(distance*1674)+int(((theta)*np.pi)*25/2)
+        mm2px = Tbot_scalefactor/height_of_TBot_body
+        origin[0] = 500+int(distance*mm2px)+int(((theta)*np.pi)*wheel_radius/4)       
         origin[0] = np.mod(origin[0],1000)
         tbot_rot = np.array(geom.rotxy(theta+np.pi,tbot))
         tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
 
         noise = np.random.rand(1)*np.pi/180
-        spokes_rot = np.array(geom.rotxy((distance*1674/wheel_radius)+theta,spokes))
+        spokes_rot = np.array(geom.rotxy((distance*mm2px/wheel_radius)+theta,spokes))
         spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
         
         #---------------------------------------------------------------
@@ -526,11 +518,6 @@ while not done:
         speed_pid.set_PID(s_kpo,s_kio,s_kdo)
         angle_pid.set_PID(a_kpo,a_kio,a_kdo)
         sf = sf_original
-#
-
-        
-     
-
 
     textPrint.setfontsize(22)
     textPrint.setColour(pygame.Color(0,255,255,255))

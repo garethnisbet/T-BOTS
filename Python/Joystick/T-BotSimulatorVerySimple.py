@@ -1,17 +1,19 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
+sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
 import pygame.gfxdraw
 import pygame.locals as pgl
-from datetime import datetime
+
+
+
 clock = pygame.time.Clock()
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 
-framerate = 60 # set to 30 for Rasoberry pi
+framerate = 30 # set to 30 for Rasoberry pi
 
 #-----------------------------------------------------------------------
 #                           Physical constants
@@ -22,9 +24,18 @@ acc_g = 9.81
 l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
 R = 0.024 # Radius of wheels
 C = 0.99 # Friction
+
+#_l = l* 820/(l+R)# Tallest building 828 m 
+#_R = R* 820/(l+R)# Tallest building 828 m
+
+#_l = l* 3/(l+R)# house 3 m 
+#_R = R* 3/(l+R)# house 3 m 
+#l, R = _l, _R
+
+
+
 h=l+R # Maximum distance between the centre of gravity and the ground 
-#h = 828 # Tallest building
-#h = 5
+
 
 t = 0
 alpha = 0
@@ -33,13 +44,15 @@ acc = 0
 omega = 0
 velocity = 0
 distance = 0
-theta = 1.01
+theta = 0.01
 
 height_of_man = 1.8923 # Me
 #height_of_man = 0.1524 # 1:12 Scale (approx. 5-6") Action Figure
 height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
 
 Tbot_scalefactor = 216
+height_of_TBot_body = 120E-3
+
 Man_scalefactor = (height_of_man/(l*2))*Tbot_scalefactor
 wheel_radius = int(R/l*Tbot_scalefactor/2.2)
 draw_stick_man = 1
@@ -77,6 +90,9 @@ stick_man = tuple(map(tuple, tuple((stick_man+[750-stick_man_h_centre,368-stick_
 
 pygame.init()
 
+textPrint = pgt.TextPrint(pygame.Color('white'))
+textPrint.setfontsize(18)
+
 # Set the width and height of the screen (width, height).
 screen = pygame.display.set_mode((1000, 700))
 pygame.display.set_caption("T-Bot Simulator")
@@ -105,9 +121,9 @@ while not done:
     #-------------------------------------------------------------------
     #                            The Physics
     #-------------------------------------------------------------------
-    if theta >= -np.pi/2.2 and theta <= np.pi/2.2:
+    #if theta >= -np.pi/2.2 and theta <= np.pi/2.2:
+    if theta >= -5*np.pi and theta <= 5*np.pi:        
         
-		'''
         alpha =  np.sin(theta)*g/h
 
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
@@ -159,24 +175,29 @@ while not done:
  
         velocity += acc*dt
         distance += (velocity*dt)
-        
+        '''
 
     #-------------------------------------------------------------------
     #                          Draw Stuff
     #-------------------------------------------------------------------
-
+    if abs(theta) > np.pi/2:
+        textPrint.abspos(screen, "Press the s key to reset.",(430,580))
     if draw_stick_man:
         pygame.gfxdraw.filled_polygon(screen, (stick_man), (0, 249, 249, 20))         
         #pygame.gfxdraw.aapolygon(screen, (stick_man), (255, 255, 255, 255))
 
-    origin[0] = 500+int(distance*1674)+int(((theta)*np.pi)*25/2)
+    mm2px = Tbot_scalefactor/height_of_TBot_body
+    origin[0] = 500+int(distance*mm2px)+int(((theta)*np.pi)*wheel_radius/4)       
     origin[0] = np.mod(origin[0],1000)
     tbot_rot = np.array(geom.rotxy(theta+np.pi,tbot))
     tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
 
     noise = np.random.rand(1)*np.pi/180
-    spokes_rot = np.array(geom.rotxy((distance*1674/wheel_radius)+theta,spokes))
+    spokes_rot = np.array(geom.rotxy((distance*mm2px/wheel_radius)+theta,spokes))
     spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
+    
+    
+    
 
     pygame.gfxdraw.filled_polygon(screen, (tbot_tup), (0, 249, 249, 100))         
     pygame.gfxdraw.aapolygon(screen, (tbot_tup), (255, 255, 255, 255))
@@ -196,7 +217,7 @@ while not done:
         keys = pygame.key.get_pressed()
 
     if keys[pgl.K_s]:
-        theta = 0.001
+        theta = 0.01
         omega = 0
         alpha = 0
             
