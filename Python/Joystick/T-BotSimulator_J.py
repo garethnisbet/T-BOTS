@@ -1,7 +1,8 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+currentpath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+sys.path.append(currentpath)
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
@@ -10,9 +11,9 @@ import pygame.locals as pgl
 from collections import deque
 from datetime import datetime
 clock = pygame.time.Clock()
-dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
+dirpath = currentpath+'/Joystick/Images'
 
-framerate = 30 # set to 30 for Rasoberry pi
+framerate = 60 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
 
 #-----------------------------------------------------------------------

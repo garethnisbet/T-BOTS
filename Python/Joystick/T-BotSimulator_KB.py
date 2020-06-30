@@ -1,7 +1,9 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
+#sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
+currentpath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+sys.path.append(currentpath)
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
@@ -10,10 +12,11 @@ import pygame.locals as pgl
 from collections import deque
 from datetime import datetime
 clock = pygame.time.Clock()
-dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
+
+dirpath = currentpath+'/Joystick/Images'
 
 framerate = 60 # set to 30 for Rasoberry pi
-dt = 1.0/framerate 
+dt = 1.0/framerate
 
 #-----------------------------------------------------------------------
 #                           PID Tuning
@@ -282,7 +285,7 @@ while not done:
         if auto:          
             #settheta = -speed_pid.output(targetvelocity,-velocity,dt)
             # The T-Bot does not have motor encoders so the velocity is is calculated as a function of angle
-            settheta = -speed_pid.output(geom.v2ang(h,g,targetvelocity),-geom.v2ang(h,g,velocity),dt)
+            settheta = speed_pid.output(geom.v2ang(h,g,-targetvelocity),geom.v2ang(h,g,velocity),dt)
             acc = -angle_pid.output(settheta,(theta+noise[0]),dt)
             #acc = -angle_pid.output(np.pi-geom.v2ang(h,g,targetvelocity),(theta+noise[0]),dt)
             
