@@ -326,7 +326,7 @@ while not done:
         #---------------------------------------------------------------
         
         if show_arrows:
-            arrow_rot1 = np.array(geom.rotxy(theta,arrow))
+            arrow_rot1 = np.array(geom.rotxy(theta+np.pi,arrow))
             arrow1_tup = tuple(map(tuple, tuple((arrow_rot1+origin).astype(int))))
             arrow_rot2 = np.array(geom.rotxy(np.pi+settheta,arrow))
             arrow2_tup = tuple(map(tuple, tuple((arrow_rot2+origin).astype(int))))
