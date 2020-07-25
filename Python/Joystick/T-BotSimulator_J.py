@@ -254,7 +254,7 @@ while not done:
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
 
-        gamma =  np.cos(theta)*h_acc/l
+        gamma =  np.cos(theta)*h_acc/h
         a_acc = alpha-gamma
  
        # integrate angular acceleration to get angular velocity

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
+sys.path.append('/home/pi/GitHub/T-BOTS/Python')
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
@@ -12,7 +12,7 @@ from datetime import datetime
 clock = pygame.time.Clock()
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 
-framerate = 60 # set to 30 for Rasoberry pi
+framerate = 30 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
 
 #-----------------------------------------------------------------------
@@ -218,7 +218,7 @@ while not done:
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
 
-        gamma =  np.cos(theta)*h_acc/l
+        gamma =  np.cos(theta)*h_acc/h
         a_acc = alpha-gamma
  
        # integrate angular acceleration to get angular velocity
@@ -282,7 +282,7 @@ while not done:
         if auto:          
             #settheta = -speed_pid.output(targetvelocity,-velocity,dt)
             # The T-Bot does not have motor encoders so the velocity is is calculated as a function of angle
-            settheta = -speed_pid.output(geom.v2ang(h,g,targetvelocity),-geom.v2ang(h,g,velocity),dt)
+            settheta = speed_pid.output(geom.v2ang(h,g,-targetvelocity),geom.v2ang(h,g,velocity),dt)
             acc = -angle_pid.output(settheta,(theta+noise[0]),dt)
             #acc = -angle_pid.output(np.pi-geom.v2ang(h,g,targetvelocity),(theta+noise[0]),dt)
             
