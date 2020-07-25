@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-#sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
 currentpath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
 sys.path.append(currentpath)
 from TBotTools import pid, geometry, pgt
@@ -63,7 +62,7 @@ draw_stick_man = 1
 
 acc_g = 9.81 
 l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
-R = 0.124 # Radius of wheels
+R = 0.024 # Radius of wheels
 C = 1 # Friction
 
 #_l = l* 820/(l+R)# Tallest building 828 m 
@@ -215,7 +214,6 @@ while not done:
                                 # produced from the rotation of the 
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
-        print(h_acc)
         gamma =  np.cos(theta)*h_acc/h
         a_acc = alpha-gamma
  

@@ -61,7 +61,7 @@ draw_stick_man = 1
 
 acc_g = 9.81 
 l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
-R = 0.124 # Radius of wheels
+R = 0.024 # Radius of wheels
 C = 0.99 # Friction
 max_velocity = 0.4
 h=l+R # Maximum distance between the centre of gravity and the ground 
