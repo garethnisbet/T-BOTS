@@ -1,18 +1,31 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
+<<<<<<< HEAD
 sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+=======
+#sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
+currentpath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+sys.path.append(currentpath)
+>>>>>>> f00dba0f1b79df750ebd2a961d148544141f14d1
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
 import pygame.gfxdraw
+import pygame.locals as pgl
 from collections import deque
 from datetime import datetime
 clock = pygame.time.Clock()
-dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 
+dirpath = currentpath+'/Joystick/Images'
+
+<<<<<<< HEAD
 framerate = 30 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
+=======
+framerate = 60 # set to 30 for Rasoberry pi
+dt = 1.0/framerate
+>>>>>>> f00dba0f1b79df750ebd2a961d148544141f14d1
 
 #-----------------------------------------------------------------------
 #                           PID Tuning
@@ -45,7 +58,6 @@ speed_pid = pid.pid(s_kp, s_ki, s_kd,[-10,10],[-5,5],dt)
 angle_pid = pid.pid(a_kp, a_ki, a_kd,[6, 6],[-1,1],dt)
 
 
-
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
@@ -61,10 +73,15 @@ draw_stick_man = 1
 acc_g = 9.81 
 l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
 R = 0.024 # Radius of wheels
-C = 0.99 # Friction
+C = 1 # Friction
+
+#_l = l* 820/(l+R)# Tallest building 828 m 
+#_R = R* 820/(l+R)# Tallest building 828 m
+#_l = l* 6/(l+R)# house 6 m 
+#_R = R* 6/(l+R)# house 6 m 
+#l, R = _l, _R
+
 h=l+R # Maximum distance between the centre of gravity and the ground 
-#h = 828 # Tallest building
-#h = 5
 
 auto_toggle = 0
 auto = 1
@@ -90,24 +107,19 @@ lasttime = 0
 timeflag = 1
 draw_stick_man = 1
 
-
 #-----------------------------------------------------------------------
 #                          Drawing Geometry
 #-----------------------------------------------------------------------
 
 geom = geometry.geometry()
 
-
 origin = [500,320]
 tbot_drawing_offset = [-78,-10]
 Tbot_scalefactor = 216
 height_of_TBot_body = 120E-3
 
-
-Man_scalefactor = (height_of_man/h/2)*Tbot_scalefactor
+Man_scalefactor = (height_of_man/(l*2))*Tbot_scalefactor
 wheel_radius = int(R/l*Tbot_scalefactor/2.2)
-
-
 
 tbot = np.loadtxt('T-BotSideView.dat')
 tbot = np.vstack((tbot,tbot[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
@@ -144,75 +156,37 @@ clock = pygame.time.Clock()
 # Use convert for the large images. This is the fastest format for blitting
 # Background images
 bg = pygame.image.load(dirpath+'/Simple/Gray.jpg').convert() 
-
+track_image = pygame.image.load(dirpath+'/Simple/line.png')
+arrowkeys = pygame.image.load(dirpath+'/arrowkeys.png')
+arrowkeysL = pygame.image.load(dirpath+'/arrowkeysL.png')
+arrowkeysR = pygame.image.load(dirpath+'/arrowkeysR.png')
+arrowkeysUp = pygame.image.load(dirpath+'/arrowkeysUp.png')
+arrowkeysDown = pygame.image.load(dirpath+'/arrowkeysDown.png')
+arrowkeysUL = pygame.image.load(dirpath+'/arrowkeysUL.png')
+arrowkeysUR = pygame.image.load(dirpath+'/arrowkeysUR.png')
+arrowkeysDL = pygame.image.load(dirpath+'/arrowkeysDL.png')
+arrowkeysDR = pygame.image.load(dirpath+'/arrowkeysDR.png')
+joytop = pygame.image.load(dirpath+'/joysticktopSmall.png')
+joybase = pygame.image.load(dirpath+'/joystickbase_250.png')
 
 # Do not use convert for the following images
 # Button images
-joystick_image = pygame.image.load(dirpath+'/Simple/joystick_only.png')
-track_image = pygame.image.load(dirpath+'/Simple/line.png')
-dpad = pygame.image.load(dirpath+'/Simple/dpad.png')
-dpadU = pygame.image.load(dirpath+'/Simple/dpadU.png')
-dpadD = pygame.image.load(dirpath+'/Simple/dpadD.png')
-dpadL = pygame.image.load(dirpath+'/Simple/dpadL.png')
-dpadR = pygame.image.load(dirpath+'/Simple/dpadR.png')
-dpadUR = pygame.image.load(dirpath+'/Simple/dpadUR.png')
-dpadDR = pygame.image.load(dirpath+'/Simple/dpadDR.png')
-dpadUL = pygame.image.load(dirpath+'/Simple/dpadUL.png')
-dpadDL = pygame.image.load(dirpath+'/Simple/dpadDL.png')
-
-bpad = pygame.image.load(dirpath+'/Simple/bpad.png')
-bpadU = pygame.image.load(dirpath+'/Simple/bpadU.png')
-bpadD = pygame.image.load(dirpath+'/Simple/bpadD.png')
-bpadL = pygame.image.load(dirpath+'/Simple/bpadL.png')
-bpadR = pygame.image.load(dirpath+'/Simple/bpadR.png')
-bpadUR = pygame.image.load(dirpath+'/Simple/bpadUR.png')
-bpadDR = pygame.image.load(dirpath+'/Simple/bpadDR.png')
-bpadUL = pygame.image.load(dirpath+'/Simple/bpadUL.png')
-bpadDL = pygame.image.load(dirpath+'/Simple/bpadDL.png')
-
-stick = pygame.image.load(dirpath+'/Simple/stick.png')
-
-L1 = pygame.image.load(dirpath+'/Simple/L1.png')
-L2 = pygame.image.load(dirpath+'/Simple/L2.png')
-L1L2 = pygame.image.load(dirpath+'/Simple/L1L2.png')
-R1 = pygame.image.load(dirpath+'/Simple/R1.png')
-R2 = pygame.image.load(dirpath+'/Simple/R2.png')
-R1R2 = pygame.image.load(dirpath+'/Simple/R1R2.png')
-
-hoffset = 244
-voffset = 388
-posdpad = (102+hoffset, 75+voffset)
-posbpad = (327+hoffset, 75+voffset)
-posL = (106+hoffset,15+voffset)
-posR = (338+hoffset,15+voffset)
-
-
+posarrows = (815,620)
 
 arrow = np.array([[2,0],[2,150],[7,150],[0,165],[-7,150],[-2,150],[-2,0],[2,0]])
 
-pos_joystick = (298,420)
-posstickL = (164+hoffset, 130+voffset)
-posstickR = (287+hoffset, 130+voffset)
 # Get ready to print.
 textPrint = pgt.TextPrint(pygame.Color('white'))
 
-
-# Initialize the joystick.
-pygame.joystick.init()
-joystick = pygame.joystick.Joystick(0) # 0 for first joystick, 1 for the next etc.
-joystick.init()
-name = joystick.get_name()
-axes = joystick.get_numaxes()
-hats = joystick.get_numhats()
-
-readdataevent = pygame.USEREVENT+1
-pygame.time.set_timer(readdataevent, 60)
+axis0 = 0
+mx_origin,my_origin = 500, 540
+mxnew, mynew = 250, 250
 
 framecount = 1
 done = False
 
 xdatarange = [760,950]
-y_origin = 500
+y_origin = 450
 yscale = 100
 pts = deque(maxlen=xdatarange[1]-xdatarange[0])
 pts2 = deque(maxlen=xdatarange[1]-xdatarange[0])
@@ -235,7 +209,10 @@ while not done:
     g = acc_g * sf
     #screen.fill((0, 0, 0))
     screen.blit(bg,(0,0))
-    screen.blit(joystick_image, pos_joystick)
+    screen.blit(arrowkeys,posarrows)
+
+
+
     screen.blit(track_image, (0,origin[1]+wheel_radius-8))
 
 
@@ -268,9 +245,8 @@ while not done:
  
         velocity += acc*dt
         distance += (velocity*dt)
+
         '''
-        
-        
         theta_c = np.arctan2(l*np.sin(theta),l*np.cos(theta)+R)
         h_c = np.sqrt((l*np.sin(theta))**2+(l*np.cos(theta)+R)**2)
         
@@ -290,7 +266,7 @@ while not done:
 
         # integrate angular velocity to get angle
         theta_c += omega*dt
-        theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))  *np.sin(theta_c))/l) # only good for  -90 > theta_c < 90
+        theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))*np.sin(theta_c))/l) # only good for  -90 > theta_c < 90
 
         # integrate dt to get time
         t += dt
@@ -300,7 +276,6 @@ while not done:
 		'''
 
         #---------------------------------------------------------------
-
 
         mm2px = Tbot_scalefactor/height_of_TBot_body
         origin[0] = 500+int(distance*mm2px)+int(((theta)*np.pi)*wheel_radius/4)       
@@ -319,25 +294,28 @@ while not done:
         if auto:          
             #settheta = -speed_pid.output(targetvelocity,-velocity,dt)
             # The T-Bot does not have motor encoders so the velocity is is calculated as a function of angle
-            settheta = -speed_pid.output(geom.v2ang(h,g,targetvelocity),-geom.v2ang(h,g,velocity),dt)
+            settheta = speed_pid.output(geom.v2ang(h,g,-targetvelocity),geom.v2ang(h,g,velocity),dt)
             acc = -angle_pid.output(settheta,(theta+noise[0]),dt)
             #acc = -angle_pid.output(np.pi-geom.v2ang(h,g,targetvelocity),(theta+noise[0]),dt)
             
         #---------------------------------------------------------------
         
-        if show_arrows:
-            arrow_rot1 = np.array(geom.rotxy(theta,arrow))
-            arrow1_tup = tuple(map(tuple, tuple((arrow_rot1+origin).astype(int))))
-            arrow_rot2 = np.array(geom.rotxy(np.pi+settheta,arrow))
-            arrow2_tup = tuple(map(tuple, tuple((arrow_rot2+origin).astype(int))))
-            arrow_rot3 = np.array(geom.rotxy(np.pi+geom.v2ang(h,g,targetvelocity),arrow))
-            arrow3_tup = tuple(map(tuple, tuple((arrow_rot3+origin).astype(int))))         
+        
     else:
 
-        textPrint.abspos(screen, "Press the start button to reset.",(430,180))
+        textPrint.abspos(screen, "Press the s key to reset.",(430,180))
         if timeflag:
             lasttime = time()-starttime
             timeflag = 0
+
+    if show_arrows:
+        arrow_rot1 = np.array(geom.rotxy(theta+np.pi,arrow))
+        arrow1_tup = tuple(map(tuple, tuple((arrow_rot1+origin).astype(int))))
+        arrow_rot2 = np.array(geom.rotxy(np.pi+settheta,arrow))
+        arrow2_tup = tuple(map(tuple, tuple((arrow_rot2+origin).astype(int))))
+        arrow_rot3 = np.array(geom.rotxy(np.pi+geom.v2ang(h,g,targetvelocity),arrow))
+        arrow3_tup = tuple(map(tuple, tuple((arrow_rot3+origin).astype(int)))) 
+
 
     if draw_stick_man:
         pygame.gfxdraw.filled_polygon(screen, (stick_man), (0, 249, 249, 20))         
@@ -390,115 +368,151 @@ while not done:
     textPrint.tprint(screen,'Velocity')
     textPrint.setColour(WHITE)
     
-    if pygame.event.get(readdataevent):
-        oldvals = [0,0,0,0]
+    
+    mx,my = pygame.mouse.get_pos()
+
+    #print('x '+str(mx)+' y ' +str(my))
+    c1, c2, c3 =  pygame.mouse.get_pressed()
+          
+        
+    if mx > mx_origin + 115 or mx < mx_origin - 115 or my > my_origin+115 or my < my_origin-115:
+        mx,my = mx_origin,my_origin  
+
+    jx = ((mx-mx_origin)*0.862)/20.
+    jy = (((116+my_origin)-my))/20.
+    
+    screen.blit(joybase,(mx_origin-125,my_origin-125))
+    screen.blit(joytop,(mx-40,my-40))
+    
+
+    if auto:
+        if c1==1:
+            targetvelocity =  -jx * 0.05
+    else:
+        if c1==1:
+            acc = jx*2  
+    
+    
         
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
 
     keys = pygame.key.get_pressed()
-
-    if keys[pygame.K_g]:
-        sf += 0.01
-    elif keys[pygame.K_f]:
-        sf -= 0.01
-            
-    if keys[pygame.K_q]:
-        done = True
-  
-    for i in range(hats):
-        hat = joystick.get_hat(i)
-
-    axis0 = joystick.get_axis(0)
-    axis1 = joystick.get_axis(1)
-    axis2 = joystick.get_axis(2)
-    axis3 = joystick.get_axis(3)
- 
-    if keys[pygame.K_UP]:
-        show_arrows = 1
-    elif keys[pygame.K_DOWN]:
-        show_arrows = 0
     
-    if keys[pygame.K_a]:
-        auto = 1
-    elif keys[pygame.K_m]:
-        auto = 0
-#
-    if auto:
-        targetvelocity =  -axis0 * 0.2
-    else:
-        #acc = axis0
-        acc = axis0*2 # swing up
-        
-    # ------------------ Highlight buttons ----------------#
-    screen.blit(dpad,posdpad)
-    screen.blit(bpad,posbpad)
-    screen.blit(stick,(posstickL[0]+axis0*5,posstickL[1]+axis1*5))
-    screen.blit(stick,(posstickR[0]+axis2*5,posstickR[1]+axis3*5))
+    if keys[pgl.K_RIGHT] and keys[pgl.K_UP]:
+        screen.blit(arrowkeysUR,posarrows)
 
-    if hat[0] == 1:
-        screen.blit(dpadR,posdpad)
-        s_ki += 0.001
+
+    elif keys[pgl.K_LEFT] and keys[pgl.K_UP]:
+        screen.blit(arrowkeysUL,posarrows)
+
+        
+    elif keys[pgl.K_RIGHT] and keys[pgl.K_DOWN]:
+        screen.blit(arrowkeysDR,posarrows)
+
+        
+    elif keys[pgl.K_LEFT] and keys[pgl.K_DOWN]:
+        screen.blit(arrowkeysDL,posarrows)
+
+
+    elif keys[pgl.K_DOWN]:
+        screen.blit(arrowkeysDown,posarrows)
+        show_arrows = 0
+        
+    elif keys[pgl.K_UP]:
+        screen.blit(arrowkeysUp,posarrows)
+        show_arrows = 1
+
+    elif keys[pgl.K_RIGHT]:
+        screen.blit(arrowkeysR,posarrows)
+        if auto:
+            targetvelocity =  -0.1
+        else:
+            acc = 1
+
+    elif keys[pgl.K_LEFT]:
+        screen.blit(arrowkeysL,posarrows)
+        if auto:
+            targetvelocity =  0.1
+        else:
+            acc = -1
+            
+    if keys[pgl.K_LEFT]+keys[pgl.K_RIGHT]+jx == 0:
+
+        if auto:
+            targetvelocity =  0
+        else:
+            acc = 0 
+
+    #-------------------------------------------------------------------
+    #                          Tuning Keys
+    #-------------------------------------------------------------------
+    
+    if keys[pgl.K_t]:
+        s_kp += 0.01
         speed_pid.set_PID(s_kp,s_ki,s_kd)
-    elif hat[0] == -1:
-        screen.blit(dpadL,posdpad)
-        s_ki -= 0.001
-        if s_ki < 0:
-            s_ki = 0
-        speed_pid.set_PID(s_kp,s_ki,s_kd)
-    elif hat[1] == 1:
-        screen.blit(dpadU,posdpad)
-        s_kp += 0.001
-        speed_pid.set_PID(s_kp,s_ki,s_kd)
-    elif hat[1] == -1:
-        screen.blit(dpadD,posdpad)
-        s_kp -= 0.001
-        if s_kp < 0:
+    elif keys[pgl.K_f]:
+        s_kp -= 0.01
+        if s_kp <= 0:
             s_kp = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
-    else:
-        screen.blit(dpad,posdpad)
+    if keys[pgl.K_y]:
+        s_ki += 0.01
+        speed_pid.set_PID(s_kp,s_ki,s_kd)
+    elif keys[pgl.K_g]:
+        s_ki -= 0.01
+        if s_ki <= 0:
+            s_ki = 0
+        speed_pid.set_PID(s_kp,s_ki,s_kd)
+    if keys[pgl.K_u]:
+        s_kd += 0.01
+        speed_pid.set_PID(s_kp,s_ki,s_kd)
+    elif keys[pgl.K_h]:
+        s_kd -= 0.01
+        if s_kd <= 0:
+            s_kd = 0
+        speed_pid.set_PID(s_kp,s_ki,s_kd)
         
-    if (hat[0] == -1) & (hat[1] == 1):
-        screen.blit(dpadUL,posdpad)
-    elif (hat[0] == 1) & (hat[1] == -1):
-        screen.blit(dpadDR,posdpad)
-    elif (hat[0] == 1 & hat[1] == 1):
-        screen.blit(dpadUR,posdpad)
-    elif hat[0] == -1 & hat[1] == -1:
-        screen.blit(dpadDL,posdpad)
-        
-    if joystick.get_button(0):
-        screen.blit(bpadU,posbpad)
-        a_kp += 0.001
+    if keys[pgl.K_i]:
+        a_kp += 0.01
         angle_pid.set_PID(a_kp,a_ki,a_kd)
-    elif joystick.get_button(1):
-        screen.blit(bpadR,posbpad)
-        a_ki += 0.001
-        angle_pid.set_PID(a_kp,a_ki,a_kd)      
-    elif joystick.get_button(2):
-        screen.blit(bpadD,posbpad)
-        a_kp -= 0.001
-        if a_kp < 0:
+    elif keys[pgl.K_j]:
+        a_kp -= 0.01
+        if a_kp <= 0:
             a_kp = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
-        
-    elif joystick.get_button(3):
-        screen.blit(bpadL,posbpad)
-        a_ki -= 0.001
-        if a_ki < 0:
+    if keys[pgl.K_o]:
+        a_ki += 0.01
+        angle_pid.set_PID(a_kp,a_ki,a_kd)
+    elif keys[pgl.K_k]:
+        a_ki -= 0.01
+        if a_ki <= 0:
             a_ki = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
-    else:
-        screen.blit(bpad,posbpad)
-
-    if joystick.get_button(8):
-        speed_pid.set_PID(s_kpo,s_kio,s_kdo)
-        angle_pid.set_PID(a_kpo,a_kio,a_kdo)
-        sf = sf_original
+    if keys[pgl.K_p]:
+        a_kd += 0.01
+        angle_pid.set_PID(a_kp,a_ki,a_kd)
+    elif keys[pgl.K_l]:
+        a_kd -= 0.01
+        if a_kd <= 0:
+            a_kd = 0
+        angle_pid.set_PID(a_kp,a_ki,a_kd)
         
-    elif joystick.get_button(9):
+    if keys[pgl.K_b]:
+        sf += 0.01
+    elif keys[pgl.K_v]:
+        sf -= 0.01
+            
+    if keys[pgl.K_q]:
+        done = True
+    
+    if keys[pgl.K_a]:
+        auto = 1
+    elif keys[pgl.K_m]:
+        auto = 0
+    
+    if keys[pgl.K_s]:
         alpha = 0
         gamma = 0
         acc = 0
@@ -511,80 +525,12 @@ while not done:
         angle_pid.clear()
         starttime = time()
         timeflag = 1
-   
-    if joystick.get_button(0) & joystick.get_button(1):
-        screen.blit(bpadUR,posbpad)
-    elif joystick.get_button(1) & joystick.get_button(2):
-        screen.blit(bpadDR,posbpad)
-    elif joystick.get_button(2) & joystick.get_button(3):
-        screen.blit(bpadDL,posbpad)
-    elif joystick.get_button(0) & joystick.get_button(3):
-        screen.blit(bpadUL,posbpad)
-
-    if joystick.get_button(4):
-        screen.blit(L1,posL)
-        s_kd += 0.001
-        speed_pid.set_PID(s_kp,s_ki,s_kd)
-    elif joystick.get_button(6):
-        screen.blit(L2,posL)
-        s_kd -= 0.001
-        if s_kd < 0:
-            s_kd = 0
-        speed_pid.set_PID(s_kp,s_ki,s_kd)
-    elif joystick.get_button(5):
-        screen.blit(R1,posR)
-        a_kd += 0.001
-        angle_pid.set_PID(a_kp,a_ki,a_kd)
-    elif joystick.get_button(7):
-        screen.blit(R2,posR)
-        a_kd -= 0.001
-        if a_kd < 0:
-            a_kd = 0
-        angle_pid.set_PID(a_kp,a_ki,a_kd)
-    else:
-        screen.blit(bpad,posbpad)
         
-    if joystick.get_button(4) & joystick.get_button(6):
-        screen.blit(L1L2,posL)
-    elif joystick.get_button(5) & joystick.get_button(7):
-        screen.blit(R1R2,posR)
-    elif joystick.get_button(4) & joystick.get_button(5):
-        screen.blit(L1,posL)
-        screen.blit(R1,posR)
-    elif joystick.get_button(4) & joystick.get_button(7):
-        screen.blit(L1,posL)
-        screen.blit(R2,posR)
-    elif joystick.get_button(6) & joystick.get_button(5):
-        screen.blit(L2,posL)
-        screen.blit(R1,posR)
-    elif joystick.get_button(6) & joystick.get_button(7):
-        screen.blit(L2,posL)
-        screen.blit(R2,posR)
-        
-    if joystick.get_button(4) & joystick.get_button(6) & joystick.get_button(5):
-        screen.blit(L1L2,posL)
-        screen.blit(R1,posR)
-    elif joystick.get_button(4) & joystick.get_button(6) & joystick.get_button(7):
-        screen.blit(L1L2,posL)
-        screen.blit(R2,posR)
-    elif joystick.get_button(4) & joystick.get_button(5) & joystick.get_button(7):
-        screen.blit(L1,posL)
-        screen.blit(R1R2,posR)
-    elif joystick.get_button(5) & joystick.get_button(6) & joystick.get_button(7):
-        screen.blit(L2,posL)
-        screen.blit(R1R2,posR) 
-    
-    if joystick.get_button(4) & joystick.get_button(5) & joystick.get_button(6) & joystick.get_button(7):
-        screen.blit(L1L2,posL)
-        screen.blit(R1R2,posR)
+    if keys[pgl.K_x]:        
+        speed_pid.set_PID(s_kpo,s_kio,s_kdo)
+        angle_pid.set_PID(a_kpo,a_kio,a_kdo)
+        sf = sf_original
 
-    
-    s_kp = speed_pid.get_PID()[0]
-    s_ki = speed_pid.get_PID()[1]
-    s_kd = speed_pid.get_PID()[2]
-    a_kp = angle_pid.get_PID()[0]
-    a_ki = angle_pid.get_PID()[1]
-    a_kd = angle_pid.get_PID()[2]
     textPrint.setfontsize(22)
     textPrint.setColour(pygame.Color(0,255,255,255))
     textPrint.abspos(screen, "T-Bot Simulator",(10,10))
@@ -593,9 +539,16 @@ while not done:
     textPrint.tprint(screen, "www.klikrobotics.com")
     textPrint.tprint(screen, " ")
 
+    s_kp = speed_pid.get_PID()[0]
+    s_ki = speed_pid.get_PID()[1]
+    s_kd = speed_pid.get_PID()[2]
+    a_kp = angle_pid.get_PID()[0]
+    a_ki = angle_pid.get_PID()[1]
+    a_kd = angle_pid.get_PID()[2]
+
     textPrint.tprint(screen, "T: {:.3f}".format(time()-starttime))
     textPrint.tprint(screen, "Last T: {:.3f}".format(lasttime))        
-    textPrint.abspos(screen, "Tuning Parameters",(10,400))
+    textPrint.abspos(screen, "Tuning Parameters",(10,420))
     textPrint.tprint(screen, " ")
     textPrint.tprint(screen, "s_kp: {:.3f}".format(s_kp))
     textPrint.tprint(screen, "s_ki: {:.3f}".format(s_ki))
@@ -609,7 +562,7 @@ while not done:
         textPrint.tprint(screen, "Auto - Press m for manual control")
     else:
         textPrint.tprint(screen, "Manual - Press a for automatic control")
-    textPrint.tprint(screen,'Press i for information')
+    textPrint.tprint(screen,'Press c for command list')
     textPrint.abspos(screen, "g: {:.2f}".format((g)),(890,10))
     textPrint.tprint(screen, "theta: {:.2f}".format((theta)*180/np.pi))
     textPrint.tprint(screen, "Alpha: {:.2f}".format(alpha))
@@ -625,22 +578,22 @@ while not done:
     # Limit to 60 frames per second. Set to 30 for Raspberry Pi. It can't run at 60 fps
     clock.tick(framerate)
 
-    if keys[pygame.K_p]:
+    if keys[pgl.K_d]:
         waiting = 1
         while waiting:
             for event in pygame.event.get():
                 keys = pygame.key.get_pressed()
-                if keys[pygame.K_s]:
+                if keys[pgl.K_s]:
                     save = 1
                     if save:
                         pygame.image.save(screen, datetime.now().strftime("TutorialImages/%m%d%Y_%H%M%S.png"))
                         save = 0
-                if keys[pygame.K_o]:
+                if keys[pgl.K_r]:
                     waiting = 0
-                if keys[pygame.K_q]:
+                if keys[pgl.K_q]:
                     done = True
                     waiting = 0
-    if keys[pygame.K_i]:
+    if keys[pgl.K_c]:
         waiting = 1
         while waiting:
 
@@ -655,48 +608,50 @@ while not done:
                 textPrint.setfontsize(16)
                 textPrint.tprint(screen, "www.klikrobotics.com")
                 textPrint.setfontsize(20)
-                textPrint.abspos(screen, "Keyboard",(200,80))
+                textPrint.abspos(screen, "Basic Commands",(200,80))
                 textPrint.tprint(screen, "")
                 textPrint.setfontsize(16)
-                textPrint.tprint(screen, "p -> Pause")
-                textPrint.tprint(screen, "o -> Resume")
+                textPrint.tprint(screen, "d -> Pause")
+                textPrint.tprint(screen, "r -> Resume")
                 textPrint.tprint(screen, "s -> Save paused frame")
-                textPrint.tprint(screen, "i -> For information")
+                textPrint.tprint(screen, "s -> Reset frame if not paused")
+                textPrint.tprint(screen, "x -> Reset PID")                
+                textPrint.tprint(screen, "c -> For information")
                 textPrint.tprint(screen, "m -> For manual control")
                 textPrint.tprint(screen, "a -> For automatic PID control")
-                textPrint.tprint(screen, "g -> increase g")
-                textPrint.tprint(screen, "f -> decrease g")
+                textPrint.tprint(screen, "b -> increase g")
+                textPrint.tprint(screen, "v -> decrease g")
                 textPrint.tprint(screen, "Up arrow to show arrows")
                 textPrint.tprint(screen, "Down arrow to hide arrows")
                 textPrint.setfontsize(20)
-                textPrint.abspos(screen, "Joystick",(600,80))
+                textPrint.abspos(screen, "Tuning",(600,80))
                 textPrint.tprint(screen, "")
                 textPrint.setfontsize(16)
-                textPrint.tprint(screen, "Left side of the controller")
+                textPrint.tprint(screen, "Speed PID")
                 textPrint.tprint(screen, "")
-                textPrint.tprint(screen, "Up -> Increase speed proportional gain")
-                textPrint.tprint(screen, "Down -> Decrease speed proportional gain")
-                textPrint.tprint(screen, "Left -> Increase speed integral gain")
-                textPrint.tprint(screen, "Right -> Decrease speed integral gain")
-                textPrint.tprint(screen, "L1 -> Increase speed derivitive gain")
-                textPrint.tprint(screen, "L2 -> Decrease speed derivitive gain")
+                textPrint.tprint(screen, "t -> Increase speed proportional gain")
+                textPrint.tprint(screen, "f -> Decrease speed proportional gain")
+                textPrint.tprint(screen, "y -> Increase speed integral gain")
+                textPrint.tprint(screen, "g -> Decrease speed integral gain")
+                textPrint.tprint(screen, "u -> Increase speed derivitive gain")
+                textPrint.tprint(screen, "h -> Decrease speed derivitive gain")
                 textPrint.tprint(screen, "")
-                textPrint.tprint(screen, "Right side of the controller")
+                textPrint.tprint(screen, "Angle PID")
                 textPrint.tprint(screen, "")
-                textPrint.tprint(screen, "Triangle -> Increase angle proportional gain")
-                textPrint.tprint(screen, "X -> Decrease angle proportional gain")
-                textPrint.tprint(screen, "Square -> Increase angle integral gain")
-                textPrint.tprint(screen, "Circle -> Decrease angle integral gain")
-                textPrint.tprint(screen, "R1 -> Increase angle derivitive gain")
-                textPrint.tprint(screen, "R2 -> Decrease angle derivitive gain")
+                textPrint.tprint(screen, "i -> Increase angle proportional gain")
+                textPrint.tprint(screen, "j -> Decrease angle proportional gain")
+                textPrint.tprint(screen, "o -> Increase angle integral gain")
+                textPrint.tprint(screen, "k -> Decrease angle integral gain")
+                textPrint.tprint(screen, "p -> Increase angle derivitive gain")
+                textPrint.tprint(screen, "l -> Decrease angle derivitive gain")
 
                 textPrint.setfontsize(40)
-                textPrint.abspos(screen, "Press o to return to simulator",(290,500))
+                textPrint.abspos(screen, "Press r to return to simulator",(290,500))
                 
                 pygame.display.flip()
-                if keys[pygame.K_o]:
+                if keys[pgl.K_r]:
                     waiting = 0
-                if keys[pygame.K_q]:
+                if keys[pgl.K_q]:
                     done = True
                     waiting = 0
 

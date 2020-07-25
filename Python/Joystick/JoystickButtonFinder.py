@@ -1,6 +1,7 @@
 #!/usr/bin/python
-import sys
-sys.path.append('/home/gareth/GitHub/T-BOTS/Python')
+import sys, os
+currentpath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+sys.path.append(currentpath)
 from TBotTools import tbt, pgt
 import pygame
 import pygame.locals as pgl

@@ -6,7 +6,6 @@ from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
 import pygame.gfxdraw
-import pygame.locals as pgl
 from collections import deque
 from datetime import datetime
 clock = pygame.time.Clock()
@@ -388,45 +387,45 @@ while not done:
 
     keys = pygame.key.get_pressed()
     
-    if keys[pgl.K_RIGHT] and keys[pgl.K_UP]:
+    if keys[pygame.K_RIGHT] and keys[pygame.K_UP]:
         screen.blit(arrowkeysUR,posarrows)
 
 
-    elif keys[pgl.K_LEFT] and keys[pgl.K_UP]:
+    elif keys[pygame.K_LEFT] and keys[pygame.K_UP]:
         screen.blit(arrowkeysUL,posarrows)
 
         
-    elif keys[pgl.K_RIGHT] and keys[pgl.K_DOWN]:
+    elif keys[pygame.K_RIGHT] and keys[pygame.K_DOWN]:
         screen.blit(arrowkeysDR,posarrows)
 
         
-    elif keys[pgl.K_LEFT] and keys[pgl.K_DOWN]:
+    elif keys[pygame.K_LEFT] and keys[pygame.K_DOWN]:
         screen.blit(arrowkeysDL,posarrows)
 
 
-    elif keys[pgl.K_DOWN]:
+    elif keys[pygame.K_DOWN]:
         screen.blit(arrowkeysDown,posarrows)
         show_arrows = 0
         
-    elif keys[pgl.K_UP]:
+    elif keys[pygame.K_UP]:
         screen.blit(arrowkeysUp,posarrows)
         show_arrows = 1
 
-    elif keys[pgl.K_RIGHT]:
+    elif keys[pygame.K_RIGHT]:
         screen.blit(arrowkeysR,posarrows)
         if auto:
             targetvelocity =  -0.1
         else:
             acc = 1
 
-    elif keys[pgl.K_LEFT]:
+    elif keys[pygame.K_LEFT]:
         screen.blit(arrowkeysL,posarrows)
         if auto:
             targetvelocity =  0.1
         else:
             acc = -1
             
-    if keys[pgl.K_LEFT]+keys[pgl.K_RIGHT]+jx == 0:
+    if keys[pygame.K_LEFT]+keys[pygame.K_RIGHT]+jx == 0:
 
         if auto:
             targetvelocity =  0
@@ -437,70 +436,70 @@ while not done:
     #                          Tuning Keys
     #-------------------------------------------------------------------
     
-    if keys[pgl.K_t]:
+    if keys[pygame.K_t]:
         s_kp += 0.01
         speed_pid.set_PID(s_kp,s_ki,s_kd)
-    elif keys[pgl.K_f]:
+    elif keys[pygame.K_f]:
         s_kp -= 0.01
         if s_kp <= 0:
             s_kp = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
-    if keys[pgl.K_y]:
+    if keys[pygame.K_y]:
         s_ki += 0.01
         speed_pid.set_PID(s_kp,s_ki,s_kd)
-    elif keys[pgl.K_g]:
+    elif keys[pygame.K_g]:
         s_ki -= 0.01
         if s_ki <= 0:
             s_ki = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
-    if keys[pgl.K_u]:
+    if keys[pygame.K_u]:
         s_kd += 0.01
         speed_pid.set_PID(s_kp,s_ki,s_kd)
-    elif keys[pgl.K_h]:
+    elif keys[pygame.K_h]:
         s_kd -= 0.01
         if s_kd <= 0:
             s_kd = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
         
-    if keys[pgl.K_i]:
+    if keys[pygame.K_i]:
         a_kp += 0.01
         angle_pid.set_PID(a_kp,a_ki,a_kd)
-    elif keys[pgl.K_j]:
+    elif keys[pygame.K_j]:
         a_kp -= 0.01
         if a_kp <= 0:
             a_kp = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
-    if keys[pgl.K_o]:
+    if keys[pygame.K_o]:
         a_ki += 0.01
         angle_pid.set_PID(a_kp,a_ki,a_kd)
-    elif keys[pgl.K_k]:
+    elif keys[pygame.K_k]:
         a_ki -= 0.01
         if a_ki <= 0:
             a_ki = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
-    if keys[pgl.K_p]:
+    if keys[pygame.K_p]:
         a_kd += 0.01
         angle_pid.set_PID(a_kp,a_ki,a_kd)
-    elif keys[pgl.K_l]:
+    elif keys[pygame.K_l]:
         a_kd -= 0.01
         if a_kd <= 0:
             a_kd = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
         
-    if keys[pgl.K_b]:
+    if keys[pygame.K_b]:
         sf += 0.01
-    elif keys[pgl.K_v]:
+    elif keys[pygame.K_v]:
         sf -= 0.01
             
-    if keys[pgl.K_q]:
+    if keys[pygame.K_q]:
         done = True
     
-    if keys[pgl.K_a]:
+    if keys[pygame.K_a]:
         auto = 1
-    elif keys[pgl.K_m]:
+    elif keys[pygame.K_m]:
         auto = 0
     
-    if keys[pgl.K_s]:
+    if keys[pygame.K_s]:
         alpha = 0
         gamma = 0
         acc = 0
@@ -514,7 +513,7 @@ while not done:
         starttime = time()
         timeflag = 1
         
-    if keys[pgl.K_x]:        
+    if keys[pygame.K_x]:        
         speed_pid.set_PID(s_kpo,s_kio,s_kdo)
         angle_pid.set_PID(a_kpo,a_kio,a_kdo)
         sf = sf_original
@@ -566,22 +565,22 @@ while not done:
     # Limit to 60 frames per second. Set to 30 for Raspberry Pi. It can't run at 60 fps
     clock.tick(framerate)
 
-    if keys[pgl.K_d]:
+    if keys[pygame.K_d]:
         waiting = 1
         while waiting:
             for event in pygame.event.get():
                 keys = pygame.key.get_pressed()
-                if keys[pgl.K_s]:
+                if keys[pygame.K_s]:
                     save = 1
                     if save:
                         pygame.image.save(screen, datetime.now().strftime("TutorialImages/%m%d%Y_%H%M%S.png"))
                         save = 0
-                if keys[pgl.K_r]:
+                if keys[pygame.K_r]:
                     waiting = 0
-                if keys[pgl.K_q]:
+                if keys[pygame.K_q]:
                     done = True
                     waiting = 0
-    if keys[pgl.K_c]:
+    if keys[pygame.K_c]:
         waiting = 1
         while waiting:
 
@@ -637,9 +636,9 @@ while not done:
                 textPrint.abspos(screen, "Press r to return to simulator",(290,500))
                 
                 pygame.display.flip()
-                if keys[pgl.K_r]:
+                if keys[pygame.K_r]:
                     waiting = 0
-                if keys[pgl.K_q]:
+                if keys[pygame.K_q]:
                     done = True
                     waiting = 0
 
