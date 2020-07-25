@@ -13,7 +13,7 @@ from datetime import datetime
 clock = pygame.time.Clock()
 dirpath = currentpath+'/Joystick/Images'
 
-framerate = 60 # set to 30 for Rasoberry pi
+framerate = 30 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
 
 #-----------------------------------------------------------------------
@@ -333,7 +333,7 @@ while not done:
             arrow_rot2 = np.array(geom.rotxy(np.pi+settheta,arrow))
             arrow2_tup = tuple(map(tuple, tuple((arrow_rot2+origin).astype(int))))
             arrow_rot3 = np.array(geom.rotxy(np.pi+geom.v2ang(h,g,targetvelocity),arrow))
-            arrow3_tup = tuple(map(tuple, tuple((arrow_rot3+origin).astype(int))))         
+            arrow3_tup = tuple(map(tuple, tuple((arrow_rot3+origin).astype(int))))                  
     else:
 
         textPrint.abspos(screen, "Press the start button to reset.",(430,180))

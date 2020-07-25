@@ -15,7 +15,7 @@ clock = pygame.time.Clock()
 
 dirpath = currentpath+'/Joystick/Images'
 
-framerate = 60 # set to 30 for Rasoberry pi
+framerate = 30 # set to 30 for Rasoberry pi
 dt = 1.0/framerate
 
 #-----------------------------------------------------------------------
