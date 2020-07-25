@@ -1,17 +1,19 @@
 #!/usr/bin/python
 import sys, os
 import numpy as np
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+currentpath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+sys.path.append(currentpath)
 from TBotTools import pid, geometry, pgt
 from time import time
 import pygame
 import pygame.gfxdraw
+import pygame.locals as pgl
 from collections import deque
 from datetime import datetime
 clock = pygame.time.Clock()
-dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
+dirpath = currentpath+'/Joystick/Images'
 
-framerate = 30 # set to 30 for Rasoberry pi
+framerate = 60 # set to 30 for Rasoberry pi
 dt = 1.0/framerate 
 
 #-----------------------------------------------------------------------
@@ -253,7 +255,7 @@ while not done:
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
 
-        gamma =  np.cos(theta)*h_acc/h
+        gamma =  np.cos(theta)*h_acc/l
         a_acc = alpha-gamma
  
        # integrate angular acceleration to get angular velocity
@@ -399,12 +401,12 @@ while not done:
 
     keys = pygame.key.get_pressed()
 
-    if keys[pygame.K_g]:
+    if keys[pgl.K_g]:
         sf += 0.01
-    elif keys[pygame.K_f]:
+    elif keys[pgl.K_f]:
         sf -= 0.01
             
-    if keys[pygame.K_q]:
+    if keys[pgl.K_q]:
         done = True
   
     for i in range(hats):
@@ -415,14 +417,14 @@ while not done:
     axis2 = joystick.get_axis(2)
     axis3 = joystick.get_axis(3)
  
-    if keys[pygame.K_UP]:
+    if keys[pgl.K_UP]:
         show_arrows = 1
-    elif keys[pygame.K_DOWN]:
+    elif keys[pgl.K_DOWN]:
         show_arrows = 0
     
-    if keys[pygame.K_a]:
+    if keys[pgl.K_a]:
         auto = 1
-    elif keys[pygame.K_m]:
+    elif keys[pgl.K_m]:
         auto = 0
 #
     if auto:
@@ -625,22 +627,22 @@ while not done:
     # Limit to 60 frames per second. Set to 30 for Raspberry Pi. It can't run at 60 fps
     clock.tick(framerate)
 
-    if keys[pygame.K_p]:
+    if keys[pgl.K_p]:
         waiting = 1
         while waiting:
             for event in pygame.event.get():
                 keys = pygame.key.get_pressed()
-                if keys[pygame.K_s]:
+                if keys[pgl.K_s]:
                     save = 1
                     if save:
                         pygame.image.save(screen, datetime.now().strftime("TutorialImages/%m%d%Y_%H%M%S.png"))
                         save = 0
-                if keys[pygame.K_o]:
+                if keys[pgl.K_o]:
                     waiting = 0
-                if keys[pygame.K_q]:
+                if keys[pgl.K_q]:
                     done = True
                     waiting = 0
-    if keys[pygame.K_i]:
+    if keys[pgl.K_i]:
         waiting = 1
         while waiting:
 
@@ -694,9 +696,9 @@ while not done:
                 textPrint.abspos(screen, "Press o to return to simulator",(290,500))
                 
                 pygame.display.flip()
-                if keys[pygame.K_o]:
+                if keys[pgl.K_o]:
                     waiting = 0
-                if keys[pygame.K_q]:
+                if keys[pgl.K_q]:
                     done = True
                     waiting = 0
 

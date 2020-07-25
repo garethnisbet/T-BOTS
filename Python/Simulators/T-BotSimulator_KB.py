@@ -63,7 +63,7 @@ draw_stick_man = 1
 
 acc_g = 9.81 
 l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
-R = 0.024 # Radius of wheels
+R = 0.124 # Radius of wheels
 C = 1 # Friction
 
 #_l = l* 820/(l+R)# Tallest building 828 m 
@@ -201,11 +201,7 @@ while not done:
     #screen.fill((0, 0, 0))
     screen.blit(bg,(0,0))
     screen.blit(arrowkeys,posarrows)
-
-
-
     screen.blit(track_image, (0,origin[1]+wheel_radius-8))
-
 
     #-------------------------------------------------------------------
     #                            The Physics
@@ -213,18 +209,17 @@ while not done:
 
     if theta >= -np.pi/2.2 and theta <= np.pi/2.2:
         
-        
         alpha =  np.sin(theta)*g/h
 
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
                                 # produced from the rotation of the 
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
-
-        gamma =  np.cos(theta)*h_acc/l
+        print(h_acc)
+        gamma =  np.cos(theta)*h_acc/h
         a_acc = alpha-gamma
  
-       # integrate angular acceleration to get angular velocity
+        # integrate angular acceleration to get angular velocity
         omega += a_acc*dt
         omega = omega*C
 
@@ -264,7 +259,7 @@ while not done:
  
         velocity += acc*dt
         distance += (velocity*dt)
-		'''
+        '''
 
         #---------------------------------------------------------------
 
@@ -635,10 +630,8 @@ while not done:
                 textPrint.tprint(screen, "k -> Decrease angle integral gain")
                 textPrint.tprint(screen, "p -> Increase angle derivitive gain")
                 textPrint.tprint(screen, "l -> Decrease angle derivitive gain")
-
                 textPrint.setfontsize(40)
                 textPrint.abspos(screen, "Press r to return to simulator",(290,500))
-                
                 pygame.display.flip()
                 if keys[pgl.K_r]:
                     waiting = 0
