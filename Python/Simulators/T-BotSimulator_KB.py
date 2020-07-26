@@ -78,8 +78,8 @@ auto_toggle = 0
 auto = 1
 
 #height_of_man = 1.8923 # Me
-#height_of_man = 0.1524 # 1:12 Scale (approx. 5-6") Action Figure
-height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
+height_of_man = 0.1524 # 1:12 Scale (approx. 5-6") Action Figure
+#height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
 
 tyre = 4
 t = 0
@@ -107,9 +107,9 @@ geom = geometry.geometry()
 origin = [500,320]
 tbot_drawing_offset = [-78,-10]
 Tbot_scalefactor = 216
-height_of_TBot_body = 120E-3
+height_of_TBot_body = h * 1.524
 
-Man_scalefactor = (height_of_man/(l*2))*Tbot_scalefactor
+Man_scalefactor = (height_of_man/height_of_TBot_body)*Tbot_scalefactor
 wheel_radius = int(R/l*Tbot_scalefactor/2.2)
 
 tbot = np.loadtxt('T-BotSideView.dat')
