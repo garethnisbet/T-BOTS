@@ -64,6 +64,7 @@ acc_g = 9.81
 l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
 R = 0.024 # Radius of wheels
 C = 1 # Friction
+max_velocity = 0.4
 
 #_l = l* 820/(l+R)# Tallest building 828 m 
 #_R = R* 820/(l+R)# Tallest building 828 m
@@ -214,7 +215,11 @@ while not done:
                                 # produced from the rotation of the 
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
+        if np.abs(velocity) > max_velocity:
+            h_acc = 0
+
         gamma =  np.cos(theta)*h_acc/h
+        
         a_acc = alpha-gamma
  
         # integrate angular acceleration to get angular velocity

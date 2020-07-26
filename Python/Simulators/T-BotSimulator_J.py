@@ -12,7 +12,7 @@ from datetime import datetime
 clock = pygame.time.Clock()
 dirpath = currentpath+'/Joystick/Images'
 
-framerate = 60 # set to 30 for Rasoberry pi
+framerate = 30 # set to 30 for Rasoberry pi
 dt = 1.0/framerate
 
 #-----------------------------------------------------------------------
@@ -254,10 +254,11 @@ while not done:
                                 # produced from the rotation of the 
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
+                                
         if np.abs(velocity) > max_velocity:
-            gamma = 0
-        else:
-            gamma =  np.cos(theta)*h_acc/l
+            h_acc = 0
+
+        gamma =  np.cos(theta)*h_acc/h
 
 
         a_acc = alpha-gamma
