@@ -14,7 +14,7 @@ clock = pygame.time.Clock()
 
 dirpath = currentpath+'/Simulators/Images'
 
-framerate = 30 # set to 30 for Rasoberry pi
+framerate = 60 # set to 30 for Rasoberry pi
 dt = 1.0/framerate
 
 #-----------------------------------------------------------------------
@@ -66,7 +66,7 @@ R = 0.024 # Radius of wheels
 C = 1 # Friction
 max_velocity = 0.4
 
-#_l = l* 820/(l+R)# Tallest building 828 m 
+#_l = l* 820/(l+R)# Tallest building 828 m
 #_R = R* 820/(l+R)# Tallest building 828 m
 #_l = l* 6/(l+R)# house 6 m 
 #_R = R* 6/(l+R)# house 6 m 
@@ -121,7 +121,8 @@ spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0], [-0.8660254, -0.5 ],[0,
 trackmarksArray = np.array([[0,origin[1]+wheel_radius],[1000,origin[1]+wheel_radius]])
 track_marks_tup = tuple(map(tuple, tuple((trackmarksArray).astype(int))))
 
-stick_man_data = np.loadtxt('Man.dat')
+stick_man_data = np.loadtxt('ActionFigure.dat')
+stick_man_data[:,0]=stick_man_data[:,0]*-1
 stick_man = np.vstack((stick_man_data,stick_man_data[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
 stick_man = stick_man/(stick_man[:,1].max()-stick_man[:,1].min())*Man_scalefactor
 scaled_stick_man = stick_man

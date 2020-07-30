@@ -2,7 +2,8 @@ import sys
 import cv2
 import os
 import imutils
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+currentpath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../..'))
+sys.path.append(currentpath)
 from TBotTools import tbt, pid, geometry
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,6 +14,7 @@ from time import time
 imagepath = 'TemplateImages/Elephant.png'
 imagepath = 'TemplateImages/Track.png'
 imagepath = 'TemplateImages/TBot_side.png'
+imagepath = 'TemplateImages/ActionFigure.png'
 
 #imagepath = 'TemplateImages/Butterfly.png'
 #imagepath = 'TemplateImages/Bot.png'
@@ -27,6 +29,7 @@ imagepath = 'TemplateImages/TBot_side.png'
 
 filename = 'pathpoints.dat'
 filename = 'T-BotSideView.dat'
+filename = 'ActionFigure.dat'
 low_threshold = 0
 high_threshold = 255
 geom = geometry.geometry()
