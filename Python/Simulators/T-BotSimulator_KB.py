@@ -10,11 +10,12 @@ import pygame.gfxdraw
 import pygame.locals as pgl
 from collections import deque
 from datetime import datetime
+framecount = 1
 clock = pygame.time.Clock()
 
 dirpath = currentpath+'/Simulators/Images'
 
-framerate = 60 # set to 30 for Rasoberry pi
+framerate = 30 # set to 30 for Rasoberry pi
 dt = 1.0/framerate
 
 #-----------------------------------------------------------------------
@@ -121,7 +122,7 @@ spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0], [-0.8660254, -0.5 ],[0,
 trackmarksArray = np.array([[0,origin[1]+wheel_radius],[1000,origin[1]+wheel_radius]])
 track_marks_tup = tuple(map(tuple, tuple((trackmarksArray).astype(int))))
 
-stick_man_data = np.loadtxt('ActionFigure.dat')
+stick_man_data = np.loadtxt('Man.dat')
 stick_man_data[:,0]=stick_man_data[:,0]*-1
 stick_man = np.vstack((stick_man_data,stick_man_data[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
 stick_man = stick_man/(stick_man[:,1].max()-stick_man[:,1].min())*Man_scalefactor
@@ -318,7 +319,7 @@ while not done:
     pygame.gfxdraw.aacircle(screen, origin[0], origin[1], wheel_radius, WHITE)
     pygame.draw.lines(screen, WHITE, False, (track_marks_tup),1)
     
-    pts.appendleft((iii,theta-np.pi))
+    pts.appendleft((iii,theta))
     pts2.appendleft((iii,velocity))
     iii+=1
     pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
@@ -567,7 +568,9 @@ while not done:
 
     # Limit to 60 frames per second. Set to 30 for Raspberry Pi. It can't run at 60 fps
     clock.tick(framerate)
-
+    #if framecount < 500:
+    #    pygame.image.save(screen, "CapturedImages/{:04d}.png".format(framecount))
+    framecount += 1
     if keys[pgl.K_d]:
         waiting = 1
         while waiting:

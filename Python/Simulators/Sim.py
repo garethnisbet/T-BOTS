@@ -11,18 +11,19 @@ screen = pygame.display.set_mode((1000, 700))
 pygame.display.set_caption("T-Bot Simulator")
 clock = pygame.time.Clock()
 framerate = 60
+framecount = 1
 arrow_origin = [500,350]
 arrow = np.array([[2,0],[2,150],[7,150],[0,165],[-7,150],[-2,150],[-2,0],[2,0]])
 #-----------------------------------------------------------------------
 #                              Constants
 #-----------------------------------------------------------------------
 g = 9.81
-l = 0.08
+l = 1.08
 alpha = 0
 omega = 0
 theta = 0.01
 dt = 1/framerate
-C = 0.99
+C = 0.999
 #-----------------------------------------------------------------------
 #                               Main Loop
 #-----------------------------------------------------------------------
@@ -51,4 +52,7 @@ while not done:
         theta = 0.01
     pygame.display.flip()
     clock.tick(framerate)
+    #if framecount < 500:    
+    #    pygame.image.save(screen, "CapturedImages/{:04d}.png".format(framecount))
+    framecount += 1
 pygame.display.quit()

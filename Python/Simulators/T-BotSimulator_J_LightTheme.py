@@ -10,7 +10,7 @@ import pygame.gfxdraw
 from collections import deque
 from datetime import datetime
 clock = pygame.time.Clock()
-dirpath = currentpath+'/Joystick/Images'
+dirpath = currentpath+'/Simulators/Images'
 
 framerate = 60 # set to 30 for Rasoberry pi
 dt = 1.0/framerate
@@ -145,41 +145,41 @@ clock = pygame.time.Clock()
 
 # Use convert for the large images. This is the fastest format for blitting
 # Background images
-bg = pygame.image.load(dirpath+'/Simple/SlateWallpaper.jpg').convert() 
+bg = pygame.image.load(dirpath+'/Vintage.jpg').convert() 
 
 
 # Do not use convert for the following images
 # Button images
-joystick_image = pygame.image.load(dirpath+'/Simple/joystick_only.png')
-track_image = pygame.image.load(dirpath+'/Simple/line.png')
-dpad = pygame.image.load(dirpath+'/Simple/dpad.png')
-dpadU = pygame.image.load(dirpath+'/Simple/dpadU.png')
-dpadD = pygame.image.load(dirpath+'/Simple/dpadD.png')
-dpadL = pygame.image.load(dirpath+'/Simple/dpadL.png')
-dpadR = pygame.image.load(dirpath+'/Simple/dpadR.png')
-dpadUR = pygame.image.load(dirpath+'/Simple/dpadUR.png')
-dpadDR = pygame.image.load(dirpath+'/Simple/dpadDR.png')
-dpadUL = pygame.image.load(dirpath+'/Simple/dpadUL.png')
-dpadDL = pygame.image.load(dirpath+'/Simple/dpadDL.png')
+joystick_image = pygame.image.load(dirpath+'/joystick_only.png')
+track_image = pygame.image.load(dirpath+'/line.png')
+dpad = pygame.image.load(dirpath+'/dpad.png')
+dpadU = pygame.image.load(dirpath+'/dpadU.png')
+dpadD = pygame.image.load(dirpath+'/dpadD.png')
+dpadL = pygame.image.load(dirpath+'/dpadL.png')
+dpadR = pygame.image.load(dirpath+'/dpadR.png')
+dpadUR = pygame.image.load(dirpath+'/dpadUR.png')
+dpadDR = pygame.image.load(dirpath+'/dpadDR.png')
+dpadUL = pygame.image.load(dirpath+'/dpadUL.png')
+dpadDL = pygame.image.load(dirpath+'/dpadDL.png')
 
-bpad = pygame.image.load(dirpath+'/Simple/bpad.png')
-bpadU = pygame.image.load(dirpath+'/Simple/bpadU.png')
-bpadD = pygame.image.load(dirpath+'/Simple/bpadD.png')
-bpadL = pygame.image.load(dirpath+'/Simple/bpadL.png')
-bpadR = pygame.image.load(dirpath+'/Simple/bpadR.png')
-bpadUR = pygame.image.load(dirpath+'/Simple/bpadUR.png')
-bpadDR = pygame.image.load(dirpath+'/Simple/bpadDR.png')
-bpadUL = pygame.image.load(dirpath+'/Simple/bpadUL.png')
-bpadDL = pygame.image.load(dirpath+'/Simple/bpadDL.png')
+bpad = pygame.image.load(dirpath+'/bpad.png')
+bpadU = pygame.image.load(dirpath+'/bpadU.png')
+bpadD = pygame.image.load(dirpath+'/bpadD.png')
+bpadL = pygame.image.load(dirpath+'/bpadL.png')
+bpadR = pygame.image.load(dirpath+'/bpadR.png')
+bpadUR = pygame.image.load(dirpath+'/bpadUR.png')
+bpadDR = pygame.image.load(dirpath+'/bpadDR.png')
+bpadUL = pygame.image.load(dirpath+'/bpadUL.png')
+bpadDL = pygame.image.load(dirpath+'/bpadDL.png')
 
-stick = pygame.image.load(dirpath+'/Simple/stick.png')
+stick = pygame.image.load(dirpath+'/stick.png')
 
-L1 = pygame.image.load(dirpath+'/Simple/L1.png')
-L2 = pygame.image.load(dirpath+'/Simple/L2.png')
-L1L2 = pygame.image.load(dirpath+'/Simple/L1L2.png')
-R1 = pygame.image.load(dirpath+'/Simple/R1.png')
-R2 = pygame.image.load(dirpath+'/Simple/R2.png')
-R1R2 = pygame.image.load(dirpath+'/Simple/R1R2.png')
+L1 = pygame.image.load(dirpath+'/L1.png')
+L2 = pygame.image.load(dirpath+'/L2.png')
+L1L2 = pygame.image.load(dirpath+'/L1L2.png')
+R1 = pygame.image.load(dirpath+'/R1.png')
+R2 = pygame.image.load(dirpath+'/R2.png')
+R1R2 = pygame.image.load(dirpath+'/R1R2.png')
 
 hoffset = 244
 voffset = 388
