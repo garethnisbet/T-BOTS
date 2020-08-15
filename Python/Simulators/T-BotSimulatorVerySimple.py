@@ -7,14 +7,9 @@ from TBotTools import geometry, pgt
 import pygame
 import pygame.gfxdraw
 import pygame.locals as pgl
-
-
-
 clock = pygame.time.Clock()
-dirpath = currentpath+'/Joystick/Images'
-
+dirpath = currentpath+'/Simulators/Images/'
 framerate = 60 # set to 30 for Rasoberry pi
-
 #-----------------------------------------------------------------------
 #                           Physical constants
 #-----------------------------------------------------------------------
@@ -23,20 +18,8 @@ sf = 1.0
 acc_g = 9.81 
 l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
 R = 0.024 # Radius of wheels
-C = 0.99 # Friction
-
-#_l = l* 820/(l+R)# Tallest building 828 m 
-#_R = R* 820/(l+R)# Tallest building 828 m
-
-#_l = l* 3/(l+R)# house 3 m 
-#_R = R* 3/(l+R)# house 3 m 
-#l, R = _l, _R
-
-
-
-h=l+R # Maximum distance between the centre of gravity and the ground 
-
-
+C = 1     # Friction
+h=l+R     # Maximum distance between the centre of gravity and the ground 
 t = 0
 alpha = 0
 gamma = 0
@@ -45,37 +28,27 @@ omega = 0
 velocity = 0
 distance = 0
 theta = 0.01
-
 height_of_man = 1.8923 # Me
 #height_of_man = 0.1524 # 1:12 Scale (approx. 5-6") Action Figure
 height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
-
 Tbot_scalefactor = 216
 height_of_TBot_body = 120E-3
-
 Man_scalefactor = (height_of_man/(l*2))*Tbot_scalefactor
 wheel_radius = int(R/l*Tbot_scalefactor/2.2)
 draw_stick_man = 1
-
 tyre = 4
-
 #-----------------------------------------------------------------------
 #                          Drawing Geometry
 #-----------------------------------------------------------------------
-
 geom = geometry.geometry()
-
 origin = [500,319]
 tbot_drawing_offset = [-78,-10]
 tbot = np.loadtxt('T-BotSideView.dat')
 tbot = np.vstack((tbot,tbot[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
 tbot = tbot/(tbot[:,1].max()-tbot[:,1].min())*Tbot_scalefactor
-
 spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0], [-0.8660254, -0.5 ],[0,0]])*(wheel_radius-tyre)
-
 trackmarksArray = np.array([[0,origin[1]+wheel_radius],[1000,origin[1]+wheel_radius]])
 track_marks_tup = tuple(map(tuple, tuple((trackmarksArray).astype(int))))
-
 stick_man_data = np.loadtxt('Man.dat')
 stick_man = np.vstack((stick_man_data,stick_man_data[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
 stick_man = stick_man/(stick_man[:,1].max()-stick_man[:,1].min())*Man_scalefactor
@@ -83,100 +56,71 @@ scaled_stick_man = stick_man
 stick_man=stick_man-[stick_man[:,0].min(),stick_man[:,1].min()]
 stick_man_h_centre = (stick_man[:,0].min()+stick_man[:,0].max())/2
 stick_man = tuple(map(tuple, tuple((stick_man+[750-stick_man_h_centre,368-stick_man[:,1].max()]).astype(int))))
-
 #-----------------------------------------------------------------------
-#                         Initialise Pygame
+#                          Initialise Pygame
 #-----------------------------------------------------------------------
-
 pygame.init()
-
 textPrint = pgt.TextPrint(pygame.Color('white'))
 textPrint.setfontsize(18)
-
 # Set the width and height of the screen (width, height).
 screen = pygame.display.set_mode((1000, 700))
 pygame.display.set_caption("T-Bot Simulator")
 # Used to manage how fast the screen updates.
 clock = pygame.time.Clock()
-
 #-----------------------------------------------------------------------
 #                           Load Images
 #-----------------------------------------------------------------------
-
-bg = pygame.image.load(dirpath+'/Simple/Gray.jpg').convert() 
-track_image = pygame.image.load(dirpath+'/Simple/line.png')
-#
+bg = pygame.image.load(dirpath+'/Gray.jpg').convert() 
+track_image = pygame.image.load(dirpath+'line.png')
 #-----------------------------------------------------------------------
-
-
 done = False
-
-# -------- Main Program Loop -----------
-
+# ---------------------- Main Program Loop -----------------------------
 while not done:
     g = acc_g * sf
     screen.blit(bg,(0,0))
     screen.blit(track_image, (0,origin[1]+wheel_radius-8))
-    
     #-------------------------------------------------------------------
     #                            The Physics
     #-------------------------------------------------------------------
     #if theta >= -np.pi/2.2 and theta <= np.pi/2.2:
     if theta >= -5*np.pi and theta <= 5*np.pi:        
-        
         alpha =  np.sin(theta)*g/h
-
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
                                 # produced from the rotation of the 
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
-
         gamma =  np.cos(theta)*h_acc/l
         a_acc = alpha-gamma
- 
-       # integrate angular acceleration to get angular velocity
+        # integrate angular acceleration to get angular velocity
         omega += a_acc*dt
         omega = omega*C
-
         # integrate angular velocity to get angle
         theta += omega*dt
-
         # integrate dt to get time
         t += dt
- 
         velocity += acc*dt
         distance += (velocity*dt)
-        
         '''
-
         theta_c = np.arctan2(l*np.sin(theta),l*np.cos(theta)+R)
         h_c = np.sqrt((l*np.sin(theta))**2+(l*np.cos(theta)+R)**2)
-        
         alpha =  np.sin(theta_c)*g/h_c
-
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
                                 # produced from the rotation of the 
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
-
         gamma =  np.cos(theta)*h_acc/l
         a_acc = alpha-gamma
- 
-       # integrate angular acceleration to get angular velocity
+        # integrate angular acceleration to get angular velocity
         omega += a_acc*dt
         omega = omega*C
-
         # integrate angular velocity to get angle
         theta_c += omega*dt
-        theta = np.arcsin(   (  (R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))  *np.sin(theta_c))   /l)
-
+        theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))*np.sin(theta_c))/l)
         # integrate dt to get time
         t += dt
- 
         velocity += acc*dt
         distance += (velocity*dt)
         '''
-
     #-------------------------------------------------------------------
     #                          Draw Stuff
     #-------------------------------------------------------------------
@@ -185,51 +129,48 @@ while not done:
     if draw_stick_man:
         pygame.gfxdraw.filled_polygon(screen, (stick_man), (0, 249, 249, 20))         
         #pygame.gfxdraw.aapolygon(screen, (stick_man), (255, 255, 255, 255))
-
     mm2px = Tbot_scalefactor/height_of_TBot_body
     origin[0] = 500+int(distance*mm2px)+int(((theta)*np.pi)*wheel_radius/4)       
     origin[0] = np.mod(origin[0],1000)
     tbot_rot = np.array(geom.rotxy(theta+np.pi,tbot))
     tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
-
     noise = np.random.rand(1)*np.pi/180
     spokes_rot = np.array(geom.rotxy((distance*mm2px/wheel_radius)+theta,spokes))
     spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
-    
-    
-    
-
     pygame.gfxdraw.filled_polygon(screen, (tbot_tup), (0, 249, 249, 100))         
     pygame.gfxdraw.aapolygon(screen, (tbot_tup), (255, 255, 255, 255))
-
     pygame.gfxdraw.aapolygon(screen, (spokes_tup), (255, 255, 255, 255))
     pygame.gfxdraw.aacircle(screen, origin[0], origin[1], wheel_radius-tyre, (255, 255, 255, 255))
     pygame.gfxdraw.aacircle(screen, origin[0], origin[1], wheel_radius, (255, 255, 255, 255))
-    
     pygame.draw.lines(screen, (255, 255, 255, 255), False, (track_marks_tup),1)
-    
-
     #-------------------------------------------------------------------
     #                          Get Key Pressed
     #------------------------------------------------------------------- 
-          
     for event in pygame.event.get():
         keys = pygame.key.get_pressed()
-
     if keys[pgl.K_s]:
         theta = 0.01
         omega = 0
         alpha = 0
-            
     if keys[pgl.K_q]:
         done = True
-
+    if keys[pygame.K_p]:
+        waiting = 1
+        pressed = 1
+        while waiting:
+            for event in pygame.event.get():
+                keys = pygame.key.get_pressed()
+                if pressed:
+                    textPrint.abspos(screen, "Press o to return to simulator",(420,500))
+                pressed = 0
+            if keys[pygame.K_o]:
+                waiting = 0
+            elif keys[pygame.K_q]:
+                waiting = 0
+                done = 1
+            pygame.display.flip()
     pygame.display.flip()
     clock.tick(framerate)
-
 pygame.display.quit()
 pygame.quit()
-
 print('Simulation Closed')
-
-        
