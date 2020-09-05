@@ -18,7 +18,7 @@ sf = 1.0
 acc_g = 9.81 
 l = 0.045 # distance between the centre of gravity of the T-Bot and the axil
 R = 0.024 # Radius of wheels
-C = 0.99  # Friction
+C = 1     # Friction
 h=l+R     # Maximum distance between the centre of gravity and the ground 
 t = 0
 alpha = 0
@@ -28,7 +28,7 @@ omega = 0
 velocity = 0
 distance = 0
 theta = 0.05
-height_of_man = 1.8923 # My height
+height_of_man = 1.8923 # Me
 #height_of_man = 0.1524 # 1:12 Scale (approx. 5-6") Action Figure
 height_of_man = 0.0508 # 1:48 Scale (approx. 2") Action Figure
 Tbot_scalefactor = 216
@@ -37,6 +37,12 @@ Man_scalefactor = (height_of_man/(l*2))*Tbot_scalefactor
 wheel_radius = int(R/l*Tbot_scalefactor/2.2)
 draw_stick_man = 1
 tyre = 4
+#-----------------------------------------------------------------------
+#                           PID Cintrol
+#-----------------------------------------------------------------------
+targetvelocity = 0
+speed_pid = pid.pid(0.040, 0.20, 0.00,[-10,10],[-5,5],dt)
+angle_pid = pid.pid(12.00, 0.00, 0.20,[6, 6],[-1,1],dt)
 #-----------------------------------------------------------------------
 #                          Drawing Geometry
 #-----------------------------------------------------------------------
@@ -49,7 +55,6 @@ tbot = tbot/(tbot[:,1].max()-tbot[:,1].min())*Tbot_scalefactor
 spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0], [-0.8660254, -0.5 ],[0,0]])*(wheel_radius-tyre)
 trackmarksArray = np.array([[0,origin[1]+wheel_radius],[1000,origin[1]+wheel_radius]])
 track_marks_tup = tuple(map(tuple, tuple((trackmarksArray).astype(int))))
-
 #-----------------------------------------------------------------------
 #                          Initialise Pygame
 #-----------------------------------------------------------------------
@@ -94,27 +99,9 @@ while not done:
         t += dt
         velocity += acc*dt
         distance += (velocity*dt)
-        '''
-        theta_c = np.arctan2(l*np.sin(theta),l*np.cos(theta)+R)
-        h_c = np.sqrt((l*np.sin(theta))**2+(l*np.cos(theta)+R)**2)
-        alpha =  np.sin(theta_c)*g/h_c
-        h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
-                                # produced from the rotation of the 
-                                # wheels as the T-Bot falls. The gearbox
-                                # prevents free rotation of the wheels.
-        gamma =  np.cos(theta)*h_acc/l
-        a_acc = alpha-gamma
-        # integrate angular acceleration to get angular velocity
-        omega += a_acc*dt
-        omega = omega*C
-        # integrate angular velocity to get angle
-        theta_c += omega*dt
-        theta = np.arcsin(((R*np.cos(theta_c)+np.sqrt(l**2-(R*np.sin(theta_c))**2))*np.sin(theta_c))/l)
-        # integrate dt to get time
-        t += dt
-        velocity += acc*dt
-        distance += (velocity*dt)
-        '''
+        noise = np.random.rand(1)*np.pi/180
+        settheta = -speed_pid.output(geom.v2ang(h,g,targetvelocity),-geom.v2ang(h,g,velocity),dt)
+        acc = -angle_pid.output(settheta,(theta+noise[0]),dt)
     #-------------------------------------------------------------------
     #                          Draw Stuff
     #-------------------------------------------------------------------
@@ -128,7 +115,7 @@ while not done:
     noise = np.random.rand(1)*np.pi/180
     spokes_rot = np.array(geom.rotxy((distance*mm2px/wheel_radius)+theta,spokes))
     spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
-    pygame.gfxdraw.filled_polygon(screen, (tbot_tup), (0, 249, 249, 100))         
+    pygame.gfxdraw.filled_polygon(screen, (tbot_tup), (0, 249, 249, 100))
     pygame.gfxdraw.aapolygon(screen, (tbot_tup), (255, 255, 255, 255))
     pygame.gfxdraw.aapolygon(screen, (spokes_tup), (255, 255, 255, 255))
     pygame.gfxdraw.aacircle(screen, origin[0], origin[1], wheel_radius-tyre, (255, 255, 255, 255))

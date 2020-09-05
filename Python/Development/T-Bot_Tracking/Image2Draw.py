@@ -14,7 +14,7 @@ from time import time
 imagepath = 'TemplateImages/Elephant.png'
 imagepath = 'TemplateImages/Track.png'
 imagepath = 'TemplateImages/TBot_side.png'
-imagepath = 'TemplateImages/ActionFigure.png'
+imagepath = 'TemplateImages/ActionFigure2.png'
 
 #imagepath = 'TemplateImages/Butterfly.png'
 #imagepath = 'TemplateImages/Bot.png'

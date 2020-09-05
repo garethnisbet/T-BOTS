@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.ion()
 
-save = 1 # Save way points
-usecam = 1
+save = 0 # Save way points
+usecam = 0
 showconv = 1
 
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -83,6 +83,9 @@ def tilesequence(last_tile,current_tile,tile_type):
     elif (tile_type == 5) & (last_tile[1] > current_tile[1]): # VS
         vout = [0,-1]
         sign = [1]
+    else:
+        vout = [0,0]
+        sign = [1]
                 
     return vout+current_tile, sign
 
@@ -112,12 +115,12 @@ w, h = tile_RD.shape[::-1]
 
 threshold = 0.82
 positions = []
-tilelist = [tile_RD,tile_UR,tile_DR,tile_RU,tile_HS,tile_VS,tile_cross,tile_zebraH,tile_zebraV]
+tilelist = [tile_zebraH,tile_zebraV,tile_RD,tile_UR,tile_DR,tile_RU,tile_VS,tile_HS,tile_cross]
 
 #colourstep = int(255/len(tilelist))
 cv2.imwrite('Images/{:05d}.png'.format(1),im_rgb)
 
-for ii in [0,1,2,3,4,5,7]:
+for ii in list(range(8)):
 #for ii in range(len(tilelist)):
     res = cv2.matchTemplate(track,tilelist[ii],cv2.TM_CCOEFF_NORMED)
     loc = np.where(res >= threshold)
@@ -149,17 +152,20 @@ h=np.zeros(track.shape[1])
 h[aa[:,0]]=100
 vgrid = np.nonzero(np.diff(v,1)>50)[0]
 hgrid = np.nonzero(np.diff(h,1)>50)[0]
-mgrid = np.meshgrid(range(5),range(3))
+mgrid = np.meshgrid(list(range(5)),list(range(3)))
 cgrid=np.reshape(mgrid,(2,15)).T
-v1 = np.array([[]]*3).T
+v1 = np.array([[]]*3).T.astype(int)
 
-for ii in range(cgrid.shape[0]):
+for ii in list(range(cgrid.shape[0])):
     vindex = cgrid[ii][1]
     hindex = cgrid[ii][0]
     bb = aa[np.nonzero((aa[:,1]>vgrid[vindex]) & (aa[:,1]<vgrid[vindex]+40)),:][0]
     cc = bb[np.nonzero((bb[:,0]>hgrid[hindex]) & (bb[:,0]<hgrid[hindex]+40)),:][0]
     cc = np.sum(cc,0)/cc.shape[0]
-    v1 = np.vstack((v1,cc))
+    if not np.any(np.isnan(cc)):
+        v1 = np.vstack((v1,cc))
+
+v1 = v1.astype(int)
     
 
 #----------------------------------------------------------------------#
@@ -174,28 +180,28 @@ signarray = np.array([[]]*1).T
 if v1[:,2].max() == 8:
     starttile = cgrid[np.nonzero(v1[:,2]==8)[0][0],:]
     nexttile = starttile + np.array([1,0])
-    patharray = np.vstack((patharray,v1[np.nonzero(v1[:,2]>6)[0][0]]))
+    patharray = np.vstack((patharray,v1[np.nonzero(v1[:,2]>6)[0]]))
 
     
 elif v1[:,2].max() == 7:
     starttile = cgrid[np.nonzero(v1[:,2]==7)[0][0],:]
     nexttile = starttile + np.array([0,1])  
-    patharray = np.vstack((patharray,v1[np.nonzero(v1[:,2]>6)[0][0]]))
+    patharray = np.vstack((patharray,v1[np.nonzero(v1[:,2]>6)[0]]))
+
 
 sign = [0]
 signarray = np.vstack((signarray,sign))    
   
-for ii in range(cgrid.shape[0]-2):
+for ii in list(range(cgrid.shape[0]-2)):
     nindex = np.nonzero(np.all(cgrid-np.array([nexttile[0],nexttile[1]])==0,axis=1))[0][0]
     patharray = np.vstack((patharray,v1[nindex,:]))
-    
     tiletype = v1[nindex,-1].astype(int)
     vectout, sign = tilesequence(starttile,nexttile,tiletype)
     signarray = np.vstack((signarray,sign))
     starttile = nexttile
     nexttile = vectout
     
-print(patharray)
+
 
 #----------------------------------------------------------------------#
 # -------------------  Create way points ------------------------------#
@@ -218,13 +224,13 @@ minipaths =[[[[10,50],[40,55],[50,80]],[[50,80],[40,55],[10,50]]],# RD
 
                 
 p2 = np.array([[]]*2).T
-for ii in range(patharray.shape[0]):
+for ii in list(range(patharray.shape[0])):
     p2 = np.vstack((p2,patharray[ii,:2]+np.array(minipaths[int(patharray[ii,-1])][int(signarray[ii])])))
     
 plt.plot(p2[:,0],p2[:,1],'ro')
 
 if save:
-    for ii in range(p2.shape[0]):
+    for ii in list(range(p2.shape[0])):
         cv2.circle(im_rgb, tuple(p2[ii,:].astype(int)), 10, (0,255,0), -1)
         cv2.imwrite('Images/{:05d}.png'.format(lastimage+ii),im_rgb)
 

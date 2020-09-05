@@ -4,7 +4,8 @@ from pygame.locals import *
 from time import sleep, time
 from collections import deque
 import numpy as np
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+toolspath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+sys.path.append(toolspath)
 from TBotTools import tbt
 
 clock = pygame.time.Clock()
@@ -43,7 +44,8 @@ sendcount = 0
 #               For Linux / Raspberry Pi
 #------------------------------------------------------------------
 #bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
-bd_addr = '98:D3:32:21:3D:77'
+#bd_addr = '98:D3:32:21:3D:77'
+bd_addr = '98:D3:91:FD:46:C9' # Brenda
 port = 1
 #btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -157,7 +159,7 @@ spotV = np.array([0,-62])
 
 
 
-pygame.display.set_caption("Player 1")
+pygame.display.set_caption("Player 2")
 
 # Loop until the user clicks the close button.
 done = False
