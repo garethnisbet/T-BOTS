@@ -40,7 +40,8 @@ class TextPrint(object):
 
 class SliderBar(object):
     '''Text positioning class for PyGame'''
-    def __init__(self,screen, pos, pos2, length, sliderrange, thickness, colour1, colour2, tolerence = []):
+    def __init__(self,screen, pos, pos2, length, sliderrange, thickness,
+                colour1, colour2, tolerence = []):
         self.screen = screen
         self.pos = pos
         self.pos2 = [pos[0]+pos2, pos[1]]
@@ -69,7 +70,10 @@ class SliderBar(object):
         pygame.event.get()
         mx,my = pygame.mouse.get_pos()
         c1, c2, c3 =  pygame.mouse.get_pressed()
-        if c1 == 1  and mx > self.pos[0] and mx < self.pos[0]+self.length and my > self.pos[1]-self.tolerence and my < self.pos[1]+self.tolerence:
+        if (
+            c1 == 1  and mx > self.pos[0] and mx < self.pos[0]+self.length
+            and my > self.pos[1]-self.tolerence and my < self.pos[1]+self.tolerence
+           ):
             self.pos2 = [mx, self.pos2[1]]
         pygame.draw.line(self.screen, self.colour1, self.pos, (self.pos[0]+self.length,self.pos[1]), self.thickness)
         pygame.gfxdraw.aacircle(self.screen, self.pos[0],self.pos[1], int(self.thickness/2), self.colour1)
