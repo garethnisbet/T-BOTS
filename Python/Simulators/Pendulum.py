@@ -21,9 +21,9 @@ framerate = 30
 origin = [500,180]
 arrow = np.array([[1,0],[1,150],[0,152],[-1,150],[-1,0],[1,0]])
 arrow = arrow/arrow.max()
-scalefactor = 220
+scalefactor = 240
 
-sbar = pgt.SliderBar(screen, (100,100), 500, 800, 2.00, 20, (170,170,170),(10,10,10))
+sbar = pgt.SliderBar(screen, (100,100), 400, 800, 2.00, 10, (170,170,170),(10,10,10),20)
 textPrint = pgt.TextPrint((255,255,255))
 textPrint.setfontsize(30)
 #-----------------------------------------------------------------------
@@ -35,7 +35,7 @@ alpha = 0
 omega = 0
 theta = 0.9*np.pi
 dt = 1/framerate
-C = 0.999
+C = 1
 
 #-----------------------------------------------------------------------
 #                               Main Loop
@@ -43,7 +43,7 @@ C = 0.999
 done = False
 while not done:
     screen.fill((90,90,90))
-    textPrint.abspos(screen, "{:.2f}".format(l),(480,50))
+    textPrint.abspos(screen, "{:.2f}m".format(l),(480,50))
     
     #-------------------------------------------------------------------
     #                           Dynamics

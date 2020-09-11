@@ -40,10 +40,10 @@ class TextPrint(object):
 
 class SliderBar(object):
     '''Text positioning class for PyGame'''
-    def __init__(self,screen, pos, pos2, length, sliderrange, thickness, colour1, colour2):
+    def __init__(self,screen, pos, pos2, length, sliderrange, thickness, colour1, colour2, tolerence = []):
         self.screen = screen
         self.pos = pos
-        self.pos2 = [pos2, pos[1]]
+        self.pos2 = [pos[0]+pos2, pos[1]]
         self.length = length
         self.sliderrange = sliderrange
         if thickness % 2 == 0:
@@ -52,6 +52,10 @@ class SliderBar(object):
         self.colour1 = colour1
         self.colour2 = colour2
         self.pos_flag = 0
+        if tolerence == []:
+            self.tolerence = thickness
+        else:
+            self.tolerence = tolerence
 
     def set_pos(self,newpos):
         self.pos = newpos
@@ -65,14 +69,17 @@ class SliderBar(object):
         pygame.event.get()
         mx,my = pygame.mouse.get_pos()
         c1, c2, c3 =  pygame.mouse.get_pressed()
-        if c1 == 1  and mx > self.pos[0] and mx < self.pos[0]+self.length and my > self.pos[1]-self.thickness and my < self.pos[1]+self.thickness:
+        if c1 == 1  and mx > self.pos[0] and mx < self.pos[0]+self.length and my > self.pos[1]-self.tolerence and my < self.pos[1]+self.tolerence:
             self.pos2 = [mx, self.pos2[1]]
-
-
         pygame.draw.line(self.screen, self.colour1, self.pos, (self.pos[0]+self.length,self.pos[1]), self.thickness)
+        pygame.gfxdraw.aacircle(self.screen, self.pos[0],self.pos[1], int(self.thickness/2), self.colour1)
+        pygame.gfxdraw.aacircle(self.screen, self.pos[0],self.pos[1], int(self.thickness/2)-1, self.colour1)
         pygame.draw.circle(self.screen, self.colour1, (self.pos[0], self.pos[1]), int(self.thickness/2))
+        pygame.gfxdraw.aacircle(self.screen, self.pos[0]+self.length,self.pos[1], int(self.thickness/2)-1, self.colour1)
+        pygame.gfxdraw.aacircle(self.screen, self.pos[0]+self.length,self.pos[1], int(self.thickness/2), self.colour1)
         pygame.draw.circle(self.screen, self.colour1, (self.pos[0]+self.length, self.pos[1]), int(self.thickness/2))
         pygame.draw.circle(self.screen, self.colour2, self.pos2, int(self.thickness/1.5))
+        pygame.gfxdraw.filled_circle(self.screen, self.pos2[0],self.pos2[1], int(self.thickness/1.5)-1, self.colour2)
         pygame.gfxdraw.filled_circle(self.screen, self.pos2[0],self.pos2[1], int(self.thickness/1.5), self.colour2)
         pygame.gfxdraw.aacircle(self.screen, self.pos2[0],self.pos2[1], int(self.thickness/1.5), self.colour2)
         return self.sliderrange*(self.pos2[0]-self.pos[0])/self.length
