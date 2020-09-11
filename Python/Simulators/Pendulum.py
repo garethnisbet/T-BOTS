@@ -19,7 +19,7 @@ pygame.display.set_caption("Pendulum")
 clock = pygame.time.Clock()
 framerate = 30
 origin = [500,180]
-arrow = np.array([[1.,0.],[1.,150.],[0.,152.],[-1.,150.],[-1.,0.],[1.,0.]])
+arrow = np.array([[1,0],[1,150],[0,152],[-1,150],[-1,0],[1,0]]).astype(float)
 arrow = arrow/arrow.max()
 scalefactor = 240
 sbar = pgt.SliderBar(screen, (100,100), 400, 800, 2.00, 10, (170,170,170),(10,10,10),20)
@@ -58,7 +58,7 @@ while not done:
     #                           Drawing 
     #------------------------------------------------------------------- 
     arrow_tup = tuple(map(tuple, tuple((arrow_rot+origin).astype(int))))
-    #pygame.gfxdraw.filled_polygon(screen, (arrow_tup), (255,255,255,155))
+    pygame.gfxdraw.filled_polygon(screen, (arrow_tup), (255,255,255,155))
     pygame.gfxdraw.aapolygon(screen, (arrow_tup), (255,255,255,250))
     pygame.gfxdraw.aapolygon(screen, (arrow_tup), (255,255,255,250))
     pygame.gfxdraw.aacircle(screen, origin[0], origin[1], 5, (255,0,0))
