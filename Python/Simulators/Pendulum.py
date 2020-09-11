@@ -55,7 +55,7 @@ while not done:
     #-------------------------------------------------------------------
     #                        Transformations
     #------------------------------------------------------------------- 
-    arrow1 = (arrow * l * scalefactor)
+    arrow1 = np.array([arrow[:,0]*scalefactor,(arrow[:,1] * l * scalefactor)]).T
     arrow_rot = np.array(geom.rotxy(theta+np.pi,arrow1))
     #-------------------------------------------------------------------
     #                           Drawing 
