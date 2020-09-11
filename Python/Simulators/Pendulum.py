@@ -22,7 +22,6 @@ origin = [500,180]
 arrow = np.array([[1,0],[1,150],[0,152],[-1,150],[-1,0],[1,0]])
 arrow = arrow/arrow.max()
 scalefactor = 240
-
 sbar = pgt.SliderBar(screen, (100,100), 400, 800, 2.00, 10, (170,170,170),(10,10,10),20)
 textPrint = pgt.TextPrint((255,255,255))
 textPrint.setfontsize(30)
@@ -36,15 +35,13 @@ omega = 0
 theta = 0.9*np.pi
 dt = 1/framerate
 C = 1
-
 #-----------------------------------------------------------------------
 #                               Main Loop
 #-----------------------------------------------------------------------
 done = False
 while not done:
     screen.fill((90,90,90))
-    textPrint.abspos(screen, "{:.2f}m".format(l),(480,50))
-    
+    textPrint.abspos(screen, "{:.2f}m".format(l),(475,50))
     #-------------------------------------------------------------------
     #                           Dynamics
     #-------------------------------------------------------------------
@@ -84,7 +81,6 @@ while not done:
     if keys[pygame.K_q]:
         done = True
     l = sbar.get_mouse_and_set()+0.001
-
     pygame.display.flip()
     if keys[pygame.K_s]:
         pygame.image.save(screen, datetime.now().strftime("CapturedImages/%m%d%Y_%H%M%S.png"))
