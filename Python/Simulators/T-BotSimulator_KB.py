@@ -155,13 +155,13 @@ cc[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
 bb=np.copy(aa)
 dd=np.copy(cc)
 #sbar = pgt.SliderBar(screen, (200,800), s_kp, 800, 2.00, 10, (170,170,170),(10,10,10),20)
-sbar = pgt.SliderBar(screen, (100,455), s_kp, 100, 0.5, 5, (200,200,200),(255,10,10))
-sbar2 = pgt.SliderBar(screen, (100,470), s_ki, 100, 0.5, 5, (200,200,200),(255,10,10))
-sbar3 = pgt.SliderBar(screen, (100,485), s_kd, 100, 0.5, 5, (200,200,200),(255,10,10))
+sbar = pgt.SliderBar(screen, (100,455), s_kp, 130, 0.5, 5, (200,200,200),(255,10,10))
+sbar2 = pgt.SliderBar(screen, (100,470), s_ki, 130, 0.5, 5, (200,200,200),(255,10,10))
+sbar3 = pgt.SliderBar(screen, (100,485), s_kd, 130, 0.5, 5, (200,200,200),(255,10,10))
 
-sbar4 = pgt.SliderBar(screen, (100,515), a_kp, 100, 20.0, 5, (200,200,200),(255,10,10))
-sbar5 = pgt.SliderBar(screen, (100,530), a_ki, 100, 0.5, 5, (200,200,200),(255,10,10))
-sbar6 = pgt.SliderBar(screen, (100,545), a_kd, 100, 0.5, 5, (200,200,200),(255,10,10))
+sbar4 = pgt.SliderBar(screen, (100,515), a_kp, 130, 20.0, 5, (200,200,200),(255,10,10))
+sbar5 = pgt.SliderBar(screen, (100,530), a_ki, 130, 0.5, 5, (200,200,200),(255,10,10))
+sbar6 = pgt.SliderBar(screen, (100,545), a_kd, 130, 0.5, 5, (200,200,200),(255,10,10))
 # -------- Main Program Loop -----------
 while not done:
     g = acc_g * sf
@@ -467,6 +467,7 @@ while not done:
     textPrint.tprint(screen, "a_kp: {:.3f}".format(a_kp))
     textPrint.tprint(screen, "a_ki: {:.3f}".format(a_ki))
     textPrint.tprint(screen, "a_kd: {:.3f}".format(a_kd))
+    textPrint.tprint(screen, " ")
     textPrint.tprint(screen, " ")
     if auto:
         textPrint.tprint(screen, "Auto - Press m for manual control")
