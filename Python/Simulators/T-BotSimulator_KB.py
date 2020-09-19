@@ -141,6 +141,7 @@ y_origin = 450
 yscale = 100
 pts = deque(maxlen=xdatarange[1]-xdatarange[0])
 pts2 = deque(maxlen=xdatarange[1]-xdatarange[0])
+
 for ii in range(xdatarange[0],xdatarange[1]):
     pts.appendleft((ii,0))
     pts2.appendleft((ii,0))
@@ -153,11 +154,30 @@ cc[:,1]=np.array(pts2)[:,1]
 cc[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
 bb=np.copy(aa)
 dd=np.copy(cc)
+#sbar = pgt.SliderBar(screen, (200,800), s_kp, 800, 2.00, 10, (170,170,170),(10,10,10),20)
+sbar = pgt.SliderBar(screen, (100,455), s_kp, 100, 0.5, 5, (200,200,200),(255,10,10))
+sbar2 = pgt.SliderBar(screen, (100,470), s_ki, 100, 0.5, 5, (200,200,200),(255,10,10))
+sbar3 = pgt.SliderBar(screen, (100,485), s_kd, 100, 0.5, 5, (200,200,200),(255,10,10))
+
+sbar4 = pgt.SliderBar(screen, (100,515), a_kp, 100, 20.0, 5, (200,200,200),(255,10,10))
+sbar5 = pgt.SliderBar(screen, (100,530), a_ki, 100, 0.5, 5, (200,200,200),(255,10,10))
+sbar6 = pgt.SliderBar(screen, (100,545), a_kd, 100, 0.5, 5, (200,200,200),(255,10,10))
 # -------- Main Program Loop -----------
 while not done:
     g = acc_g * sf
     #screen.fill((0, 0, 0))
     screen.blit(bg,(0,0))
+    s_kp = sbar.get_mouse_and_set()
+    s_ki = sbar2.get_mouse_and_set()
+    s_kd = sbar3.get_mouse_and_set()
+    speed_pid.set_PID(s_kp,s_ki,s_kd)
+    
+    a_kp = sbar4.get_mouse_and_set()
+    a_ki = sbar5.get_mouse_and_set()
+    a_kd = sbar6.get_mouse_and_set()
+    angle_pid.set_PID(a_kp,a_ki,a_kd)
+    
+    
     screen.blit(arrowkeys,posarrows)
     screen.blit(track_image, (0,origin[1]+wheel_radius-8))
     #-------------------------------------------------------------------
@@ -333,51 +353,63 @@ while not done:
     if keys[pgl.K_t]:
         s_kp += 0.01
         speed_pid.set_PID(s_kp,s_ki,s_kd)
+        sbar.set_pos2(s_kp) 
     elif keys[pgl.K_f]:
         s_kp -= 0.01
         if s_kp <= 0:
             s_kp = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
+        sbar.set_pos2(s_kp)
     if keys[pgl.K_y]:
         s_ki += 0.01
         speed_pid.set_PID(s_kp,s_ki,s_kd)
+        sbar2.set_pos2(s_ki)
     elif keys[pgl.K_g]:
         s_ki -= 0.01
         if s_ki <= 0:
             s_ki = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
+        sbar2.set_pos2(s_ki)
     if keys[pgl.K_u]:
         s_kd += 0.01
         speed_pid.set_PID(s_kp,s_ki,s_kd)
+        sbar3.set_pos2(s_kd)
     elif keys[pgl.K_h]:
         s_kd -= 0.01
         if s_kd <= 0:
             s_kd = 0
         speed_pid.set_PID(s_kp,s_ki,s_kd)
+        sbar3.set_pos2(s_kd)
     if keys[pgl.K_i]:
         a_kp += 0.01
         angle_pid.set_PID(a_kp,a_ki,a_kd)
+        sbar4.set_pos2(a_kp)
     elif keys[pgl.K_j]:
         a_kp -= 0.01
         if a_kp <= 0:
             a_kp = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
+        sbar4.set_pos2(a_kp)
     if keys[pgl.K_o]:
         a_ki += 0.01
         angle_pid.set_PID(a_kp,a_ki,a_kd)
+        sbar5.set_pos2(a_ki)
     elif keys[pgl.K_k]:
         a_ki -= 0.01
         if a_ki <= 0:
             a_ki = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
+        sbar5.set_pos2(a_ki)
     if keys[pgl.K_p]:
         a_kd += 0.01
         angle_pid.set_PID(a_kp,a_ki,a_kd)
+        sbar6.set_pos2(a_kd)
     elif keys[pgl.K_l]:
         a_kd -= 0.01
         if a_kd <= 0:
             a_kd = 0
         angle_pid.set_PID(a_kp,a_ki,a_kd)
+        sbar6.set_pos2(a_kd)
     if keys[pgl.K_b]:
         sf += 0.01
     elif keys[pgl.K_v]:
@@ -405,6 +437,12 @@ while not done:
         speed_pid.set_PID(s_kpo,s_kio,s_kdo)
         angle_pid.set_PID(a_kpo,a_kio,a_kdo)
         sf = sf_original
+        sbar.set_pos2(s_kpo)
+        sbar2.set_pos2(s_kio)
+        sbar3.set_pos2(s_kdo)
+        sbar4.set_pos2(a_kpo)
+        sbar5.set_pos2(a_kio)
+        sbar6.set_pos2(a_kdo)
     textPrint.setfontsize(22)
     textPrint.setColour(pygame.Color(0,255,255,255))
     textPrint.abspos(screen, "T-Bot Simulator",(10,10))
@@ -443,12 +481,14 @@ while not done:
     textPrint.tprint(screen, "Velocity: {:.2f}".format(velocity))
     textPrint.tprint(screen, "Distance: {:.2f}".format(distance))
     textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))
+    
     pygame.display.flip()
     # Limit to 60 frames per second. Set to 30 for Raspberry Pi. It can't run at 60 fps
     clock.tick(framerate)
     #if framecount < 500:
     #    pygame.image.save(screen, "CapturedImages/{:04d}.png".format(framecount))
-    framecount += 1
+    # ~ framecount += 1
+
     if keys[pgl.K_d]:
         waiting = 1
         while waiting:

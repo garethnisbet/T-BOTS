@@ -38,15 +38,17 @@ class TextPrint(object):
     def setColour(self, textcolour):
         self.textcolour = textcolour
 
+
+
 class SliderBar(object):
     '''Text positioning class for PyGame'''
-    def __init__(self,screen, pos, pos2, length, sliderrange, thickness,
+    def __init__(self,screen, pos, pos2, length, scale, thickness,
                 colour1, colour2, tolerence = []):
         self.screen = screen
         self.pos = pos
-        self.pos2 = [pos[0]+pos2, pos[1]]
+        self.pos2 = [pos[0]+int(pos2*length/scale), pos[1]]
         self.length = length
-        self.sliderrange = sliderrange
+        self.scale = scale
         if thickness % 2 == 0:
             thickness += 1
         self.thickness = thickness
@@ -61,7 +63,7 @@ class SliderBar(object):
     def set_pos(self,newpos):
         self.pos = newpos
     def set_pos2(self,newpos2):
-        self.pos2 = newpos2
+        self.pos2 = [self.pos[0]+int(newpos2*self.length/self.scale), self.pos[1]]
     def set_length(self,newlength):
         self.lenght = newlength
     def set_thickness(self,newthickness):
@@ -86,4 +88,4 @@ class SliderBar(object):
         pygame.gfxdraw.filled_circle(self.screen, self.pos2[0],self.pos2[1], int(self.thickness/1.5)-1, self.colour2)
         pygame.gfxdraw.filled_circle(self.screen, self.pos2[0],self.pos2[1], int(self.thickness/1.5), self.colour2)
         pygame.gfxdraw.aacircle(self.screen, self.pos2[0],self.pos2[1], int(self.thickness/1.5), self.colour2)
-        return self.sliderrange*(self.pos2[0]-self.pos[0])/self.length
+        return float((self.pos2[0]-self.pos[0])*self.scale/self.length)
