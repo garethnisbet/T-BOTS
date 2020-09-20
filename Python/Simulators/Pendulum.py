@@ -86,9 +86,9 @@ while not done:
     pygame.display.flip()
     if keys[pygame.K_s]:
         pygame.image.save(screen, datetime.now().strftime("CapturedImages/%m%d%Y_%H%M%S.png"))
-    if keys[pygame.K_r]:
+    if keys[pygame.K_1]:
         record = 1
-    if keys[pygame.K_c]:
+    if keys[pygame.K_2]:
         record = 0
         framecount = 1
     if record == 1:

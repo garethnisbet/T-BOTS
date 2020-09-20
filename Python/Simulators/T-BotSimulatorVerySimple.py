@@ -148,9 +148,9 @@ while not done:
         velocity = 0
     if keys[pgl.K_q]:
         done = True
-    if keys[pygame.K_r]:
+    if keys[pygame.K_1]:
         record = 1
-    if keys[pygame.K_c]:
+    if keys[pygame.K_2]:
         record = 0
         framecount = 1
     if record == 1:
