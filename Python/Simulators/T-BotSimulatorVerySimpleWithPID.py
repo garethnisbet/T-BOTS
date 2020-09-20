@@ -72,6 +72,8 @@ clock = pygame.time.Clock()
 bg = pygame.image.load(dirpath+'/Gray.jpg').convert() 
 track_image = pygame.image.load(dirpath+'line.png')
 #-----------------------------------------------------------------------
+record = 0
+framecount = 1
 done = False
 # ---------------------- Main Program Loop -----------------------------
 while not done:
@@ -133,6 +135,14 @@ while not done:
         velocity = 0
     if keys[pgl.K_q]:
         done = True
+    if keys[pygame.K_r]:
+        record = 1
+    if keys[pygame.K_c]:
+        record = 0
+        framecount = 1
+    if record == 1:
+        pygame.image.save(screen, "CapturedImages/{:04d}.png".format(framecount))
+        framecount += 1
     if keys[pygame.K_p]:
         waiting = 1
         pressed = 1

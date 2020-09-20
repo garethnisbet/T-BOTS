@@ -13,7 +13,7 @@ from collections import deque
 from datetime import datetime
 clock = pygame.time.Clock()
 
-dirpath = currentpath+'/Joystick/Images'
+dirpath = currentpath+'/Simulators/Images'
 
 framerate = 30 # set to 30 for Rasoberry pi
 dt = 1.0/framerate
@@ -146,8 +146,8 @@ clock = pygame.time.Clock()
 
 # Use convert for the large images. This is the fastest format for blitting
 # Background images
-bg = pygame.image.load(dirpath+'/Simple/Gray.jpg').convert() 
-track_image = pygame.image.load(dirpath+'/Simple/line.png')
+bg = pygame.image.load(dirpath+'/Gray.jpg').convert() 
+track_image = pygame.image.load(dirpath+'/line.png')
 arrowkeys = pygame.image.load(dirpath+'/arrowkeys.png')
 arrowkeysL = pygame.image.load(dirpath+'/arrowkeysL.png')
 arrowkeysR = pygame.image.load(dirpath+'/arrowkeysR.png')
@@ -221,7 +221,7 @@ while not done:
                                 # wheels as the T-Bot falls. The gearbox
                                 # prevents free rotation of the wheels.
 
-        gamma =  np.cos(theta)*h_acc/l
+        gamma =  np.cos(theta)*h_acc/h
         a_acc = alpha-gamma
  
        # integrate angular acceleration to get angular velocity

@@ -38,6 +38,8 @@ C = 1
 #-----------------------------------------------------------------------
 #                               Main Loop
 #-----------------------------------------------------------------------
+record = 0
+framecount = 1
 done = False
 while not done:
     screen.fill((90,90,90))
@@ -84,5 +86,13 @@ while not done:
     pygame.display.flip()
     if keys[pygame.K_s]:
         pygame.image.save(screen, datetime.now().strftime("CapturedImages/%m%d%Y_%H%M%S.png"))
+    if keys[pygame.K_r]:
+        record = 1
+    if keys[pygame.K_c]:
+        record = 0
+        framecount = 1
+    if record == 1:
+        pygame.image.save(screen, "CapturedImages/{:04d}.png".format(framecount))
+        framecount += 1
     clock.tick(framerate)
 pygame.display.quit()

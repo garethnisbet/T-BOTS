@@ -9,12 +9,11 @@ import pygame
 import pygame.gfxdraw
 import pygame.locals as pgl
 
-
-
 clock = pygame.time.Clock()
-dirpath = currentpath+'/Joystick/Images'
-
+dirpath = currentpath+'/Simulators/Images'
 framerate = 60 # set to 30 for Rasoberry pi
+framecount = 1
+record = 0
 
 #-----------------------------------------------------------------------
 #                           Physical constants
@@ -104,8 +103,8 @@ clock = pygame.time.Clock()
 #                           Load Images
 #-----------------------------------------------------------------------
 
-bg = pygame.image.load(dirpath+'/Simple/Gray.jpg').convert() 
-track_image = pygame.image.load(dirpath+'/Simple/line.png')
+bg = pygame.image.load(dirpath+'/Gray.jpg').convert() 
+track_image = pygame.image.load(dirpath+'/line.png')
 #
 #-----------------------------------------------------------------------
 
@@ -224,6 +223,14 @@ while not done:
             
     if keys[pgl.K_q]:
         done = True
+        
+    if keys[pygame.K_r]:
+        record = 1
+    if keys[pygame.K_c]:
+        record = 0
+        framecount = 1
+    if record == 1:
+        pygame.image.save(screen, "CapturedImages/{:04d}.png".format(framecount))
 
     pygame.display.flip()
     clock.tick(framerate)

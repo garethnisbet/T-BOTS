@@ -15,6 +15,8 @@ clock = pygame.time.Clock()
 dirpath = currentpath+'/Simulators/Images'
 framerate = 30 # set to 30 for Rasoberry pi
 dt = 1.0/framerate
+framecount = 1
+record = 0
 #-----------------------------------------------------------------------
 #                           PID Tuning
 #-----------------------------------------------------------------------
@@ -155,13 +157,13 @@ cc[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
 bb=np.copy(aa)
 dd=np.copy(cc)
 #sbar = pgt.SliderBar(screen, (200,800), s_kp, 800, 2.00, 10, (170,170,170),(10,10,10),20)
-sbar = pgt.SliderBar(screen, (100,455), s_kp, 130, 0.5, 5, (200,200,200),(255,10,10))
-sbar2 = pgt.SliderBar(screen, (100,470), s_ki, 130, 0.5, 5, (200,200,200),(255,10,10))
-sbar3 = pgt.SliderBar(screen, (100,485), s_kd, 130, 0.5, 5, (200,200,200),(255,10,10))
+sbar = pgt.SliderBar(screen, (100,475), s_kp, 130, 0.5, 5, (200,200,200),(255,10,10))
+sbar2 = pgt.SliderBar(screen, (100,490), s_ki, 130, 0.5, 5, (200,200,200),(255,10,10))
+sbar3 = pgt.SliderBar(screen, (100,505), s_kd, 130, 0.5, 5, (200,200,200),(255,10,10))
 
-sbar4 = pgt.SliderBar(screen, (100,515), a_kp, 130, 20.0, 5, (200,200,200),(255,10,10))
-sbar5 = pgt.SliderBar(screen, (100,530), a_ki, 130, 0.5, 5, (200,200,200),(255,10,10))
-sbar6 = pgt.SliderBar(screen, (100,545), a_kd, 130, 0.5, 5, (200,200,200),(255,10,10))
+sbar4 = pgt.SliderBar(screen, (100,535), a_kp, 130, 20.0, 5, (200,200,200),(255,10,10))
+sbar5 = pgt.SliderBar(screen, (100,550), a_ki, 130, 0.5, 5, (200,200,200),(255,10,10))
+sbar6 = pgt.SliderBar(screen, (100,565), a_kd, 130, 0.5, 5, (200,200,200),(255,10,10))
 # -------- Main Program Loop -----------
 while not done:
     g = acc_g * sf
@@ -458,7 +460,7 @@ while not done:
     a_kd = angle_pid.get_PID()[2]
     textPrint.tprint(screen, "T: {:.3f}".format(time()-starttime))
     textPrint.tprint(screen, "Last T: {:.3f}".format(lasttime))        
-    textPrint.abspos(screen, "Tuning Parameters",(10,420))
+    textPrint.abspos(screen, "Tuning Parameters",(10,440))
     textPrint.tprint(screen, " ")
     textPrint.tprint(screen, "s_kp: {:.3f}".format(s_kp))
     textPrint.tprint(screen, "s_ki: {:.3f}".format(s_ki))
@@ -482,6 +484,14 @@ while not done:
     textPrint.tprint(screen, "Velocity: {:.2f}".format(velocity))
     textPrint.tprint(screen, "Distance: {:.2f}".format(distance))
     textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))
+    if keys[pygame.K_r]:
+        record = 1
+    if keys[pygame.K_c]:
+        record = 0
+        framecount = 1
+    if record == 1:
+        pygame.image.save(screen, "CapturedImages/{:04d}.png".format(framecount))
+        framecount += 1
     
     pygame.display.flip()
     # Limit to 60 frames per second. Set to 30 for Raspberry Pi. It can't run at 60 fps
