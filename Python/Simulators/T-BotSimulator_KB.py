@@ -484,9 +484,9 @@ while not done:
     textPrint.tprint(screen, "Velocity: {:.2f}".format(velocity))
     textPrint.tprint(screen, "Distance: {:.2f}".format(distance))
     textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))
-    if keys[pygame.K_r]:
+    if keys[pygame.K_1]:
         record = 1
-    if keys[pygame.K_c]:
+    if keys[pygame.K_2]:
         record = 0
         framecount = 1
     if record == 1:
@@ -543,6 +543,8 @@ while not done:
                 textPrint.tprint(screen, "a -> For automatic PID control")
                 textPrint.tprint(screen, "b -> increase g")
                 textPrint.tprint(screen, "v -> decrease g")
+                textPrint.tprint(screen, "1 -> Record Frames")
+                textPrint.tprint(screen, "2 -> Stop Recording")
                 textPrint.tprint(screen, "Up arrow to show arrows")
                 textPrint.tprint(screen, "Down arrow to hide arrows")
                 textPrint.setfontsize(20)
