@@ -2,7 +2,8 @@ import sys
 import cv2
 import os
 import imutils
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+path_above = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../..'))
+sys.path.append(path_above)
 from collections import deque
 import numpy as np
 import matplotlib.pyplot as plt
@@ -36,7 +37,8 @@ if os.path.isfile(filename):
 else:
     coordinate = []
 
-cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(2,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -165,10 +167,10 @@ angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 #
 #                        Artificial Lighting
 #----------------------------------------------------------------------#
-greenLower = (37,26,178)   
-greenUpper = (56,255,255) 
+greenLower = (40,38,193)   
+greenUpper = (97,107,255) 
  
-pinkLower = (156,56,173)       
+pinkLower = (129,45,0)       
 pinkUpper = (255,255,255) 
 
 #----------------------------------------------------------------------#
@@ -222,10 +224,11 @@ sendcount = 0
 #------------------------------------------------------------------
 #               For Linux / Raspberry Pi
 #------------------------------------------------------------------
-bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
-#bd_addr = '98:D3:51:FD:82:95' # George
-#bd_addr = '98:D3:91:FD:46:C9' # B
+# bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
+# bd_addr = '98:D3:51:FD:82:95' # George
+# bd_addr = '98:D3:91:FD:46:C9' # B
 #bd_addr = '98:D3:32:21:3D:77'
+bd_addr = '98:D3:71:FD:44:F7'
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Raspberry Pi
 #btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -269,7 +272,7 @@ if interpfactor != 1:
 #-----------------------   Start main loop ----------------------------#
 ########################################################################
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(2,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)

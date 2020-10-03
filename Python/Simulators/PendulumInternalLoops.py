@@ -17,7 +17,7 @@ pygame.init()
 screen = pygame.display.set_mode((1000, 700))
 pygame.display.set_caption("Pendulum")
 clock = pygame.time.Clock()
-framerate = 30
+framerate = 60
 origin = [500,180]
 arrow = np.array([[1,0],[1,150],[0,152],[-1,150],[-1,0],[1,0]]).astype(float)
 arrow = arrow/arrow.max()

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 plt.ion()
 
 save = 0 # Save way points
-usecam = 0
+usecam = 1
 showconv = 1
 
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -17,7 +17,7 @@ color2 = (255, 255, 255)
 thickness = 1
 
 if usecam:
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(2,cv2.CAP_V4L2)
     try:
         cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
@@ -131,7 +131,6 @@ for ii in list(range(8)):
         if showconv:
             cv2.rectangle(im_rgb,pt,(pt[0] + w, pt[1] + h), linecolour, 2)
             iii += 1
-    print(pt[0])
     textstr = str(iii)
     cv2.putText(im_rgb, textstr, tuple(np.array(pt)+[25,25]), font,fontScale, color, thickness, cv2.LINE_AA)
     cv2.imwrite('Images/{:05d}.png'.format(ii+2),im_rgb)
