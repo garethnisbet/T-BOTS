@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.ion()
 
-save = 0 # Save way points
-usecam = 1
+save = 1 # Save way points
+usecam = 0
 showconv = 1
 
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -17,7 +17,7 @@ color2 = (255, 255, 255)
 thickness = 1
 
 if usecam:
-    cap = cv2.VideoCapture(2,cv2.CAP_V4L2)
+    cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
     try:
         cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
@@ -115,12 +115,12 @@ w, h = tile_RD.shape[::-1]
 
 threshold = 0.82
 positions = []
-tilelist = [tile_zebraH,tile_zebraV,tile_RD,tile_UR,tile_DR,tile_RU,tile_VS,tile_HS,tile_cross]
+tilelist = [tile_RD,tile_UR,tile_DR,tile_RU,tile_HS,tile_VS,tile_cross,tile_zebraV, tile_zebraH]
 
 #colourstep = int(255/len(tilelist))
 cv2.imwrite('Images/{:05d}.png'.format(1),im_rgb)
 
-for ii in list(range(8)):
+for ii in list(range(len(tilelist))):
 #for ii in range(len(tilelist)):
     res = cv2.matchTemplate(track,tilelist[ii],cv2.TM_CCOEFF_NORMED)
     loc = np.where(res >= threshold)
@@ -178,13 +178,12 @@ signarray = np.array([[]]*1).T
 
 if v1[:,2].max() == 8:
     starttile = cgrid[np.nonzero(v1[:,2]==8)[0][0],:]
-    nexttile = starttile + np.array([1,0])
-    patharray = np.vstack((patharray,v1[np.nonzero(v1[:,2]>6)[0]]))
+    nexttile = starttile + np.array([0,1])
+    patharray = np.vstack((patharray,v1[np.nonzero(v1[:,2]>7)[0]])) # locate first tile
 
-    
 elif v1[:,2].max() == 7:
     starttile = cgrid[np.nonzero(v1[:,2]==7)[0][0],:]
-    nexttile = starttile + np.array([0,1])  
+    nexttile = starttile + np.array([1,0])  
     patharray = np.vstack((patharray,v1[np.nonzero(v1[:,2]>6)[0]]))
 
 
