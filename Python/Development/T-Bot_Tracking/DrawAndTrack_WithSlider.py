@@ -158,7 +158,7 @@ rdeadban = 2
 tolerance = 30
 
 
-feedforward = 26
+feedforward = 2
 pkp_o = 0.4
 pki_o = 0.4
 pkd_o = 0
@@ -170,25 +170,26 @@ akd_o = 0.01
 pos_pid = pid.pid(pkp_o,pki_o,pkd_o,[-10,10],[0,20],turntime)
 angle_pid = pid.pid(akp_o,aki_o,akd_o,[-15,15],[-60,60],turntime)
 
-def callback(value):
-    pass
+
 slider_scale = 3
 cv2.namedWindow("Tuning",cv2.WINDOW_NORMAL)
+
+cv2.resizeWindow("Tuning", 700, 700)
 pkp = round(pos_pid.get_PID()[0]/(slider_scale/255.))
-cv2.createTrackbar('p_KP', "Tuning", pkp, 255, callback)
+cv2.createTrackbar('p_KP', "Tuning", pkp, 255, (lambda a: None))
 pki = round(pos_pid.get_PID()[1]/(slider_scale/255.))
-cv2.createTrackbar('p_KI', "Tuning", pki, 255, callback)
+cv2.createTrackbar('p_KI', "Tuning", pki, 255, (lambda a: None))
 pkd = round(pos_pid.get_PID()[2]/(slider_scale/255.))
-cv2.createTrackbar('p_KD', "Tuning", pkd, 255, callback)
+cv2.createTrackbar('p_KD', "Tuning", pkd, 255, (lambda a: None))
 
 akp = round(angle_pid.get_PID()[0]/(slider_scale/255.))
-cv2.createTrackbar('a_KP', "Tuning", akp, 255, callback)
+cv2.createTrackbar('a_KP', "Tuning", akp, 255, (lambda a: None))
 aki = round(angle_pid.get_PID()[1]/(slider_scale/255.))
-cv2.createTrackbar('a_KI', "Tuning", aki, 255, callback)
+cv2.createTrackbar('a_KI', "Tuning", aki, 255, (lambda a: None))
 akd = round(angle_pid.get_PID()[2]/(slider_scale/255.))
-cv2.createTrackbar('a_KD', "Tuning", akd, 255, callback)
+cv2.createTrackbar('a_KD', "Tuning", akd, 255, (lambda a: None))
 fw = feedforward
-cv2.createTrackbar('FW', "Tuning", fw, 255, callback)
+cv2.createTrackbar('FW', "Tuning", fw, 255, (lambda a: None))
 
 
 
@@ -197,10 +198,10 @@ cv2.createTrackbar('FW', "Tuning", fw, 255, callback)
 #
 #                        Artificial Lighting
 #----------------------------------------------------------------------#
-greenLower = (40,38,193)   
+greenLower = (40,38,193)   # place green disc on the left
 greenUpper = (97,107,255) 
  
-pinkLower = (129,45,0)       
+pinkLower = (129,45,0)     # place pink disc on the right
 pinkUpper = (255,255,255) 
 
 #----------------------------------------------------------------------#
@@ -439,7 +440,7 @@ if __name__ == '__main__':
             textstr2 = 'Last lap time: '+"{:6.4f}".format(laptime)
             cv2.putText(frame, textstr2, (org[0],org[1]+20), font,fontScale, color2, thickness, cv2.LINE_AA)
 
-        cv2.imshow('MultiTracker', frame)
+        cv2.imshow("Tuning", frame)
 
 
         ###################################################
@@ -508,7 +509,12 @@ if __name__ == '__main__':
         if key == ord("y"):
             buttonstring = '200200T' # Auto trim
             sendcount = btcom.send_data(buttonstring,sendcount)
-            
+            showline
+        if key == ord("h"):
+            showline = 0
+        if key == ord("s"):
+            showline = 1
+
 
         if key == ord("f"):
             feedforward -= 1
