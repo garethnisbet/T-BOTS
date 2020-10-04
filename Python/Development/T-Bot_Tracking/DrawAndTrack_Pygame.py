@@ -7,7 +7,7 @@ sys.path.append(path_above)
 from collections import deque
 import numpy as np
 import matplotlib.pyplot as plt
-from TBotTools import tbt, pid, geometry
+from TBotTools import tbt, pid, geometry, pgt
 from scipy.interpolate import interp1d
 from time import time
 plt.ion()
@@ -16,6 +16,11 @@ from datetime import datetime
 import pygame
 from pygame.locals import *
 from sys import exit
+import pygame
+import pygame.gfxdraw
+pygame.init()
+textPrint = pgt.TextPrint((255,255,255))
+textPrint.setlineheight(25)
 scalefactor = 1
 #origin =  [636/2,357/2]
 origin =  [0,0]
@@ -48,64 +53,14 @@ success, frame = cap.read()
 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 cap.release()
 pygame.init()
-screen = pygame.display.set_mode((633, 359), 0, 0)
+screen0 = pygame.display.set_mode((633, 359), 0, 0)
 canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
  
 
 
 
 
-while drawplot:
-    keys = pygame.key.get_pressed()
-     
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            exit()
-        c1, c2, c3 =  pygame.mouse.get_pressed()
 
-        if event.type == MOUSEMOTION and c1:
-            if len(coordinate)>2:
-                if np.linalg.norm(np.array(event.pos)-np.array(coordinate[-1])) > 5:
-                    coordinate.append(event.pos)
-            else:
-                coordinate.append(event.pos)
-            
-
-        if c3:
-            if len(coordinate)>10:
-                coordinate = coordinate[0:len(coordinate)-10]
-            else:
-                coordinate  = []
-        if keys[K_c]:
-            coordinate  = []
-
-        if keys[K_q]:
-            pygame.display.quit()
-            exit()
-        if keys[K_s]:
-            aa = np.array(coordinate)
-            np.savetxt(filename,aa)
-        if keys[K_b]:
-            aa = np.array(coordinate)
-            timestampedname = 'Paths/'+datetime.now().strftime('%d-%m-%y-%H%M%S')+'.dat'
-            np.savetxt(timestampedname,aa)
-            print('Backup created in '+timestampedname)
-
-
-        screen.blit(canvas,(0,0))
-     
-        if len(coordinate)>1:
-            pygame.draw.lines(screen, (0,255,0), False, coordinate, 3)
-
-        if event.type == KEYDOWN and event.key == K_ESCAPE:
-            pygame.display.quit()
-            exit()
-
-        pygame.display.update()
-        
-        if keys[K_r]:
-            drawplot = 0
-            pygame.display.quit()
 
 
 x = []
@@ -140,6 +95,7 @@ color2 = (0, 255, 0)
 # Line thickness of 2 px 
 thickness = 1
 textstr = ''
+textstr2 = ''
 
 
 
@@ -159,50 +115,21 @@ rdeadban = 2
 tolerance = 30
 
 
-feedforward = 2
-pkp_o = 2.02
-pki_o = 0.4
-pkd_o = 0
-akp_o = 0.68
-aki_o = 0.4
-akd_o = 0.01
 
 
-pos_pid = pid.pid(pkp_o,pki_o,pkd_o,[-10,10],[0,20],turntime)
-angle_pid = pid.pid(akp_o,aki_o,akd_o,[-15,15],[-60,60],turntime)
-
-
-slider_scale = 3
-cv2.namedWindow("Tuning",cv2.WINDOW_NORMAL)
-
-cv2.resizeWindow("Tuning", 720, 720)
-pkp = round(pos_pid.get_PID()[0]/(slider_scale/255.))
-cv2.createTrackbar('p_KP', "Tuning", pkp, 255, (lambda a: None))
-pki = round(pos_pid.get_PID()[1]/(slider_scale/255.))
-cv2.createTrackbar('p_KI', "Tuning", pki, 255, (lambda a: None))
-pkd = round(pos_pid.get_PID()[2]/(slider_scale/255.))
-cv2.createTrackbar('p_KD', "Tuning", pkd, 255, (lambda a: None))
-
-akp = round(angle_pid.get_PID()[0]/(slider_scale/255.))
-cv2.createTrackbar('a_KP', "Tuning", akp, 255, (lambda a: None))
-aki = round(angle_pid.get_PID()[1]/(slider_scale/255.))
-cv2.createTrackbar('a_KI', "Tuning", aki, 255, (lambda a: None))
-akd = round(angle_pid.get_PID()[2]/(slider_scale/255.))
-cv2.createTrackbar('a_KD', "Tuning", akd, 255, (lambda a: None))
-fw = feedforward
-cv2.createTrackbar('FW', "Tuning", fw, 255, (lambda a: None))
 
 
 
 #----------------------------------------------------------------------#
 #                        Set HSV Thresholds
+#            Use getHSVThresh.py to find the correct values
 #
 #                        Artificial Lighting
 #----------------------------------------------------------------------#
-greenLower = (40,38,193)   # place green disc on the left
-greenUpper = (97,107,255) 
+greenLower = (35,25,223)   # place green disc on the left
+greenUpper = (62,104,255) 
  
-pinkLower = (129,45,0)     # place pink disc on the right
+pinkLower = (147,76,0)     # place pink disc on the right
 pinkUpper = (255,255,255) 
 
 #----------------------------------------------------------------------#
@@ -308,8 +235,103 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 
 
 oldtime = time()
+done = 0
+
+screen = pygame.display.set_mode((640, 700))
+
+feedforward = 2
+pkp_o = 2.02
+pki_o = 0.4
+pkd_o = 0
+akp_o = 0.68
+aki_o = 0.4
+akd_o = 0.01
+FW_o = 2
+FW = FW_o
+FW_old = FW_o
+pkp_old = pkp_o
+pki_old = pki_o
+pkd_old = pkd_o
+akp_old = akp_o
+aki_old = aki_o
+akd_old = akd_o
+
+
+sbar = pgt.SliderBar(screen, (100,455), pkp_o, 440, 5, 6, (200,200,200),(255,10,10))
+sbar2 = pgt.SliderBar(screen, (100,480), pki_o, 440, 5, 6, (200,200,200),(255,10,10))
+sbar3 = pgt.SliderBar(screen, (100,505), pkd_o, 440, 0.5, 6, (200,200,200),(255,10,10))
+
+sbar4 = pgt.SliderBar(screen, (100,555), akp_o, 440, 5, 6, (200,200,200),(255,10,10))
+sbar5 = pgt.SliderBar(screen, (100,580), aki_o, 440, 5, 6, (200,200,200),(255,10,10))
+sbar6 = pgt.SliderBar(screen, (100,605), akd_o, 440, 0.5, 6, (200,200,200),(255,10,10))
+sbar7 = pgt.SliderBar(screen, (100,655), FW, 440, 30, 6, (200,200,200),(255,10,10))
+
+pos_pid = pid.pid(pkp_o,pki_o,pkd_o,[-10,10],[0,20],turntime)
+angle_pid = pid.pid(akp_o,aki_o,akd_o,[-15,15],[-60,60],turntime)
+pygame.display.set_caption("Tuning")
+
+
+
 if __name__ == '__main__':
-   
+    
+    while drawplot:
+        screen.fill((40,40,40))
+        keys = pygame.key.get_pressed()
+         
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                exit()
+            c1, c2, c3 =  pygame.mouse.get_pressed()
+
+            if event.type == MOUSEMOTION and c1:
+                if len(coordinate)>2:
+                    if np.linalg.norm(np.array(event.pos)-np.array(coordinate[-1])) > 5:
+                        coordinate.append(event.pos)
+                else:
+                    coordinate.append(event.pos)
+                
+
+            if c3:
+                if len(coordinate)>10:
+                    coordinate = coordinate[0:len(coordinate)-10]
+                else:
+                    coordinate  = []
+            if keys[K_c]:
+                coordinate  = []
+
+            if keys[K_q]:
+                pygame.display.quit()
+                exit()
+            if keys[K_s]:
+                aa = np.array(coordinate)
+                np.savetxt(filename,aa)
+            if keys[K_b]:
+                aa = np.array(coordinate)
+                timestampedname = 'Paths/'+datetime.now().strftime('%d-%m-%y-%H%M%S')+'.dat'
+                np.savetxt(timestampedname,aa)
+                print('Backup created in '+timestampedname)
+
+
+            screen.blit(canvas,(0,0))
+         
+            if len(coordinate)>1:
+                pygame.draw.lines(screen, (0,255,0), False, coordinate, 3)
+
+            if event.type == KEYDOWN and event.key == K_ESCAPE:
+                pygame.display.quit()
+                exit()
+            textPrint.abspos(screen, "Press R to run with current path",(10,420))
+            textPrint.tprint(screen, " ")
+            textPrint.tprint(screen, "Press S to save the current path (note this will overwrite the previous path)")
+            pygame.display.update()
+            
+            if keys[K_r]:
+                drawplot = 0
+                # pygame.display.quit()
+
+    
+    
+
     success, frame = cap.read()
     if not success:
         print('Failed to capture video')
@@ -321,6 +343,54 @@ if __name__ == '__main__':
 
     while cap.isOpened():
         success, frame = cap.read()
+        screen.fill((40,40,40))
+        events = pygame.event.get()
+        keys = pygame.key.get_pressed()
+        c1, c2, c3 =  pygame.mouse.get_pressed()
+        mx,my = pygame.mouse.get_pos()
+        
+        pkp = sbar.get_mouse_and_set()
+        pki = sbar2.get_mouse_and_set()
+        pkd = sbar3.get_mouse_and_set()
+        
+        akp = sbar4.get_mouse_and_set()
+        aki = sbar5.get_mouse_and_set()
+        akd = sbar6.get_mouse_and_set()
+        
+        FW = sbar7.get_mouse_and_set()
+
+        
+        
+        if pkp != pkp_old:
+            pos_pid.set_PID(pkp,pki,pkd)
+            pkp_old = pkp
+            
+        if pki != pki_old:
+            pos_pid.set_PID(pkp,pki,pkd)
+            pki_old = pki
+
+        if pkd != pkd_old:
+            pos_pid.set_PID(pkp,pki,pkd)
+            pkd_old = pkd
+            
+        if akp != akp_old:
+            angle_pid.set_PID(akp,aki,akd)
+            akp_old = akp
+
+        if aki != aki_old:
+            angle_pid.set_PID(akp,aki,akd)
+            aki_old = aki
+
+        if akd != akd_old:
+            angle_pid.set_PID(akp,aki,akd)
+            akd_old = akd
+
+        if FW_old != feedforward:
+            angle_pid.set_PID(akp,aki,akd)
+
+            feedforward = FW
+
+        
         #frame = cv2.flip(frame,1)
         if not success:
             break
@@ -345,42 +415,6 @@ if __name__ == '__main__':
                 tries = 0
                 data = btcom.get_data(data)
                 
-        pkp = round(cv2.getTrackbarPos('p_KP', "Tuning") * (slider_scale/255.),2)
-        pki = round(cv2.getTrackbarPos('p_KI', "Tuning") * (slider_scale/255.),2)
-        pkd = round(cv2.getTrackbarPos('p_KD', "Tuning") * (slider_scale/255.),2)
-        akp = round(cv2.getTrackbarPos('a_KP', "Tuning") * (slider_scale/255.),2)
-        aki = round(cv2.getTrackbarPos('a_KI', "Tuning") * (slider_scale/255.),2)
-        akd = round(cv2.getTrackbarPos('a_KD', "Tuning") * (slider_scale/255.),2)
-        fw = cv2.getTrackbarPos('FW', "Tuning")
-        if pkp != pkp_o:
-            pos_pid.set_PID(pkp,pki,pkd)
-            print('set new '+str(pkp)+' '+str(pki)+' '+str(pkd)+' '+str(pkp_o))
-            pkp_o = pkp
-        if pki != pki_o:
-            pos_pid.set_PID(pkp,pki,pkd)
-            print('set new '+str(pkp)+' '+str(pki)+' '+str(pkd)+' '+str(pki_o))
-            pki_o = pki
-        if pkd != pkd_o:
-            pos_pid.set_PID(pkp,pki,pkd)
-            print('set new '+str(pkp)+' '+str(pki)+' '+str(pkd)+' '+str(pkd_o))
-            pkd_o = pkd
-            
-        if akp != akp_o:
-            angle_pid.set_PID(akp,aki,akd)
-            print('set new angle PID '+str(akp)+' '+str(aki)+' '+str(akd)+' '+str(akp_o))
-            akp_o = akp
-        if aki != aki_o:
-            angle_pid.set_PID(akp,aki,akd)
-            print('set new angle PID '+str(akp)+' '+str(aki)+' '+str(akd)+' '+str(aki_o))
-            aki_o = aki
-        if akd != akd_o:
-            angle_pid.set_PID(akp,aki,akd)
-            print('set new angle PID '+str(akp)+' '+str(aki)+' '+str(akd)+' '+str(akd_o))
-            akd_o = akd
-        if fw != feedforward:
-            angle_pid.set_PID(akp,aki,akd)
-            print('set new '+str(fw))
-            feedforward = fw
 
 
         blurred = cv2.GaussianBlur(frame, (11, 11), 0)
@@ -434,11 +468,11 @@ if __name__ == '__main__':
                 oldlaptime = laptime
                 flag = 1
         if flag == 1:
-            cv2.putText(frame, textstr, org, font,fontScale, color, thickness, cv2.LINE_AA)
+            #cv2.putText(frame, textstr, org, font,fontScale, color, thickness, cv2.LINE_AA)
             textstr2 = 'Last lap time: '+"{:6.4f}".format(laptime)
-            cv2.putText(frame, textstr2, (org[0],org[1]+20), font,fontScale, color2, thickness, cv2.LINE_AA)
+            #cv2.putText(frame, textstr2, (org[0],org[1]+20), font,fontScale, color2, thickness, cv2.LINE_AA)
 
-        cv2.imshow("Tuning", frame)
+
 
 
         ###################################################
@@ -493,59 +527,45 @@ if __name__ == '__main__':
             sendstr = str(rotspeed)+str(forwardspeed)+'Z'
             sendcount = btcom.send_data(sendstr,sendcount)
 
+        if keys[pygame.K_t]:
             
-
-        key = cv2.waitKey(1) & 0xFF
-
-
-        if key == ord("t"):
             buttonstring = '200200F' # Auto trim
             sendcount = btcom.send_data(buttonstring,sendcount)
-        if key == ord("a"):
+        if keys[pygame.K_a]:
             buttonstring = '200200E' # Auto trim
             sendcount = btcom.send_data(buttonstring,sendcount)
-        if key == ord("y"):
+        if keys[pygame.K_y]:
             buttonstring = '200200T' # Auto trim
             sendcount = btcom.send_data(buttonstring,sendcount)
             showline
-        if key == ord("h"): # hide line
+        if keys[pygame.K_h]: # hide line
             showline = 0
-        if key == ord("s"): # show line
+        if keys[pygame.K_s]: # show line
             showline = 1
-        if key == ord("r"): # reset PID
-
-            pkp = 2.02
-            pki = 0.4
-            pkd = 0
-            akp = 0.68
-            aki = 0.4
-            akd = 0.01
-            pos_pid.set_PID(pkp,pki,pkd)
-            angle_pid.set_PID(akp,aki,akd)
-            fw = 2
-            cv2.setTrackbarPos('p_KP', "Tuning",round(pkp/(slider_scale/255.)))
-            cv2.setTrackbarPos('p_KI', "Tuning",round(pki/(slider_scale/255.)))
-            cv2.setTrackbarPos('p_KD', "Tuning",round(pkd/(slider_scale/255.)))
-            cv2.setTrackbarPos('a_KP', "Tuning",round(akp/(slider_scale/255.)))
-            cv2.setTrackbarPos('a_KI', "Tuning",round(aki/(slider_scale/255.)))
-            cv2.setTrackbarPos('a_KD', "Tuning",round(akd/(slider_scale/255.)))
-            cv2.setTrackbarPos('FW', "Tuning",fw)
-
-        if key == ord("f"):
-            feedforward -= 1
-            print('feedforward = '+str(feedforward))
-        if key == ord("g"):
+        if keys[pygame.K_g]:
             feedforward += 1
             print('feedforward = '+str(feedforward))
-        if key == ord("y"):
+        if keys[pygame.K_y]:
             turnspeedfactor -= 0.01
             print('turnspeedfactor = '+str(turnspeedfactor))
             # if the 'q' key is pressed, stop the loop
-        if key == ord("t"):
+        if keys[pygame.K_t]:
             sendcount = btcom.send_data('200200T',sendcount)
+        if keys[pygame.K_r]:        
+            pos_pid.set_PID(pkp_o,pki_o,pkd_o)
+            angle_pid.set_PID(akp_o,aki_o,akd_o)
+            sbar.set_pos2(pkp_o)
+            sbar2.set_pos2(pki_o)
+            sbar3.set_pos2(pkd_o)
+            sbar4.set_pos2(akp_o)
+            sbar5.set_pos2(aki_o)
+            sbar6.set_pos2(akd_o)
+            sbar7.set_pos2(FW_o)
+            pos_pid.clear()
+            angle_pid.clear()
 
-        if key == ord("q"):
 
+        if keys[pygame.K_q]:
             cap.release()
             sendcount = btcom.send_data('200200Z',sendcount)
             btcom.connect(0)
@@ -557,9 +577,25 @@ if __name__ == '__main__':
                 tii = 0
             else:
                 tii += 1
-
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
+        screen.blit(frame,(0,0))
+        textPrint.abspos(screen, "Tuning Parameters",(10,400))
+        textPrint.tprint(screen, " ")
+        textPrint.tprint(screen, "pkp: {:.3f}".format(pkp))
+        textPrint.tprint(screen, "pki: {:.3f}".format(pki))
+        textPrint.tprint(screen, "pkd: {:.3f}".format(pkd))
+        textPrint.tprint(screen, " ")
+        textPrint.tprint(screen, "akp: {:.3f}".format(akp))
+        textPrint.tprint(screen, "aki: {:.3f}".format(aki))
+        textPrint.tprint(screen, "akd: {:.3f}".format(akd))
+        textPrint.tprint(screen, " ")
+        textPrint.tprint(screen, "FW: {:.3f}".format(FW))
+        textPrint.abspos(screen, textstr,(480,380))
+        textPrint.tprint(screen,textstr2)
+        pygame.display.flip()
 
 cv2.destroyAllWindows()
-
+pygame.display.quit()
 
 

@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.ion()
 
-save = 1 # Save way points
+save = 0 # Save way points
 usecam = 0
 showconv = 1
 

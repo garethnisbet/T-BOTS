@@ -12,6 +12,9 @@ class TextPrint(object):
         textBitmap = self.font.render(textString, True, self.textcolour)
         screen.blit(textBitmap, (self.x, self.y))
         self.y += self.line_height
+        
+    def setlineheight(self, line_height):
+        self.line_height = line_height
 
     def reset(self):
         self.x = 10
