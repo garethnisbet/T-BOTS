@@ -115,7 +115,7 @@ pygame.display.set_caption("T-Bot Simulator")
 clock = pygame.time.Clock()
 # Use convert for the large images. This is the fastest format for blitting
 # Background images
-bg = pygame.image.load(dirpath+'/Gray.jpg').convert()
+bg = pygame.image.load(dirpath+'/BG_Brushed.png').convert()
 track_image = pygame.image.load(dirpath+'/line.png')
 arrowkeys = pygame.image.load(dirpath+'/arrowkeys.png')
 arrowkeysL = pygame.image.load(dirpath+'/arrowkeysL.png')
@@ -168,7 +168,7 @@ sbar6 = pgt.SliderBar(screen, (100,565+300), a_kd, 130, 0.5, 5, (200,200,200),(2
 while not done:
     g = acc_g * sf
     screen.fill((0, 0, 0))
-    #screen.blit(bg,(0,0))
+    screen.blit(bg,(0,0))
     s_kp = sbar.get_mouse_and_set()
     s_ki = sbar2.get_mouse_and_set()
     s_kd = sbar3.get_mouse_and_set()
