@@ -158,13 +158,13 @@ cc[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
 bb=np.copy(aa)
 dd=np.copy(cc)
 #sbar = pgt.SliderBar(screen, (200,800), s_kp, 800, 2.00, 10, (170,170,170),(10,10,10),20)
-sbar = pgt.SliderBar(screen, (100,475+300), s_kp, 130, 0.5, 5, (200,200,200),(255,10,10))
-sbar2 = pgt.SliderBar(screen, (100,490+300), s_ki, 130, 0.5, 5, (200,200,200),(255,10,10))
-sbar3 = pgt.SliderBar(screen, (100,505+300), s_kd, 130, 0.5, 5, (200,200,200),(255,10,10))
+sbar = pgt.SliderBar(screen, (100,475+300), s_kp, 230, 0.5, 5, (200,200,200),(255,10,10))
+sbar2 = pgt.SliderBar(screen, (100,490+300), s_ki, 230, 0.5, 5, (200,200,200),(255,10,10))
+sbar3 = pgt.SliderBar(screen, (100,505+300), s_kd, 230, 0.5, 5, (200,200,200),(255,10,10))
 
-sbar4 = pgt.SliderBar(screen, (100,535+300), a_kp, 130, 20.0, 5, (200,200,200),(255,10,10))
-sbar5 = pgt.SliderBar(screen, (100,550+300), a_ki, 130, 0.5, 5, (200,200,200),(255,10,10))
-sbar6 = pgt.SliderBar(screen, (100,565+300), a_kd, 130, 0.5, 5, (200,200,200),(255,10,10))
+sbar4 = pgt.SliderBar(screen, (100,535+300), a_kp, 230, 20.0, 5, (200,200,200),(255,10,10))
+sbar5 = pgt.SliderBar(screen, (100,550+300), a_ki, 230, 0.5, 5, (200,200,200),(255,10,10))
+sbar6 = pgt.SliderBar(screen, (100,565+300), a_kd, 230, 0.5, 5, (200,200,200),(255,10,10))
 # -------- Main Program Loop -----------
 while not done:
     g = acc_g * sf
