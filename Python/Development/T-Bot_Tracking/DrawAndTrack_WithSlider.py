@@ -499,10 +499,10 @@ if __name__ == '__main__':
 
 
         if key == ord("t"):
-            buttonstring = '200200F' # Auto trim
+            buttonstring = '200200F' # Trim
             sendcount = btcom.send_data(buttonstring,sendcount)
         if key == ord("a"):
-            buttonstring = '200200E' # Auto trim
+            buttonstring = '200200E' # Trim
             sendcount = btcom.send_data(buttonstring,sendcount)
         if key == ord("y"):
             buttonstring = '200200T' # Auto trim
@@ -541,8 +541,6 @@ if __name__ == '__main__':
             turnspeedfactor -= 0.01
             print('turnspeedfactor = '+str(turnspeedfactor))
             # if the 'q' key is pressed, stop the loop
-        if key == ord("t"):
-            sendcount = btcom.send_data('200200T',sendcount)
 
         if key == ord("q"):
 

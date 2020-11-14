@@ -28,6 +28,7 @@ sendcount = 0
 #bd_addr = '98:D3:32:21:3D:77'
 #bd_addr = '98:D3:91:FD:46:C9'
 bd_addr = '98:D3:71:FD:44:F7' # Returned :(
+bd_addr = '98:D3:91:FD:46:C9'
 port = 1
 #btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 btcom = tbt.bt_connect(bd_addr,port,'Socket')

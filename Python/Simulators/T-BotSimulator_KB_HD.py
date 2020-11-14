@@ -96,6 +96,7 @@ spokes = np.array([[0,1],[0,0],[ 0.8660254, -0.5],[0,0], [-0.8660254, -0.5 ],[0,
 trackmarksArray = np.array([[0,origin[1]+wheel_radius],[1920,origin[1]+wheel_radius],[1920,origin[1]+wheel_radius+10],[0,origin[1]+wheel_radius+10],[0,origin[1]+wheel_radius]])
 track_marks_tup = tuple(map(tuple, tuple((trackmarksArray).astype(int))))
 stick_man_data = np.loadtxt('Man.dat')
+#stick_man_data = np.loadtxt('ActionFigure.dat')
 stick_man_data[:,0]=stick_man_data[:,0]*-1
 stick_man = np.vstack((stick_man_data,stick_man_data[0,:]))+tbot_drawing_offset # closes the shape and adds an offset
 stick_man = stick_man/(stick_man[:,1].max()-stick_man[:,1].min())*Man_scalefactor
@@ -115,7 +116,7 @@ pygame.display.set_caption("T-Bot Simulator")
 clock = pygame.time.Clock()
 # Use convert for the large images. This is the fastest format for blitting
 # Background images
-bg = pygame.image.load(dirpath+'/BG_Brushed.png').convert()
+bg = pygame.image.load(dirpath+'/T-BotBG.png').convert()
 track_image = pygame.image.load(dirpath+'/line.png')
 arrowkeys = pygame.image.load(dirpath+'/arrowkeys.png')
 arrowkeysL = pygame.image.load(dirpath+'/arrowkeysL.png')
@@ -257,7 +258,7 @@ while not done:
         arrow_rot3 = np.array(geom.rotxy(np.pi+geom.v2ang(h,g,targetvelocity),arrow))
         arrow3_tup = tuple(map(tuple, tuple((arrow_rot3+origin).astype(int)))) 
     if draw_stick_man:
-        pygame.gfxdraw.filled_polygon(screen, (stick_man), (0, 249, 249, 20))         
+        pygame.gfxdraw.filled_polygon(screen, (stick_man), (100,100,100, 20))         
         #pygame.gfxdraw.aapolygon(screen, (stick_man), (255, 255, 255, 255))
     pygame.gfxdraw.filled_polygon(screen, (tbot_tup), (0, 249, 249, 100))         
     pygame.gfxdraw.aapolygon(screen, (tbot_tup), WHITE)

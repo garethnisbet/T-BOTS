@@ -3,8 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.ion()
 
-save = 0 # Save way points
-usecam = 0
+save = 1 # Save way points
+imsave = 1
+tracksave = 1
+usecam = 1
 showconv = 1
 
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -17,17 +19,19 @@ color2 = (255, 255, 255)
 thickness = 1
 
 if usecam:
-    cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
+    cap = cv2.VideoCapture(3,cv2.CAP_V4L2)
     try:
         cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
+        cap.set(cv2.CAP_PROP_BRIGHTNESS, 100)
+        cap.set(14, 10) # gain
         success, im_rgb = cap.read()
     except:
         success, im_rgb = cap.read()
         im_rgb = cv2.resize(track,(720,405))
-    
-    cv2.imwrite('TrackTiles/fulltrack2.png',im_rgb)
+    if tracksave:
+        cv2.imwrite('TrackTiles/fulltrack3.png',im_rgb)
     im_rgb = cv2.cvtColor(im_rgb, cv2.COLOR_BGR2RGB)
 else:
     im_rgb = cv2.imread('TrackTiles/fulltrack.png')
@@ -132,8 +136,9 @@ for ii in list(range(len(tilelist))):
             cv2.rectangle(im_rgb,pt,(pt[0] + w, pt[1] + h), linecolour, 2)
             iii += 1
     textstr = str(iii)
-    cv2.putText(im_rgb, textstr, tuple(np.array(pt)+[25,25]), font,fontScale, color, thickness, cv2.LINE_AA)
-    cv2.imwrite('Images/{:05d}.png'.format(ii+2),im_rgb)
+    if imsave:
+        cv2.putText(im_rgb, textstr, tuple(np.array(pt)+[25,25]), font,fontScale, color, thickness, cv2.LINE_AA)
+        cv2.imwrite('Images/{:05d}.png'.format(ii+2),im_rgb)
 lastimage = ii
 
 plt.figure()
@@ -227,9 +232,9 @@ for ii in list(range(patharray.shape[0])):
     
 plt.plot(p2[:,0],p2[:,1],'ro')
 
-if save:
+if imsave:
     for ii in list(range(p2.shape[0])):
-        cv2.circle(im_rgb, tuple(p2[ii,:].astype(int)), 10, (0,255,0), -1)
+        cv2.circle(im_rgb, tuple(p2[ii,:].astype(int)), 8, (0,255,0,100), -1,lineType=cv2.LINE_AA)
         cv2.imwrite('Images/{:05d}.png'.format(lastimage+ii),im_rgb)
 
 if save:

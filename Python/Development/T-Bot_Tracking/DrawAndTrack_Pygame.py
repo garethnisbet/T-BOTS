@@ -48,6 +48,8 @@ cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
+cap.set(cv2.CAP_PROP_BRIGHTNESS, 100)
+cap.set(14, 10) # gain
 
 success, frame = cap.read()
 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -55,13 +57,6 @@ cap.release()
 pygame.init()
 screen0 = pygame.display.set_mode((633, 359), 0, 0)
 canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
- 
-
-
-
-
-
-
 
 x = []
 y = []
@@ -71,53 +66,22 @@ starttime = []
 endtime = []
 laptime = 1000
 oldlaptime = 500
-folder = 'RecordedImages2/'
-record = 0
-
-#folder = 'SpeedTest/'
-if record:
-    if os.path.isdir(folder) is not True:
-        os.mkdir(folder)
-template = folder + '%05d.png'
-frameskip = 10
 
 
-font = cv2.FONT_HERSHEY_SIMPLEX 
-
-#---------------- Setup text writing  -----------------#
-# org 
-org = (60, 20)  
-# fontScale 
-fontScale = 0.5   
-# Blue color in BGR 
-color = (255, 0, 0)
-color2 = (0, 255, 0)  
-# Line thickness of 2 px 
-thickness = 1
 textstr = ''
 textstr2 = ''
 
-
-
-tii = 0 # counter to prevent recording every frame and slowing the Pi
-iii = 1
-loopcount = 0
 pathindex = 0
 timeflag = 0
 pathindex = 0
-rotspeed = 200
-speedfactor = 0.3
-
-turnspeedfactor = 0.3
-turntime = 0.005
 bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
 
 
-
-
-
+# sets the length of the trail
+pts = deque(maxlen=10)
+pts2 = deque(maxlen=10)
 
 
 #----------------------------------------------------------------------#
@@ -126,11 +90,12 @@ tolerance = 30
 #
 #                        Artificial Lighting
 #----------------------------------------------------------------------#
-greenLower = (35,25,223)   # place green disc on the left
-greenUpper = (62,104,255) 
+
+greenLower = (66,40,141)    # place green disc on the left
+greenUpper = (88,255,255) 
  
-pinkLower = (147,76,0)     # place pink disc on the right
-pinkUpper = (255,255,255) 
+pinkLower = (124,47,22)       
+pinkUpper = (164,255,255) # place pink disc on the right
 
 #----------------------------------------------------------------------#
 #                                  Sunny
@@ -157,18 +122,9 @@ pinkUpper = (255,255,255)
 
 #----------------------------------------------------------------------#
 
-# sets the length of the trail
-pts = deque(maxlen=10)
-pts2 = deque(maxlen=10)
 
-pathindex = 0
-rotspeed = 200
-speedfactor = 0.3
-turnspeedfactor = 0.3
-turntime = 0.005
-bendscalefactor = 10
-rdeadban = 2
-tolerance = 30
+
+
 
 #--------------------  Define functions  ------------------------------#
 
@@ -232,12 +188,29 @@ cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
+cap.set(14, 10) # gain
+cap.set(cv2.CAP_PROP_BRIGHTNESS, 100)
 
 
 oldtime = time()
 done = 0
 
 screen = pygame.display.set_mode((640, 700))
+
+# sets the length of the trail
+pts = deque(maxlen=100)
+pts2 = deque(maxlen=100)
+
+pathindex = 0
+
+bendscalefactor = 10
+rdeadban = 2
+tolerance = 30
+
+rotspeed = 200
+speedfactor = 0.3
+
+dt = 0.005
 
 feedforward = 2
 pkp_o = 2.02
@@ -264,10 +237,10 @@ sbar3 = pgt.SliderBar(screen, (100,505), pkd_o, 440, 0.5, 6, (200,200,200),(255,
 sbar4 = pgt.SliderBar(screen, (100,555), akp_o, 440, 5, 6, (200,200,200),(255,10,10))
 sbar5 = pgt.SliderBar(screen, (100,580), aki_o, 440, 5, 6, (200,200,200),(255,10,10))
 sbar6 = pgt.SliderBar(screen, (100,605), akd_o, 440, 0.5, 6, (200,200,200),(255,10,10))
-sbar7 = pgt.SliderBar(screen, (100,655), FW, 440, 30, 6, (200,200,200),(255,10,10))
+sbar7 = pgt.SliderBar(screen, (100,655), FW, 440, 500, 6, (200,200,200),(255,10,10))
 
-pos_pid = pid.pid(pkp_o,pki_o,pkd_o,[-10,10],[0,20],turntime)
-angle_pid = pid.pid(akp_o,aki_o,akd_o,[-15,15],[-60,60],turntime)
+pos_pid = pid.pid(pkp_o,pki_o,pkd_o,[-10,10],[0,20],dt)
+angle_pid = pid.pid(akp_o,aki_o,akd_o,[-15,15],[-60,60],dt)
 pygame.display.set_caption("Tuning")
 
 
@@ -343,12 +316,21 @@ if __name__ == '__main__':
 
     while cap.isOpened():
         success, frame = cap.read()
+        if not success:
+            print('Problems Connecting to Camera')
+            break
+        
         screen.fill((40,40,40))
+        #---------------------------------------------------------------
+        #                 Listen for user events
+        #---------------------------------------------------------------
         events = pygame.event.get()
         keys = pygame.key.get_pressed()
         c1, c2, c3 =  pygame.mouse.get_pressed()
         mx,my = pygame.mouse.get_pos()
-        
+        #---------------------------------------------------------------
+        #                     Draw Slide Bars
+        #---------------------------------------------------------------
         pkp = sbar.get_mouse_and_set()
         pki = sbar2.get_mouse_and_set()
         pkd = sbar3.get_mouse_and_set()
@@ -359,8 +341,9 @@ if __name__ == '__main__':
         
         FW = sbar7.get_mouse_and_set()
 
-        
-        
+        #---------------------------------------------------------------
+        #                      Update Tuning
+        #---------------------------------------------------------------
         if pkp != pkp_old:
             pos_pid.set_PID(pkp,pki,pkd)
             pkp_old = pkp
@@ -389,14 +372,10 @@ if __name__ == '__main__':
             angle_pid.set_PID(akp,aki,akd)
 
             feedforward = FW
-
-        
-        #frame = cv2.flip(frame,1)
-        if not success:
-            break
-
+        #---------------------------------------------------------------
+        #            Check Status of Bluetooth Connection
+        #---------------------------------------------------------------
         if ~btcom.connected():
-
             tries = 0
             while btcom.connected() < 1 and tries < 10:
                 print('Connecting ...')
@@ -415,22 +394,20 @@ if __name__ == '__main__':
                 tries = 0
                 data = btcom.get_data(data)
                 
-
+        #---------------------------------------------------------------
+        #          Track pink and green discs
+        #---------------------------------------------------------------
 
         blurred = cv2.GaussianBlur(frame, (11, 11), 0)
         hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV) # do this outside function so it is not done twice
-
         try:         
             x, y, center, radius, M, cents = geom.tracker(hsv, greenLower, greenUpper)
-
             if radius > 1:
                 cv2.circle(frame, (int(x), int(y)), int(radius),(0, 255, 0), 2)
                 cv2.circle(frame, center, 2, (0, 255, 0), -1)
                 pts.appendleft(center)
         except:
-
             pass
-            
         try:
             x2, y2, center2, radius2, M2, cents2 = geom.tracker(hsv, pinkLower, pinkUpper)
 
@@ -438,13 +415,11 @@ if __name__ == '__main__':
                 cv2.circle(frame, (int(x2), int(y2)), int(radius2),(113,212,198), 2)
                 cv2.circle(frame, center2, 2, (113,212,198), -1)
                 pts2.appendleft(center2)
-            
         except:
-            
             pass
-
-        #------------- Plot trail overlay -------------#
-
+        #---------------------------------------------------------------
+        #                  Plot trail overlay
+        #---------------------------------------------------------------
         for i in range(1, len(pts)):
             # if either of the tracked points are None, ignore
             if pts[i - 1] is None or pts[i] is None:
@@ -458,26 +433,26 @@ if __name__ == '__main__':
                 continue
      
             cv2.line(frame, pts2[ii - 1], pts2[ii], (113,212,198), 1)
-
+        #---------------------------------------------------------------
+        #                    Plot Path Overlay
+        #---------------------------------------------------------------
         if showline:
             cv2.polylines(frame, np.int32([aa]),True, (255,0,255),2)
         cv2.circle(frame, tuple(aa[pathindex,:].astype(int)), 8, (250,150,10), -1)
+        #---------------------------------------------------------------
+        #                   Calculate Lap Times
+        #---------------------------------------------------------------
         if laptime < oldlaptime:
             if laptime < 1000:
                 textstr = 'Best time is: '+"{:6.4f}".format(laptime)
                 oldlaptime = laptime
                 flag = 1
         if flag == 1:
-            #cv2.putText(frame, textstr, org, font,fontScale, color, thickness, cv2.LINE_AA)
             textstr2 = 'Last lap time: '+"{:6.4f}".format(laptime)
-            #cv2.putText(frame, textstr2, (org[0],org[1]+20), font,fontScale, color2, thickness, cv2.LINE_AA)
-
-
-
-
-        ###################################################
-        #---------------  Control Strategy ---------------#
-        ###################################################
+        
+        #---------------------------------------------------------------
+        #                     Control Strategy
+        #---------------------------------------------------------------
         
         if x != [] and x2 !=[]:
             vto = aa[pathindex] # target coordinate
@@ -502,33 +477,35 @@ if __name__ == '__main__':
             if pathindex == len(aa)-1:
                 sendcount = btcom.send_data('200200Z',sendcount)
                 print('Done, reached end of path...')
-                #aa = np.flipud(aa)
                 laptime = time()-starttime
-                #feedforward += 1
-                #print(feedforward)
                 pathindex = 0
                 timeflag = 0
-
+                
+            #-----------------------------------------------------------
+            #      Calculate angle and distance to way point
+            #-----------------------------------------------------------
             angle = geom.angle((x,y),(x2,y2),vto)
             rotspeed = 200+angle_pid.output(0,-angle)
             oldtime = time()
             straightspeedfactor = 1
             forwardspeed = 200+straightspeedfactor*(pos_pid.output(0,-_distance)+feedforward)
 
-
-            #------------  build data string  ------------#
-
+            #-----------------------------------------------------------
+            #          build data string to sent to T-Bot
+            #-----------------------------------------------------------
             rotspeed = '%03d' % rotspeed
-        
             forwardspeed = '%03d' % forwardspeed
 
-            #print('forward speed '+forwardspeed+' turn speed '+rotspeed)
-            #--------------   Send data    ---------------#
+            #-----------------------------------------------------------
+            #                  Send Data To T-Bot
+            #-----------------------------------------------------------
             sendstr = str(rotspeed)+str(forwardspeed)+'Z'
             sendcount = btcom.send_data(sendstr,sendcount)
 
+        #---------------------------------------------------------------
+        #          Basic Trim Controls for The T-Bot
+        #---------------------------------------------------------------
         if keys[pygame.K_t]:
-            
             buttonstring = '200200F' # Auto trim
             sendcount = btcom.send_data(buttonstring,sendcount)
         if keys[pygame.K_a]:
@@ -538,19 +515,19 @@ if __name__ == '__main__':
             buttonstring = '200200T' # Auto trim
             sendcount = btcom.send_data(buttonstring,sendcount)
             showline
+        #---------------------------------------------------------------
+        #                    Show Or Hide Overlay
+        #---------------------------------------------------------------
         if keys[pygame.K_h]: # hide line
             showline = 0
         if keys[pygame.K_s]: # show line
             showline = 1
-        if keys[pygame.K_g]:
-            feedforward += 1
-            print('feedforward = '+str(feedforward))
-        if keys[pygame.K_y]:
-            turnspeedfactor -= 0.01
-            print('turnspeedfactor = '+str(turnspeedfactor))
-            # if the 'q' key is pressed, stop the loop
-        if keys[pygame.K_t]:
+        if keys[pygame.K_t]: # show line
             sendcount = btcom.send_data('200200T',sendcount)
+        if keys[pygame.K_e]: # show line
+            sendcount = btcom.send_data('200200E',sendcount)
+        if keys[pygame.K_f]: # show line
+            sendcount = btcom.send_data('200200F',sendcount)
         if keys[pygame.K_r]:        
             pos_pid.set_PID(pkp_o,pki_o,pkd_o)
             angle_pid.set_PID(akp_o,aki_o,akd_o)
@@ -564,19 +541,12 @@ if __name__ == '__main__':
             pos_pid.clear()
             angle_pid.clear()
 
-
         if keys[pygame.K_q]:
             cap.release()
             sendcount = btcom.send_data('200200Z',sendcount)
             btcom.connect(0)
             break
-        if record:
-            if tii == frameskip:
-                cv2.imwrite(template % iii, frame)
-                iii += 1
-                tii = 0
-            else:
-                tii += 1
+
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
         screen.blit(frame,(0,0))

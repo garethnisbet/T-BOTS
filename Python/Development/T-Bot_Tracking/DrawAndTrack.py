@@ -38,7 +38,7 @@ else:
     coordinate = []
 
 # cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture(2,cv2.CAP_V4L2)
+cap = cv2.VideoCapture(3,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -167,10 +167,10 @@ angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 #
 #                        Artificial Lighting
 #----------------------------------------------------------------------#
-greenLower = (40,38,193)   
-greenUpper = (97,107,255) 
+greenLower = (37,34,178)   
+greenUpper = (99,125,255) 
  
-pinkLower = (129,45,0)       
+pinkLower = (154,104,98)       
 pinkUpper = (255,255,255) 
 
 #----------------------------------------------------------------------#
@@ -272,7 +272,7 @@ if interpfactor != 1:
 #-----------------------   Start main loop ----------------------------#
 ########################################################################
 
-cap = cv2.VideoCapture(2,cv2.CAP_V4L2)
+cap = cv2.VideoCapture(3,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
