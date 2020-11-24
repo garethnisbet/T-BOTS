@@ -3,10 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.ion()
 
-save = 1 # Save way points
-imsave = 1
+save = 0 # Save way points
+imsave = 0
 tracksave = 1
-usecam = 1
+usecam = 0
 showconv = 1
 
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -19,17 +19,17 @@ color2 = (255, 255, 255)
 thickness = 1
 
 if usecam:
-    cap = cv2.VideoCapture(3,cv2.CAP_V4L2)
+    cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
     try:
         cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
-        cap.set(cv2.CAP_PROP_BRIGHTNESS, 100)
-        cap.set(14, 10) # gain
+        cap.set(cv2.CAP_PROP_BRIGHTNESS, 50)
+        cap.set(14, 5) # gain
         success, im_rgb = cap.read()
     except:
         success, im_rgb = cap.read()
-        im_rgb = cv2.resize(track,(720,405))
+        im_rgb = cv2.resize(track,(640,360))
     if tracksave:
         cv2.imwrite('TrackTiles/fulltrack3.png',im_rgb)
     im_rgb = cv2.cvtColor(im_rgb, cv2.COLOR_BGR2RGB)
@@ -117,7 +117,7 @@ w, h = tile_RD.shape[::-1]
 # -------------------  Find Tiles and Asign Type  ---------------------#
 # ---------------------------------------------------------------------#
 
-threshold = 0.82
+threshold = 0.85
 positions = []
 tilelist = [tile_RD,tile_UR,tile_DR,tile_RU,tile_HS,tile_VS,tile_cross,tile_zebraV, tile_zebraH]
 

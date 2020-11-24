@@ -8,7 +8,7 @@ from time import time
 
 K = np.load("./camera_params/K.npy")
 dist = np.load("./camera_params/dist.npy")
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(2)
 w = int(cap.get(3))
 h = int(cap.get(4))
 

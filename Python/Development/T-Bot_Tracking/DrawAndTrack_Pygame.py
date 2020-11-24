@@ -3,6 +3,7 @@ import cv2
 import os
 import imutils
 path_above = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../..'))
+dirpath = path_above+'/Joystick/Images/HUD'
 sys.path.append(path_above)
 from collections import deque
 import numpy as np
@@ -21,15 +22,17 @@ import pygame.gfxdraw
 pygame.init()
 textPrint = pgt.TextPrint((255,255,255))
 textPrint.setlineheight(25)
+
+background = pygame.image.load(dirpath+'/BGTracker.png')
 scalefactor = 1
 #origin =  [636/2,357/2]
-origin =  [0,0]
+origin =  [180,35]
 showline = 0
 drawplot = 1
 interpfactor = 5
 flag = 0
 geom = geometry.geometry(1) # scale factor to convert pixels to mm
-
+arrow = np.array([[2,0],[2,50],[7,50],[0,65],[-7,50],[-2,50],[-2,0],[2,0]])
 bb = np.array([[0,0,],[0,1],[1,1],[2,0],[3,0],[4,0],[3,0],[2,0],[1,0]])
 ########################################################################
 #-----------------------   Draw            ----------------------------#
@@ -38,24 +41,28 @@ filename = 'pathpoints.dat'
 if os.path.isfile(filename):
     aa = np.loadtxt(filename)
     aa[:,0] = aa[:,0]*scalefactor+origin[0]
-    aa[:,1] = aa[:,1]*scalefactor+origin[1] 
+    aa[:,1] = aa[:,1]*scalefactor+origin[1]
     coordinate = list(tuple(map(tuple,aa.astype(int))))
 else:
     coordinate = []
 
-# cap = cv2.VideoCapture(0)
+
+camwidth = 640
+camheight = 360
+camorigin = origin
 cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
-cap.set(cv2.CAP_PROP_BRIGHTNESS, 100)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, camwidth)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, camheight)
 cap.set(14, 10) # gain
+cap.set(cv2.CAP_PROP_BRIGHTNESS, 100)
+
 
 success, frame = cap.read()
 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-cap.release()
+#cap.release()
 pygame.init()
-screen0 = pygame.display.set_mode((633, 359), 0, 0)
+screen0 = pygame.display.set_mode((1000, 359), 0, 0)
 canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
 
 x = []
@@ -77,9 +84,32 @@ pathindex = 0
 bendscalefactor = 10
 rdeadban = 2
 tolerance = 30
+angle = 0
 
 
 # sets the length of the trail
+angle = 0
+_distance = 0
+xdatarange = [640,940]
+y_origin = 450
+yscale = 180
+plot_pts = deque(maxlen=xdatarange[1]-xdatarange[0])
+plot_pts2 = deque(maxlen=xdatarange[1]-xdatarange[0])
+
+for ii in range(xdatarange[0],xdatarange[1]):
+    plot_pts.appendleft((ii,0))
+    plot_pts2.appendleft((ii,0))
+iii = 200
+plot_aa = np.zeros((len(plot_pts),2))
+plot_aa[:,1]=np.array(plot_pts)[:,1]
+plot_aa[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
+plot_cc = np.zeros((len(plot_pts),2))
+plot_cc[:,1]=np.array(plot_pts2)[:,1]
+plot_cc[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
+plot_bb=np.copy(plot_aa)
+plot_dd=np.copy(plot_cc)
+
+
 pts = deque(maxlen=10)
 pts2 = deque(maxlen=10)
 
@@ -91,11 +121,11 @@ pts2 = deque(maxlen=10)
 #                        Artificial Lighting
 #----------------------------------------------------------------------#
 
-greenLower = (66,40,141)    # place green disc on the left
-greenUpper = (88,255,255) 
+greenLower = (33,28,190)    # place green disc on the left
+greenUpper = (117,255,255) 
  
-pinkLower = (124,47,22)       
-pinkUpper = (164,255,255) # place pink disc on the right
+pinkLower = (90,80,120)       
+pinkUpper = (255,255,255) # place pink disc on the right
 
 #----------------------------------------------------------------------#
 #                                  Sunny
@@ -184,18 +214,10 @@ if interpfactor != 1:
 #-----------------------   Start main loop ----------------------------#
 ########################################################################
 
-cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
-cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
-cap.set(14, 10) # gain
-cap.set(cv2.CAP_PROP_BRIGHTNESS, 100)
-
-
 oldtime = time()
 done = 0
 
-screen = pygame.display.set_mode((640, 700))
+screen = pygame.display.set_mode((1000, 700))
 
 # sets the length of the trail
 pts = deque(maxlen=100)
@@ -230,14 +252,14 @@ aki_old = aki_o
 akd_old = akd_o
 
 
-sbar = pgt.SliderBar(screen, (100,455), pkp_o, 440, 5, 6, (200,200,200),(255,10,10))
-sbar2 = pgt.SliderBar(screen, (100,480), pki_o, 440, 5, 6, (200,200,200),(255,10,10))
-sbar3 = pgt.SliderBar(screen, (100,505), pkd_o, 440, 0.5, 6, (200,200,200),(255,10,10))
+sbar = pgt.SliderBar(screen, (100,455), pkp_o, 460, 5, 6, (200,200,200),(255,10,10))
+sbar2 = pgt.SliderBar(screen, (100,480), pki_o, 460, 5, 6, (200,200,200),(255,10,10))
+sbar3 = pgt.SliderBar(screen, (100,505), pkd_o, 460, 0.5, 6, (200,200,200),(255,10,10))
 
-sbar4 = pgt.SliderBar(screen, (100,555), akp_o, 440, 5, 6, (200,200,200),(255,10,10))
-sbar5 = pgt.SliderBar(screen, (100,580), aki_o, 440, 5, 6, (200,200,200),(255,10,10))
-sbar6 = pgt.SliderBar(screen, (100,605), akd_o, 440, 0.5, 6, (200,200,200),(255,10,10))
-sbar7 = pgt.SliderBar(screen, (100,655), FW, 440, 500, 6, (200,200,200),(255,10,10))
+sbar4 = pgt.SliderBar(screen, (100,555), akp_o, 460, 5, 6, (200,200,200),(255,10,10))
+sbar5 = pgt.SliderBar(screen, (100,580), aki_o, 460, 5, 6, (200,200,200),(255,10,10))
+sbar6 = pgt.SliderBar(screen, (100,605), akd_o, 460, 0.5, 6, (200,200,200),(255,10,10))
+sbar7 = pgt.SliderBar(screen, (100,655), FW, 460, 100, 4, (200,200,200),(255,10,10))
 
 pos_pid = pid.pid(pkp_o,pki_o,pkd_o,[-10,10],[0,20],dt)
 angle_pid = pid.pid(akp_o,aki_o,akd_o,[-15,15],[-60,60],dt)
@@ -248,7 +270,8 @@ pygame.display.set_caption("Tuning")
 if __name__ == '__main__':
     
     while drawplot:
-        screen.fill((40,40,40))
+        # screen.fill((40,40,40))
+        screen.blit(background,(0,0))
         keys = pygame.key.get_pressed()
          
         for event in pygame.event.get():
@@ -259,10 +282,11 @@ if __name__ == '__main__':
             if event.type == MOUSEMOTION and c1:
                 if len(coordinate)>2:
                     if np.linalg.norm(np.array(event.pos)-np.array(coordinate[-1])) > 5:
-                        coordinate.append(event.pos)
+                        if event.pos[0] < camwidth+camorigin[0] and event.pos[0] > camorigin[0] and event.pos[1] < camheight+camorigin[1] and event.pos[1] > camorigin[1]:
+                            coordinate.append(event.pos)
                 else:
-                    coordinate.append(event.pos)
-                
+                    if event.pos[0] < camwidth+camorigin[0] and event.pos[0] > camorigin[0] and event.pos[1] < camheight+camorigin[1] and event.pos[1] > camorigin[1]:
+                        coordinate.append(event.pos)
 
             if c3:
                 if len(coordinate)>10:
@@ -277,15 +301,16 @@ if __name__ == '__main__':
                 exit()
             if keys[K_s]:
                 aa = np.array(coordinate)
-                np.savetxt(filename,aa)
+                
+                np.savetxt(filename,aa-np.array(origin))
             if keys[K_b]:
                 aa = np.array(coordinate)
                 timestampedname = 'Paths/'+datetime.now().strftime('%d-%m-%y-%H%M%S')+'.dat'
-                np.savetxt(timestampedname,aa)
+                np.savetxt(timestampedname,aa-np.array(origin))
                 print('Backup created in '+timestampedname)
 
 
-            screen.blit(canvas,(0,0))
+            screen.blit(canvas,camorigin)
          
             if len(coordinate)>1:
                 pygame.draw.lines(screen, (0,255,0), False, coordinate, 3)
@@ -304,6 +329,7 @@ if __name__ == '__main__':
 
     
     
+    aa = np.loadtxt('pathpoints.dat') # Use Click2Path.py to create an arbitrary path
 
     success, frame = cap.read()
     if not success:
@@ -320,7 +346,9 @@ if __name__ == '__main__':
             print('Problems Connecting to Camera')
             break
         
-        screen.fill((40,40,40))
+        # screen.fill((40,40,40))
+        screen.blit(background,(0,0))
+        #screen.blit(tbot_ortho,(600,500))
         #---------------------------------------------------------------
         #                 Listen for user events
         #---------------------------------------------------------------
@@ -433,6 +461,7 @@ if __name__ == '__main__':
                 continue
      
             cv2.line(frame, pts2[ii - 1], pts2[ii], (113,212,198), 1)
+ 
         #---------------------------------------------------------------
         #                    Plot Path Overlay
         #---------------------------------------------------------------
@@ -488,7 +517,7 @@ if __name__ == '__main__':
             rotspeed = 200+angle_pid.output(0,-angle)
             oldtime = time()
             straightspeedfactor = 1
-            forwardspeed = 200+straightspeedfactor*(pos_pid.output(0,-_distance)+feedforward)
+            forwardspeed = 200+(pos_pid.output(0,-_distance)+FW                                                 )
 
             #-----------------------------------------------------------
             #          build data string to sent to T-Bot
@@ -546,10 +575,39 @@ if __name__ == '__main__':
             sendcount = btcom.send_data('200200Z',sendcount)
             btcom.connect(0)
             break
+        plot_pts.appendleft((iii,angle))
+        plot_pts2.appendleft((iii,_distance))
+        iii+=1
+        if iii > xdatarange[1]:
+            iii = xdatarange[0]
+        plot_aa[:,1]=np.array(plot_pts)[:,1]
+        plot_cc[:,1]=np.array(plot_pts2)[:,1]
+        pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin+0.5*yscale),(xdatarange[1],y_origin+0.5*yscale)),1)
+        try:  
+            plot_bb[:,1] = (yscale/((plot_aa[:,1]-plot_aa[:,1].max()).min())*(plot_aa[:,1]-plot_aa[:,1].max()))+y_origin
+            plot_dd[:,1] = (yscale/((plot_cc[:,1]-plot_cc[:,1].max()).min())*(plot_cc[:,1]-plot_cc[:,1].max()))+y_origin
+            gdata = tuple(map(tuple, tuple(plot_bb)))
+            vdata = tuple(map(tuple, tuple(plot_dd)))
+            pygame.draw.lines(screen, (255,255,255,255), False, (gdata),1)
+            pygame.draw.lines(screen, (255,0,0,255), False, (vdata),1)
+        except:
+            print('Plot Error')
+
+        pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
+        pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[-1],y_origin),(xdatarange[-1],y_origin+yscale)),1)
+
+        textPrint.abspos(screen, "{:+.2f}".format(plot_aa[:,1].max()),[xdatarange[0],y_origin-20])
+        textPrint.abspos(screen, "{:+.2f}".format(plot_aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
+        textPrint.tprint(screen,'Angle')
+        textPrint.setColour((255,0,0,255))
+        textPrint.abspos(screen, "{:+.2f}".format(plot_cc[:,1].max()),[xdatarange[-1],y_origin-20])
+        textPrint.abspos(screen, "{:+.2f}".format(plot_cc[:,1].min()),[xdatarange[-1],y_origin+yscale+5])
+        textPrint.tprint(screen,'Distance')
+        textPrint.setColour((255,255,255,255))
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
-        screen.blit(frame,(0,0))
+        screen.blit(frame,camorigin)
         textPrint.abspos(screen, "Tuning Parameters",(10,400))
         textPrint.tprint(screen, " ")
         textPrint.tprint(screen, "pkp: {:.3f}".format(pkp))
@@ -561,8 +619,20 @@ if __name__ == '__main__':
         textPrint.tprint(screen, "akd: {:.3f}".format(akd))
         textPrint.tprint(screen, " ")
         textPrint.tprint(screen, "FW: {:.3f}".format(FW))
-        textPrint.abspos(screen, textstr,(480,380))
+        textPrint.abspos(screen, textstr,(450,410))
         textPrint.tprint(screen,textstr2)
+        try:
+            orient = geom.orientation(center2,center)
+        except:
+            orient = geom.orientation([0,0],[1,1])
+        arrow_rot1 = np.array(geom.rotxy(orient[1]*np.pi/180,arrow))
+        arrow1_tup = tuple(map(tuple, tuple((arrow_rot1+orient[0]+origin).astype(int))))
+        pygame.gfxdraw.filled_polygon(screen, (arrow1_tup), (0,255,255,155))
+        pygame.gfxdraw.aapolygon(screen, (arrow1_tup), (0,255,255,200))
+        arrow_rot2 = np.array(geom.rotxy((angle+orient[1])*np.pi/180,arrow))
+        arrow2_tup = tuple(map(tuple, tuple((arrow_rot2+orient[0]+origin).astype(int))))
+        pygame.gfxdraw.filled_polygon(screen, (arrow2_tup), (255,255,255,155))
+        pygame.gfxdraw.aapolygon(screen, (arrow2_tup), (0,255,255,200))
         pygame.display.flip()
 
 cv2.destroyAllWindows()

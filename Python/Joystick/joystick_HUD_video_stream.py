@@ -1,7 +1,8 @@
 #!/usr/bin/python
 import pygame, sys, pygame.mixer, os
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
-
+path_above = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+sys.path.append(path_above)
+from TBotTools import tbt, pgt
 from TBotTools import tbt, pgt
 import pygame
 import pygame.locals as pgl
@@ -54,10 +55,10 @@ sendcount = 0
 #------------------------------------------------------------------
 #               For Linux / Raspberry Pi
 #------------------------------------------------------------------
-bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
+# bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 #bd_addr = '98:D3:32:21:3D:77'
 #bd_addr = '98:D3:91:FD:46:C9'
-#bd_addr = '98:D3:71:FD:44:F7'
+bd_addr = '98:D3:71:FD:44:F7'
 port = 1
 #btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 btcom = tbt.bt_connect(bd_addr,port,'Socket')

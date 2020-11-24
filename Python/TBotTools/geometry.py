@@ -57,6 +57,12 @@ class geometry(object):
         ydata = np.array([np.sin(x)*radius+origin[0]]).T
         return np.concatenate((xdata,ydata),1)
 
+    def orientation(self,v0,v1):
+        '''Calculates the angle of the T-Bot with respect frame'''
+        vm = (np.array(v0)+np.array(v1))/2.0
+        ang = (np.arctan2(v1[0]-v0[0],v0[1]-v1[1])-np.pi/2)*180/np.pi
+        return [vm, ang]
+
     def angle(self,v0,v1,vto):
         '''Calculates the angle of the T-Bot with respect to a target coordinate'''
         vm = (np.array(v0)+np.array(v1))/2.0

@@ -279,7 +279,7 @@ while not done:
         pygame.gfxdraw.filled_polygon(screen, (arrow2_tup), (255,255,255,155)) 
         pygame.gfxdraw.aapolygon(screen, (arrow2_tup), (255,255,255,200))
         pygame.gfxdraw.filled_polygon(screen, (arrow3_tup), (255,0,0,155))
-        pygame.gfxdraw.aapolygon(screen, (arrow3_tup), (255,0,0,200)) 
+        pygame.gfxdraw.aapolygon(screen, (arrow3_tup), (255,0,0,200))
     if iii > xdatarange[1]:
         iii = xdatarange[0]
     aa[:,1]=np.array(pts)[:,1]
