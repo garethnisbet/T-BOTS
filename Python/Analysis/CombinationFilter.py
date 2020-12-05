@@ -32,6 +32,27 @@ def getAngleCFilter(pitch, gyro_rate, dt):
     return angle
 
 
+class cfilter(object):
+    def __init__(self,theta, angle, alpha, filter_weighting, dt):
+        self.theta = theta
+        self.angle = angle
+        self.alpha = alpha
+        self.filter_weighting = filter_weighting
+        self.dt = dt
+        
+    def setFilterWeighting(self,filter_weighting):
+        self.filter_weighting = filter_weighting
+        
+    def getAngleCFilter(self, theta, gyro_rate, dt):
+
+        self.angle += self.filter_weighting * (theta - (self.angle + gyro_rate * dt))
+        return self.angle
+
+
+c_filter = cfilter(0,0,0,0.06,0.01)
+
+
+
 
 ####################   Kalman Filter    ########################
 ''' 
@@ -80,7 +101,9 @@ def getAngle(pitch, gyrorate, dt):
 
 ################################################################
 
-angleCF = np.array([getAngleCFilter(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
+angleCF1 = np.array([getAngleCFilter(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
+
+angleCF = np.array([c_filter.getAngleCFilter(v1[x,1],v1[x,2],v1[x,0]) for x in range(v1.shape[0])])
 
 gyroangle = np.cumsum(v1[:,2]*v1[:,0])
 
@@ -107,7 +130,8 @@ plt.title('From Python Code')
 ax.plot(t, v1[:,1],  c=(91/255.,111/255.,189/255.),label = 'Measured angle from accelerometer')
 ax.plot(t, gyroangle, c=(56/255.,192/255.,255/255.),label = 'Unfiltered Gyro Angle (integrated angular velocity)')
 ax.plot(t, angleKF, 'g',label = 'Kalman Filter',linewidth=2)
-ax.plot(t, angleCF, 'r--',label = 'Combination Filter',linewidth=2)
+ax.plot(t, angleCF1, 'r--',label = 'Combination Filter',linewidth=2)
+ax.plot(t, angleCF, 'b-.',label = 'Combination Filter Class',linewidth=2)
 
 ax.legend(loc = 'best',prop={ 'size': 8})
 plt.xlabel('t (s)')

@@ -17,6 +17,7 @@ framerate = 30 # set to 30 for Rasoberry pi
 dt = 1.0/framerate
 framecount = 1
 record = 0
+noise_amplitude = 1
 #-----------------------------------------------------------------------
 #                           PID Tuning
 #-----------------------------------------------------------------------
@@ -164,6 +165,7 @@ sbar3 = pgt.SliderBar(screen, (100,505), s_kd, 130, 0.5, 5, (200,200,200),(255,1
 sbar4 = pgt.SliderBar(screen, (100,535), a_kp, 130, 20.0, 5, (200,200,200),(255,10,10))
 sbar5 = pgt.SliderBar(screen, (100,550), a_ki, 130, 0.5, 5, (200,200,200),(255,10,10))
 sbar6 = pgt.SliderBar(screen, (100,565), a_kd, 130, 0.5, 5, (200,200,200),(255,10,10))
+sbar7 = pgt.SliderBar(screen, (100,580), noise_amplitude, 130, 2, 5, (200,200,200),(255,10,10))
 # -------- Main Program Loop -----------
 while not done:
     g = acc_g * sf
@@ -177,6 +179,7 @@ while not done:
     a_kp = sbar4.get_mouse_and_set()
     a_ki = sbar5.get_mouse_and_set()
     a_kd = sbar6.get_mouse_and_set()
+    noise_amplitude = sbar7.get_mouse_and_set()
     angle_pid.set_PID(a_kp,a_ki,a_kd)
     
     
@@ -231,7 +234,7 @@ while not done:
         origin[0] = np.mod(origin[0],1000)
         tbot_rot = np.array(geom.rotxy(theta+np.pi,tbot))
         tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
-        noise = np.random.rand(1)*np.pi/180
+        noise = np.random.rand(1)*np.pi/180*noise_amplitude
         spokes_rot = np.array(geom.rotxy((distance*mm2px/wheel_radius)+theta,spokes))
         spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
         #---------------------------------------------------------------
@@ -257,7 +260,7 @@ while not done:
         arrow_rot3 = np.array(geom.rotxy(np.pi+geom.v2ang(h,g,targetvelocity),arrow))
         arrow3_tup = tuple(map(tuple, tuple((arrow_rot3+origin).astype(int)))) 
     if draw_stick_man:
-        pygame.gfxdraw.filled_polygon(screen, (stick_man), (0, 249, 249, 20))         
+        pygame.gfxdraw.filled_polygon(screen, (stick_man), (255,255,255, 10))         
         #pygame.gfxdraw.aapolygon(screen, (stick_man), (255, 255, 255, 255))
     pygame.gfxdraw.filled_polygon(screen, (tbot_tup), (0, 249, 249, 100))         
     pygame.gfxdraw.aapolygon(screen, (tbot_tup), WHITE)
@@ -291,12 +294,12 @@ while not done:
         pygame.draw.lines(screen, RED, False, (vdata),1)
     except:
         b=1
-    textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
-    textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
+    textPrint.abspos(screen, "{:+.3f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
+    textPrint.abspos(screen, "{:+.3f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
     textPrint.tprint(screen,'Angle')
     textPrint.setColour(RED)
-    textPrint.abspos(screen, "{:+.2f}".format(cc[:,1].max()),[xdatarange[-1],y_origin-20])
-    textPrint.abspos(screen, "{:+.2f}".format(cc[:,1].min()),[xdatarange[-1],y_origin+yscale+5])
+    textPrint.abspos(screen, "{:+.3f}".format(cc[:,1].max()),[xdatarange[-1],y_origin-20])
+    textPrint.abspos(screen, "{:+.3f}".format(cc[:,1].min()),[xdatarange[-1],y_origin+yscale+5])
     textPrint.tprint(screen,'Velocity')
     textPrint.setColour(WHITE)
     mx,my = pygame.mouse.get_pos()
@@ -469,6 +472,7 @@ while not done:
     textPrint.tprint(screen, "a_kp: {:.3f}".format(a_kp))
     textPrint.tprint(screen, "a_ki: {:.3f}".format(a_ki))
     textPrint.tprint(screen, "a_kd: {:.3f}".format(a_kd))
+    textPrint.tprint(screen, "Noise: {:.3f}".format(noise_amplitude))
     textPrint.tprint(screen, " ")
     textPrint.tprint(screen, " ")
     if auto:

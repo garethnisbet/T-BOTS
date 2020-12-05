@@ -59,3 +59,42 @@ class pid(object):
            self.u = self.output_llimit
         return self.u
         
+
+'''
+This code serves as a guide to show how the filters work. 
+A filter_weighting of 0 zero will be equivalent to using
+the gyro only. A value of 1 will be equivalent to using the accelerometer  
+only. You can use serial_GetData.py to collect the data from the T-BOT
+to see how effective your filter is.
+
+This is not an efficient way of writing this in Python but the 
+structure is matched to the C code on the T-Bot for illustration.  
+'''
+
+angle = 0
+filter_weighting = 0.06
+'''
+def getAngleCFilter(pitch, gyro_rate, dt):
+    global angle
+    angle += gyro_rate * dt
+    angle += filter_weighting * (pitch - angle)
+    return angle
+'''
+
+
+class cfilter(object):
+    def __init__(self,theta, angle, alpha, filter_weighting, dt):
+        self.theta = theta
+        self.angle = angle
+        self.alpha = alpha
+        self.filter_weighting = filter_weighting
+        self.dt = dt
+        
+    def setFilterWeighting(self,filter_weighting):
+        self.filter_weighting = filter_weighting
+        
+    def getAngleCFilter(self, theta, gyro_rate, dt):
+
+        self.angle += self.filter_weighting * (theta - (self.angle + gyro_rate * dt))
+        return self.angle
+        

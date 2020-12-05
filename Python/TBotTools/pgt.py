@@ -44,7 +44,7 @@ class TextPrint(object):
 
 
 class SliderBar(object):
-    '''Text positioning class for PyGame'''
+    '''Creates interactive slide bars.'''
     def __init__(self,screen, pos, pos2, length, scale, thickness,
                 colour1, colour2, tolerence = []):
         self.screen = screen
@@ -88,7 +88,17 @@ class SliderBar(object):
         pygame.gfxdraw.aacircle(self.screen, self.pos[0]+self.length,self.pos[1], int(self.thickness/2), self.colour1)
         pygame.draw.circle(self.screen, self.colour1, (self.pos[0]+self.length, self.pos[1]), int(self.thickness/2))
         pygame.draw.circle(self.screen, self.colour2, self.pos2, int(self.thickness/1.5))
+        if self.pos2[0] <= self.pos[0]+self.tolerence:
+            self.pos2[0] =  self.pos[0]
+        if self.pos2[0] >= (self.pos[0]+self.length)-self.tolerence:
+            self.pos2[0] =  self.pos[0]+self.length
         pygame.gfxdraw.filled_circle(self.screen, self.pos2[0],self.pos2[1], int(self.thickness/1.5)-1, self.colour2)
         pygame.gfxdraw.filled_circle(self.screen, self.pos2[0],self.pos2[1], int(self.thickness/1.5), self.colour2)
         pygame.gfxdraw.aacircle(self.screen, self.pos2[0],self.pos2[1], int(self.thickness/1.5), self.colour2)
         return float((self.pos2[0]-self.pos[0])*self.scale/self.length)
+
+    
+    
+    
+    
+    

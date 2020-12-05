@@ -17,6 +17,7 @@ framerate = 30 # set to 30 for Rasoberry pi
 dt = 1.0/framerate
 framecount = 1
 record = 0
+noise_amplitude = 1
 #-----------------------------------------------------------------------
 #                           PID Tuning
 #-----------------------------------------------------------------------
@@ -31,8 +32,9 @@ record = 0
 #------------------------ Tuning for Earth -----------------------------
 sf = 1
 s_kpo, s_kio, s_kdo = 0.090, 0.256, 0.00
-a_kpo, a_kio, a_kdo = 12.651, 0.00, 0.26
+a_kpo, a_kio, a_kdo = 12.651, 0.072, 0.311
 #-----------------------------------------------------------------------
+
 sf_original = sf
 s_kp, s_ki, s_kd = s_kpo, s_kio, s_kdo
 a_kp, a_ki, a_kd = a_kpo, a_kio, a_kdo
@@ -157,6 +159,8 @@ cc[:,1]=np.array(pts2)[:,1]
 cc[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
 bb=np.copy(aa)
 dd=np.copy(cc)
+
+#screen, pos, pos2, length, scale, thickness, colour1, colour2, tolerence = []
 #sbar = pgt.SliderBar(screen, (200,800), s_kp, 800, 2.00, 10, (170,170,170),(10,10,10),20)
 sbar = pgt.SliderBar(screen, (100,475+300), s_kp, 230, 0.5, 5, (200,200,200),(255,10,10))
 sbar2 = pgt.SliderBar(screen, (100,490+300), s_ki, 230, 0.5, 5, (200,200,200),(255,10,10))
@@ -165,6 +169,7 @@ sbar3 = pgt.SliderBar(screen, (100,505+300), s_kd, 230, 0.5, 5, (200,200,200),(2
 sbar4 = pgt.SliderBar(screen, (100,535+300), a_kp, 230, 20.0, 5, (200,200,200),(255,10,10))
 sbar5 = pgt.SliderBar(screen, (100,550+300), a_ki, 230, 0.5, 5, (200,200,200),(255,10,10))
 sbar6 = pgt.SliderBar(screen, (100,565+300), a_kd, 230, 0.5, 5, (200,200,200),(255,10,10))
+sbar7 = pgt.SliderBar(screen, (100,580+300), noise_amplitude, 230, 2, 5, (200,200,200),(255,10,10))
 # -------- Main Program Loop -----------
 while not done:
     g = acc_g * sf
@@ -178,6 +183,8 @@ while not done:
     a_kp = sbar4.get_mouse_and_set()
     a_ki = sbar5.get_mouse_and_set()
     a_kd = sbar6.get_mouse_and_set()
+    
+    noise_amplitude = sbar7.get_mouse_and_set()
     angle_pid.set_PID(a_kp,a_ki,a_kd)
     
     
@@ -232,7 +239,7 @@ while not done:
         origin[0] = np.mod(origin[0],1920)
         tbot_rot = np.array(geom.rotxy(theta+np.pi,tbot))
         tbot_tup = tuple(map(tuple, tuple((tbot_rot+origin).astype(int))))
-        noise = np.random.rand(1)*np.pi/180
+        noise = np.random.rand(1)*np.pi/180*noise_amplitude
         spokes_rot = np.array(geom.rotxy((distance*mm2px/wheel_radius)+theta,spokes))
         spokes_tup = tuple(map(tuple, tuple((spokes_rot+origin).astype(int))))
         #---------------------------------------------------------------
@@ -293,12 +300,12 @@ while not done:
         pygame.draw.lines(screen, RED, False, (vdata),1)
     except:
         b=1
-    textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
-    textPrint.abspos(screen, "{:+.2f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
-    textPrint.tprint(screen,'Angle')
+    textPrint.abspos(screen, "{:+.3f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
+    textPrint.abspos(screen, "{:+.3f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
+    textPrint.tprint(screen,'Angle (Rad)')
     textPrint.setColour(RED)
-    textPrint.abspos(screen, "{:+.2f}".format(cc[:,1].max()),[xdatarange[-1],y_origin-20])
-    textPrint.abspos(screen, "{:+.2f}".format(cc[:,1].min()),[xdatarange[-1],y_origin+yscale+5])
+    textPrint.abspos(screen, "{:+.3f}".format(cc[:,1].max()),[xdatarange[-1],y_origin-20])
+    textPrint.abspos(screen, "{:+.3f}".format(cc[:,1].min()),[xdatarange[-1],y_origin+yscale+5])
     textPrint.tprint(screen,'Velocity')
     textPrint.setColour(WHITE)
     mx,my = pygame.mouse.get_pos()
@@ -351,69 +358,7 @@ while not done:
             targetvelocity =  0
         else:
             acc = 0 
-    #-------------------------------------------------------------------
-    #                          Tuning Keys
-    #-------------------------------------------------------------------
-    if keys[pgl.K_t]:
-        s_kp += 0.01
-        speed_pid.set_PID(s_kp,s_ki,s_kd)
-        sbar.set_pos2(s_kp) 
-    elif keys[pgl.K_f]:
-        s_kp -= 0.01
-        if s_kp <= 0:
-            s_kp = 0
-        speed_pid.set_PID(s_kp,s_ki,s_kd)
-        sbar.set_pos2(s_kp)
-    if keys[pgl.K_y]:
-        s_ki += 0.01
-        speed_pid.set_PID(s_kp,s_ki,s_kd)
-        sbar2.set_pos2(s_ki)
-    elif keys[pgl.K_g]:
-        s_ki -= 0.01
-        if s_ki <= 0:
-            s_ki = 0
-        speed_pid.set_PID(s_kp,s_ki,s_kd)
-        sbar2.set_pos2(s_ki)
-    if keys[pgl.K_u]:
-        s_kd += 0.01
-        speed_pid.set_PID(s_kp,s_ki,s_kd)
-        sbar3.set_pos2(s_kd)
-    elif keys[pgl.K_h]:
-        s_kd -= 0.01
-        if s_kd <= 0:
-            s_kd = 0
-        speed_pid.set_PID(s_kp,s_ki,s_kd)
-        sbar3.set_pos2(s_kd)
-    if keys[pgl.K_i]:
-        a_kp += 0.01
-        angle_pid.set_PID(a_kp,a_ki,a_kd)
-        sbar4.set_pos2(a_kp)
-    elif keys[pgl.K_j]:
-        a_kp -= 0.01
-        if a_kp <= 0:
-            a_kp = 0
-        angle_pid.set_PID(a_kp,a_ki,a_kd)
-        sbar4.set_pos2(a_kp)
-    if keys[pgl.K_o]:
-        a_ki += 0.01
-        angle_pid.set_PID(a_kp,a_ki,a_kd)
-        sbar5.set_pos2(a_ki)
-    elif keys[pgl.K_k]:
-        a_ki -= 0.01
-        if a_ki <= 0:
-            a_ki = 0
-        angle_pid.set_PID(a_kp,a_ki,a_kd)
-        sbar5.set_pos2(a_ki)
-    if keys[pgl.K_p]:
-        a_kd += 0.01
-        angle_pid.set_PID(a_kp,a_ki,a_kd)
-        sbar6.set_pos2(a_kd)
-    elif keys[pgl.K_l]:
-        a_kd -= 0.01
-        if a_kd <= 0:
-            a_kd = 0
-        angle_pid.set_PID(a_kp,a_ki,a_kd)
-        sbar6.set_pos2(a_kd)
+
     if keys[pgl.K_b]:
         sf += 0.01
     elif keys[pgl.K_v]:
@@ -471,6 +416,7 @@ while not done:
     textPrint.tprint(screen, "a_kp: {:.3f}".format(a_kp))
     textPrint.tprint(screen, "a_ki: {:.3f}".format(a_ki))
     textPrint.tprint(screen, "a_kd: {:.3f}".format(a_kd))
+    textPrint.tprint(screen, "Noise: {:.3f}".format(noise_amplitude))
     textPrint.tprint(screen, " ")
     textPrint.tprint(screen, " ")
     if auto:
