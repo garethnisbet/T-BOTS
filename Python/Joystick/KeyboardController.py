@@ -2,7 +2,8 @@
 #------------------------ Import Libraries ----------------------------#
 
 import pygame, sys, pygame.mixer, os
-sys.path.append('/home/pi/GitHub/T-BOTS/Python')
+path_above = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+sys.path.append(path_above)
 from pygame.locals import *
 from time import sleep, time
 import bluetooth as bt
@@ -51,6 +52,7 @@ bd_addr = '98:D3:91:FD:46:C9' # B
 #bd_addr = '98:D3:91:FD:46:9C' # T-Bot
 #bd_addr = '98:D3:32:21:3D:77' # Cinemon
 #bd_addr = '98:D3:51:FD:82:95' # 	George
+bd_addr = '98:D3:71:FD:44:F7'
 
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
