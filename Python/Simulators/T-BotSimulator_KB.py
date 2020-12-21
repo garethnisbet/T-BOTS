@@ -134,7 +134,7 @@ joytop = pygame.image.load(dirpath+'/joysticktopSmall.png')
 joybase = pygame.image.load(dirpath+'/joystickbase_250.png')
 # Do not use convert for the following images
 #------------------------- Button images -------------------------------
-posarrows = (815,620)
+posarrows = (790,620)
 arrow = np.array([[2,0],[2,150],[7,150],[0,165],[-7,150],[-2,150],[-2,0],[2,0]])
 textPrint = pgt.TextPrint(pygame.Color('white'))
 axis0 = 0
@@ -142,7 +142,7 @@ mx_origin,my_origin = 500, 540
 mxnew, mynew = 250, 250
 framecount = 1
 done = False
-xdatarange = [760,950]
+xdatarange = [720,920]
 y_origin = 450
 yscale = 100
 pts = deque(maxlen=xdatarange[1]-xdatarange[0])
@@ -304,13 +304,13 @@ while not done:
         pygame.draw.lines(screen, RED, False, (vdata),1)
     except:
         b=1
-    textPrint.abspos(screen, "{:+.3f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
-    textPrint.abspos(screen, "{:+.3f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
+    textPrint.abspos(screen, "{:.3e}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
+    textPrint.abspos(screen, "{:.3e}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
     textPrint.tprint(screen,'Angle (Rad)')
     textPrint.setColour(RED)
-    textPrint.abspos(screen, "{:+.3f}".format(cc[:,1].max()),[xdatarange[-1],y_origin-20])
-    textPrint.abspos(screen, "{:+.3f}".format(cc[:,1].min()),[xdatarange[-1],y_origin+yscale+5])
-    textPrint.tprint(screen,'Velocity')
+    textPrint.abspos(screen, "{:.3e}".format(cc[:,1].max()),[xdatarange[-1],y_origin-20])
+    textPrint.abspos(screen, "{:.3e}".format(cc[:,1].min()),[xdatarange[-1],y_origin+yscale+5])
+    textPrint.tprint(screen,'Velocity (m/s)')
     textPrint.setColour(WHITE)
     mx,my = pygame.mouse.get_pos()
     #print('x '+str(mx)+' y ' +str(my))
