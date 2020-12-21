@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import cv2
+# import numpy as np
+# from scipy import ndimage
 
 
 #       key value
@@ -38,8 +40,9 @@ def get_trackbar_values(range_filter):
     return values
 
 def main():
+    got_lowpass = 0
     range_filter = 'HSV'
-    camera = cv2.VideoCapture(0,cv2.CAP_V4L2)
+    camera = cv2.VideoCapture(2,cv2.CAP_V4L2)
     camera.set(cv2.CAP_PROP_AUTOFOCUS, 0)
     camera.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -49,6 +52,12 @@ def main():
 
     while True:
         success, image = camera.read()
+        # if got_lowpass == 0:
+            # lowpass = ndimage.gaussian_filter(image,0,0)
+            # got_lowpass = 1
+        # else:
+            # image = image-lowpass
+
         frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         v1_min, v2_min, v3_min, v1_max, v2_max, v3_max = get_trackbar_values(range_filter)
         thresh = cv2.inRange(frame_to_thresh, (v1_min, v2_min, v3_min), (v1_max, v2_max, v3_max))

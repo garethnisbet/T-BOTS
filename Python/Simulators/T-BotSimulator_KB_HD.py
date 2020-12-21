@@ -33,13 +33,16 @@ noise_amplitude = 1
 sf = 1
 s_kpo, s_kio, s_kdo = 0.090, 0.256, 0.00
 a_kpo, a_kio, a_kdo = 12.651, 0.072, 0.311
+# s_kpo, s_kio, s_kdo = 0.026, 0.174, 0.00
+# a_kpo, a_kio, a_kdo = 20.0, 0.03, 0.311
+
 #-----------------------------------------------------------------------
 
 sf_original = sf
 s_kp, s_ki, s_kd = s_kpo, s_kio, s_kdo
 a_kp, a_ki, a_kd = a_kpo, a_kio, a_kdo
 speed_pid = pid.pid(s_kp, s_ki, s_kd,[-10,10],[-5,5],dt)
-angle_pid = pid.pid(a_kp, a_ki, a_kd,[6, 6],[-1,1],dt)
+angle_pid = pid.pid(a_kp, a_ki, a_kd,[-6, 6],[-2,2],dt)
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
@@ -170,6 +173,7 @@ sbar4 = pgt.SliderBar(screen, (100,535+300), a_kp, 230, 20.0, 5, (200,200,200),(
 sbar5 = pgt.SliderBar(screen, (100,550+300), a_ki, 230, 0.5, 5, (200,200,200),(255,10,10))
 sbar6 = pgt.SliderBar(screen, (100,565+300), a_kd, 230, 0.5, 5, (200,200,200),(255,10,10))
 sbar7 = pgt.SliderBar(screen, (100,580+300), noise_amplitude, 230, 2, 5, (200,200,200),(255,10,10))
+sbar8 = pgt.SliderBar(screen, (100,580+300), acc_g, 130, 9.81, 5, (200,200,200),(255,10,10))
 # -------- Main Program Loop -----------
 while not done:
     g = acc_g * sf
@@ -185,7 +189,9 @@ while not done:
     a_kd = sbar6.get_mouse_and_set()
     
     noise_amplitude = sbar7.get_mouse_and_set()
+    acc_g = sbar8.get_mouse_and_set()
     angle_pid.set_PID(a_kp,a_ki,a_kd)
+    g = acc_g * sf
     
     
     screen.blit(arrowkeys,posarrows)
@@ -376,7 +382,7 @@ while not done:
         omega = 0
         velocity = 0
         distance = 0
-        theta = 0.001
+        theta = 0.01
         origin[0] = 500
         speed_pid.clear()
         angle_pid.clear()
@@ -417,6 +423,7 @@ while not done:
     textPrint.tprint(screen, "a_ki: {:.3f}".format(a_ki))
     textPrint.tprint(screen, "a_kd: {:.3f}".format(a_kd))
     textPrint.tprint(screen, "Noise: {:.3f}".format(noise_amplitude))
+    textPrint.tprint(screen, "g: {:.3f}".format(g))
     textPrint.tprint(screen, " ")
     textPrint.tprint(screen, " ")
     if auto:

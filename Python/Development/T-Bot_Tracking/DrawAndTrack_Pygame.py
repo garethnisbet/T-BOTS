@@ -517,7 +517,7 @@ if __name__ == '__main__':
             rotspeed = 200+angle_pid.output(0,-angle)
             oldtime = time()
             straightspeedfactor = 1
-            forwardspeed = 200+(pos_pid.output(0,-_distance)+FW                                                 )
+            forwardspeed = 200+(pos_pid.output(0,-_distance)+FW)
 
             #-----------------------------------------------------------
             #          build data string to sent to T-Bot

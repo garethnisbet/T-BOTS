@@ -6,7 +6,7 @@ plt.ion()
 save = 0 # Save way points
 imsave = 0
 tracksave = 1
-usecam = 0
+usecam = 1
 showconv = 1
 
 font = cv2.FONT_HERSHEY_SIMPLEX

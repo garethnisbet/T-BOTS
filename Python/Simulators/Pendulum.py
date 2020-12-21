@@ -22,7 +22,7 @@ origin = [500,180]
 arrow = np.array([[1,0],[1,150],[0,152],[-1,150],[-1,0],[1,0]]).astype(float)
 arrow = arrow/arrow.max()
 scalefactor = 240
-sbar = pgt.SliderBar(screen, (100,100), 1, 800, 2.00, 10, (170,170,170),(10,10,10),20)
+sbar = pgt.SliderBar(screen, (100,100), 1, 800, 2.00, 10, (170,170,170),(10,10,10),10)
 textPrint = pgt.TextPrint((255,255,255))
 textPrint.setfontsize(30)
 #-----------------------------------------------------------------------
