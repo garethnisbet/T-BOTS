@@ -296,8 +296,10 @@ while not done:
     aa[:,1]=np.array(pts)[:,1]
     cc[:,1]=np.array(pts2)[:,1]
     try:  
-        bb[:,1] = (yscale/((aa[:,1]-aa[:,1].max()).min())*(aa[:,1]-aa[:,1].max()))+y_origin
-        dd[:,1] = (yscale/((cc[:,1]-cc[:,1].max()).min())*(cc[:,1]-cc[:,1].max()))+y_origin
+        #bb[:,1] = (yscale/((aa[:,1]-aa[:,1].max()).min())*(aa[:,1]-aa[:,1].max()))+y_origin
+        bb[:,1] = (yscale/2/(np.abs(aa[:,1]).max())*aa[:,1])+y_origin+(yscale/2)
+        #dd[:,1] = (yscale/((cc[:,1]-cc[:,1].max()).min())*(cc[:,1]-cc[:,1].max()))+y_origin
+        dd[:,1] = (yscale/2/(np.abs(cc[:,1]).max())*cc[:,1])+y_origin+(yscale/2)
         gdata = tuple(map(tuple, tuple(bb)))
         vdata = tuple(map(tuple, tuple(dd)))
         pygame.draw.lines(screen, WHITE, False, (gdata),1)

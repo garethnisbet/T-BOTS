@@ -144,7 +144,7 @@ mx_origin,my_origin = 960, 840
 mxnew, mynew = 250, 250
 framecount = 1
 done = False
-xdatarange = [1550,1860]
+xdatarange = [1500,1810]
 y_origin = 750
 yscale = 120
 pts = deque(maxlen=xdatarange[1]-xdatarange[0])
@@ -173,7 +173,7 @@ sbar4 = pgt.SliderBar(screen, (100,535+300), a_kp, 230, 20.0, 5, (200,200,200),(
 sbar5 = pgt.SliderBar(screen, (100,550+300), a_ki, 230, 0.5, 5, (200,200,200),(255,10,10))
 sbar6 = pgt.SliderBar(screen, (100,565+300), a_kd, 230, 0.5, 5, (200,200,200),(255,10,10))
 sbar7 = pgt.SliderBar(screen, (100,580+300), noise_amplitude, 230, 2, 5, (200,200,200),(255,10,10))
-sbar8 = pgt.SliderBar(screen, (100,580+300), acc_g, 130, 9.81, 5, (200,200,200),(255,10,10))
+sbar8 = pgt.SliderBar(screen, (100,595+300), acc_g, 230, 9.81, 5, (200,200,200),(255,10,10))
 # -------- Main Program Loop -----------
 while not done:
     g = acc_g * sf
@@ -298,21 +298,23 @@ while not done:
     aa[:,1]=np.array(pts)[:,1]
     cc[:,1]=np.array(pts2)[:,1]
     try:  
-        bb[:,1] = (yscale/((aa[:,1]-aa[:,1].max()).min())*(aa[:,1]-aa[:,1].max()))+y_origin
-        dd[:,1] = (yscale/((cc[:,1]-cc[:,1].max()).min())*(cc[:,1]-cc[:,1].max()))+y_origin
+        # bb[:,1] = (yscale/((aa[:,1]-aa[:,1].max()).min())*(aa[:,1]-aa[:,1].max()))+y_origin
+        # dd[:,1] = (yscale/((cc[:,1]-cc[:,1].max()).min())*(cc[:,1]-cc[:,1].max()))+y_origin
+        bb[:,1] = (yscale/2/(np.abs(aa[:,1]).max())*aa[:,1])+y_origin+(yscale/2)
+        dd[:,1] = (yscale/2/(np.abs(cc[:,1]).max())*cc[:,1])+y_origin+(yscale/2)
         gdata = tuple(map(tuple, tuple(bb)))
         vdata = tuple(map(tuple, tuple(dd)))
         pygame.draw.lines(screen, WHITE, False, (gdata),1)
         pygame.draw.lines(screen, RED, False, (vdata),1)
     except:
         b=1
-    textPrint.abspos(screen, "{:+.3f}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
-    textPrint.abspos(screen, "{:+.3f}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
+    textPrint.abspos(screen, "{:+.3e}".format(aa[:,1].max()),[xdatarange[0],y_origin-20])
+    textPrint.abspos(screen, "{:+.3e}".format(aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
     textPrint.tprint(screen,'Angle (Rad)')
     textPrint.setColour(RED)
-    textPrint.abspos(screen, "{:+.3f}".format(cc[:,1].max()),[xdatarange[-1],y_origin-20])
-    textPrint.abspos(screen, "{:+.3f}".format(cc[:,1].min()),[xdatarange[-1],y_origin+yscale+5])
-    textPrint.tprint(screen,'Velocity')
+    textPrint.abspos(screen, "{:+.3e}".format(cc[:,1].max()),[xdatarange[-1],y_origin-20])
+    textPrint.abspos(screen, "{:+.3e}".format(cc[:,1].min()),[xdatarange[-1],y_origin+yscale+5])
+    textPrint.tprint(screen,'Velocity (m/s)')
     textPrint.setColour(WHITE)
     mx,my = pygame.mouse.get_pos()
     #print('x '+str(mx)+' y ' +str(my))
