@@ -47,7 +47,7 @@ def main():
     camera.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
     camera.set(cv2.CAP_PROP_BRIGHTNESS, 100)
-    camera.set(14, 10) # gain
+    # camera.set(14, 10) # gain
     setup_trackbars(range_filter)
 
     while True:

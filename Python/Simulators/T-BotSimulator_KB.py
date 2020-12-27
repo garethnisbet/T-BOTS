@@ -40,7 +40,7 @@ sf_original = sf
 s_kp, s_ki, s_kd = s_kpo, s_kio, s_kdo
 a_kp, a_ki, a_kd = a_kpo, a_kio, a_kdo
 speed_pid = pid.pid(s_kp, s_ki, s_kd,[-10,10],[-5,5],dt)
-angle_pid = pid.pid(a_kp, a_ki, a_kd,[-6, 6],[-2,2],dt)
+angle_pid = pid.pid(a_kp, a_ki, a_kd,[-10, 10],[-5,5],dt)
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
@@ -188,6 +188,9 @@ while not done:
     
     noise_amplitude = sbar7.get_mouse_and_set()
     acc_g = sbar8.get_mouse_and_set()
+    if acc_g == 0:
+        acc_g = 0.001
+        sbar8.set_pos2(acc_g)
     angle_pid.set_PID(a_kp,a_ki,a_kd)
     g = acc_g * sf
     
@@ -197,7 +200,7 @@ while not done:
     #-------------------------------------------------------------------
     #                            The Physics
     #-------------------------------------------------------------------
-    if theta >= -np.pi/2.2 and theta <= np.pi/2.2:
+    if theta >= -np.pi/2.0 and theta <= np.pi/2.0:
         alpha =  np.sin(theta)*g/h
         h_acc = (alpha * R)+acc # Accounts for horizontal acceleration
                                 # produced from the rotation of the 

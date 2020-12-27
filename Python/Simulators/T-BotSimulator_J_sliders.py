@@ -28,7 +28,9 @@ dt = 1.0/framerate
 #------------------------ Tuning for Earth -----------------------------
 sf = 1
 s_kpo, s_kio, s_kdo = 0.090, 0.256, 0.00
-a_kpo, a_kio, a_kdo = 12.651, 0.00, 0.26
+a_kpo, a_kio, a_kdo = 12.651, 0.072, 0.311
+# s_kpo, s_kio, s_kdo = 0.026, 0.174, 0.00
+# a_kpo, a_kio, a_kdo = 20.0, 0.03, 0.311
 #-----------------------------------------------------------------------
 sf_original = sf
 s_kp, s_ki, s_kd = s_kpo, s_kio, s_kdo

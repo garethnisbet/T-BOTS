@@ -48,6 +48,7 @@ mxnew, mynew = 250, 250
 oldvals = [0,0,0,0]
 sendcount = 0
 sendstring = '200200Z'
+buttonstring = '200200Z'
 #----------------------------------------------------------------------#
 #                     For Linux / Raspberry Pi
 #----------------------------------------------------------------------#
@@ -60,6 +61,7 @@ sendstring = '200200Z'
 #bd_addr = '98:D3:32:21:3D:77' # Cinemon
 #bd_addr = '98:D3:51:FD:82:95' # 	George
 bd_addr = '98:D3:71:FD:44:F7'
+bd_addr = '98:D3:A1:FD:42:5C' # HC-05
 
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
@@ -76,7 +78,7 @@ btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
 
-
+btcom.setTries(5)
 def send(sendstr,sendcount,cmd_write):
     global starttime
     sendcount = btcom.send_data(sendstr,sendcount)
@@ -325,16 +327,17 @@ while not done:
         
         if c1==1:
             sendstring = str(jx)+str(jy)
+            sendcount = send(sendstring,sendcount,RecordMacro)
 
         # else:
             # if np.sum(keys)==0:
                 # sendstring = '200200Z'
         mxnew = mx
         mynew = my
-    sendcount = send(sendstring,sendcount,RecordMacro)
+        
 
-    if c1==0 and keys[K_LEFT]+keys[K_RIGHT]+keys[K_UP]+keys[K_DOWN]==0:
-        sendcount = send('200200Z',sendcount,RecordMacro) 
+
+
     
     screen.blit(joybase,(mx_origin-125,my_origin-125))
     screen.blit(joytop,(mx-40,my-40))    
@@ -357,6 +360,9 @@ while not done:
 
     textPrint.setColour(RED)
     textPrint.setfontsize(20)
+    
+    if c1==0 and keys[K_LEFT]+keys[K_RIGHT]+keys[K_UP]+keys[K_DOWN]==0:
+        sendcount = send('200200Z',sendcount,RecordMacro)
     if RecordMacro:
         textPrint.tprint(screen, 'Recording Macro')
     if PlayMacro:
@@ -384,7 +390,9 @@ while not done:
     # Update the screen with what we've drawn.
 
     pygame.display.flip()
-
+    print(buttonstring)
+    print(sendcount)
+    print(sendstring)
     # Limit to 20 frames per second.
     clock.tick(20)
     

@@ -9,6 +9,7 @@ class bt_connect(object):
         self.port = port
         self.lib = lib
         self.baudrate = baudrate
+        self.numtries = 2
     def connect(self,con):
         '''Makes BLuetooth connection.'''
         if con == 1:
@@ -54,6 +55,8 @@ class bt_connect(object):
                 return 0
             except:
                 return 0
+    def setTries(self, tries):
+        self.numtries = tries
                 
     def connected(self):
         '''Checks status of BLuetooth connection.'''
@@ -72,7 +75,7 @@ class bt_connect(object):
         '''Sends data of the form '200200Z' over Bluetooth''' 
         try:
             if sendstr == '200200Z':
-                if sendtwice <= 2:
+                if sendtwice <= self.numtries:
                     builtstr = chr(0X02)+sendstr+chr(0X03)
                     if self.lib == 'PySerial':
                         self.sock.write(builtstr.encode(encoding='utf-8'))
