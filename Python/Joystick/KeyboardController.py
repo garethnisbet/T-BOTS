@@ -390,9 +390,6 @@ while not done:
     # Update the screen with what we've drawn.
 
     pygame.display.flip()
-    print(buttonstring)
-    print(sendcount)
-    print(sendstring)
     # Limit to 20 frames per second.
     clock.tick(20)
     
