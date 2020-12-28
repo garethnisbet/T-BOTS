@@ -40,21 +40,21 @@ float speedpidsampletime = 2;
 float gyropidsampletime = 2;
 float filter_weighting = 0.015;
 float speedKp=0.10, speedKi=0, speedKd=0.00;
-double  KPS = 0.10, KP = 4.20, KI = 65, KPS_last, KP_last, KI_last;
-String sendKPS, sendKP, sendgtrim;
-double gyroKp=4.2, gyroKi=65, gyroKd=0.0;
+double  KPS = 0.10, KIS = 65, KDS = 0, KP = 4.20, KI = 65, KD = 0;
+String sendKPS, sendKIS, sendKDS, sendKP, sendKI, sendKD, sendgtrim;
 
-//double speedKd=0.00, KPS = 0.02, KP = 2.00, KI = 55, KPS_last, KP_last, KI_last;
+
+//double speedKd=0.00, KPS = 0.02, KP = 2.00, KI = 55;
 //String sendKPS, sendKP, sendgtrim;
 //double gyroKp=2.0, gyroKi=35, gyroKd=0.0;
 
 float plotrange[2] = {-10, 10};
 
 double speedSetpoint, speedInput, speedOutput;
-PID speedPID(&speedInput, &speedOutput, &speedSetpoint, speedKp, speedKi, speedKd, DIRECT);
+PID speedPID(&speedInput, &speedOutput, &speedSetpoint, KPS, KIS, KDS, DIRECT);
 
 double gyroySetpoint, gyroyInput, gyroyOutput;
-PID gyroyPID(&gyroyInput, &gyroyOutput, &gyroySetpoint, gyroKp, gyroKi, gyroKd, DIRECT);
+PID gyroyPID(&gyroyInput, &gyroyOutput, &gyroySetpoint, KP, KI, KD, DIRECT);
 
 ///////////////////   Setup Gyro with Combination Filter   /////////////////////
 
@@ -222,7 +222,7 @@ void setTuningCallBack(){
     incflag = 1;
     refreshTuningFields(array1[7]);
     speedPID.SetTunings(KPS, speedKi, speedKd);
-    gyroyPID.SetTunings(KP, KI, gyroKd);
+    gyroyPID.SetTunings(KP, KI, KD);
     
 
 }
