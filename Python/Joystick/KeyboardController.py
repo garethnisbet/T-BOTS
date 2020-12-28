@@ -6,7 +6,10 @@ path_above = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
 sys.path.append(path_above)
 from pygame.locals import *
 from time import sleep, time
-import bluetooth as bt
+try:
+    import bluetooth as bt
+except:
+    print('Skipping bluetooth import. Not required for Mac') 
 from TBotTools import tbt, pgt
 from collections import deque
 import numpy as np
@@ -60,8 +63,8 @@ buttonstring = '200200Z'
 #bd_addr = '98:D3:91:FD:46:9C' # T-Bot
 #bd_addr = '98:D3:32:21:3D:77' # Cinemon
 #bd_addr = '98:D3:51:FD:82:95' # 	George
-bd_addr = '98:D3:71:FD:44:F7'
-bd_addr = '98:D3:A1:FD:42:5C' # HC-05
+# bd_addr = '98:D3:71:FD:44:F7'
+bd_addr = '98:D3:A1:FD:42:5C' # Trailblazer
 
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez')

@@ -50,7 +50,7 @@ else:
 camwidth = 640
 camheight = 360
 camorigin = origin
-cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
+cap = cv2.VideoCapture(2,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, camwidth)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, camheight)
@@ -170,7 +170,8 @@ sendcount = 0
 # bd_addr = '98:D3:51:FD:82:95' # George
 # bd_addr = '98:D3:91:FD:46:C9' # B
 #bd_addr = '98:D3:32:21:3D:77'
-bd_addr = '98:D3:71:FD:44:F7'
+# bd_addr = '98:D3:71:FD:44:F7'
+bd_addr = '98:D3:A1:FD:42:5C' # Trailblazer
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Raspberry Pi
 #btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -591,7 +592,7 @@ if __name__ == '__main__':
             pygame.draw.lines(screen, (255,255,255,255), False, (gdata),1)
             pygame.draw.lines(screen, (255,0,0,255), False, (vdata),1)
         except:
-            print('Plot Error')
+            print('Colour disks not detected')
 
         pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
         pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[-1],y_origin),(xdatarange[-1],y_origin+yscale)),1)

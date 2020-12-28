@@ -39,14 +39,14 @@ else:
     coordinate = []
 
 # cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
+cap = cv2.VideoCapture(2,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 
 success, frame = cap.read()
 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-cap.release()
+# cap.release()
 pygame.init()
 screen = pygame.display.set_mode((633, 359), 0, 0)
 canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
@@ -256,8 +256,9 @@ sendcount = 0
 # bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 # bd_addr = '98:D3:51:FD:82:95' # George
 # bd_addr = '98:D3:91:FD:46:C9' # B
-#bd_addr = '98:D3:32:21:3D:77'
-bd_addr = '98:D3:71:FD:44:F7'
+# bd_addr = '98:D3:32:21:3D:77'
+# bd_addr = '98:D3:71:FD:44:F7'
+bd_addr = '98:D3:A1:FD:42:5C' # Trailblazer
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Raspberry Pi
 #btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -301,10 +302,6 @@ if interpfactor != 1:
 #-----------------------   Start main loop ----------------------------#
 ########################################################################
 
-cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
-cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 
 
 oldtime = time()
