@@ -26,7 +26,7 @@ textPrint.setlineheight(25)
 background = pygame.image.load(dirpath+'/BGTracker.png')
 scalefactor = 1
 #origin =  [636/2,357/2]
-origin =  [180,35]
+origin =  [130,20]
 showline = 0
 drawplot = 1
 interpfactor = 5
@@ -62,7 +62,7 @@ success, frame = cap.read()
 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 #cap.release()
 pygame.init()
-screen0 = pygame.display.set_mode((1000, 359), 0, 0)
+screen0 = pygame.display.set_mode((900, 590), 0, 0)
 canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
 
 x = []
@@ -90,9 +90,9 @@ angle = 0
 # sets the length of the trail
 angle = 0
 _distance = 0
-xdatarange = [640,940]
-y_origin = 450
-yscale = 180
+xdatarange = [618,834]
+y_origin = 438
+yscale = 100
 plot_pts = deque(maxlen=xdatarange[1]-xdatarange[0])
 plot_pts2 = deque(maxlen=xdatarange[1]-xdatarange[0])
 
@@ -121,11 +121,14 @@ pts2 = deque(maxlen=10)
 #                        Artificial Lighting
 #----------------------------------------------------------------------#
 
-greenLower = (33,28,190)    # place green disc on the left
-greenUpper = (117,255,255) 
+greenLower = (50,44,126)    # place green disc on the left
+greenUpper = (96,255,255) 
+
  
-pinkLower = (90,80,120)       
+pinkLower = (71,56,184)       
 pinkUpper = (255,255,255) # place pink disc on the right
+
+
 
 #----------------------------------------------------------------------#
 #                                  Sunny
@@ -171,7 +174,8 @@ sendcount = 0
 # bd_addr = '98:D3:91:FD:46:C9' # B
 #bd_addr = '98:D3:32:21:3D:77'
 # bd_addr = '98:D3:71:FD:44:F7'
-bd_addr = '98:D3:A1:FD:42:5C' # Trailblazer
+
+bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Raspberry Pi
 #btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -218,7 +222,7 @@ if interpfactor != 1:
 oldtime = time()
 done = 0
 
-screen = pygame.display.set_mode((1000, 700))
+screen = pygame.display.set_mode((900, 590))
 
 # sets the length of the trail
 pts = deque(maxlen=100)
@@ -252,19 +256,20 @@ akp_old = akp_o
 aki_old = aki_o
 akd_old = akd_o
 
+barcolour = (150,150,150)
+spotcolour = (255,10,0)
+sbar = pgt.SliderBar(screen, (100,450-30), pkp_o, 460, 5, 4, barcolour,spotcolour)
+sbar2 = pgt.SliderBar(screen, (100,475-30), pki_o, 460, 5, 4, barcolour,spotcolour)
+sbar3 = pgt.SliderBar(screen, (100,500-30), pkd_o, 460, 0.5, 4, barcolour,spotcolour)
 
-sbar = pgt.SliderBar(screen, (100,455), pkp_o, 460, 5, 6, (200,200,200),(255,10,10))
-sbar2 = pgt.SliderBar(screen, (100,480), pki_o, 460, 5, 6, (200,200,200),(255,10,10))
-sbar3 = pgt.SliderBar(screen, (100,505), pkd_o, 460, 0.5, 6, (200,200,200),(255,10,10))
-
-sbar4 = pgt.SliderBar(screen, (100,555), akp_o, 460, 5, 6, (200,200,200),(255,10,10))
-sbar5 = pgt.SliderBar(screen, (100,580), aki_o, 460, 5, 6, (200,200,200),(255,10,10))
-sbar6 = pgt.SliderBar(screen, (100,605), akd_o, 460, 0.5, 6, (200,200,200),(255,10,10))
-sbar7 = pgt.SliderBar(screen, (100,655), FW, 460, 100, 4, (200,200,200),(255,10,10))
+sbar4 = pgt.SliderBar(screen, (100,525-30), akp_o, 460, 5, 4, barcolour,spotcolour)
+sbar5 = pgt.SliderBar(screen, (100,550-30), aki_o, 460, 5, 4, barcolour,spotcolour)
+sbar6 = pgt.SliderBar(screen, (100,575-30), akd_o, 460, 0.5, 4, barcolour,spotcolour)
+sbar7 = pgt.SliderBar(screen, (100,600-30), FW, 460, 100, 4, barcolour,spotcolour)
 
 pos_pid = pid.pid(pkp_o,pki_o,pkd_o,[-10,10],[0,20],dt)
 angle_pid = pid.pid(akp_o,aki_o,akd_o,[-15,15],[-60,60],dt)
-pygame.display.set_caption("Tuning")
+pygame.display.set_caption("Tracking")
 
 
 
@@ -591,8 +596,8 @@ if __name__ == '__main__':
             vdata = tuple(map(tuple, tuple(plot_dd)))
             pygame.draw.lines(screen, (255,255,255,255), False, (gdata),1)
             pygame.draw.lines(screen, (255,0,0,255), False, (vdata),1)
-        except:
-            print('Colour disks not detected')
+        except Exception:
+            pass
 
         pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
         pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[-1],y_origin),(xdatarange[-1],y_origin+yscale)),1)
@@ -609,18 +614,15 @@ if __name__ == '__main__':
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
         screen.blit(frame,camorigin)
-        textPrint.abspos(screen, "Tuning Parameters",(10,400))
-        textPrint.tprint(screen, " ")
-        textPrint.tprint(screen, "pkp: {:.3f}".format(pkp))
+        textPrint.abspos(screen, "pkp: {:.3f}".format(pkp),(10,416))
         textPrint.tprint(screen, "pki: {:.3f}".format(pki))
         textPrint.tprint(screen, "pkd: {:.3f}".format(pkd))
-        textPrint.tprint(screen, " ")
         textPrint.tprint(screen, "akp: {:.3f}".format(akp))
         textPrint.tprint(screen, "aki: {:.3f}".format(aki))
         textPrint.tprint(screen, "akd: {:.3f}".format(akd))
-        textPrint.tprint(screen, " ")
         textPrint.tprint(screen, "FW: {:.3f}".format(FW))
-        textPrint.abspos(screen, textstr,(450,410))
+        textPrint.abspos(screen, textstr,(450,425))
+
         textPrint.tprint(screen,textstr2)
         try:
             orient = geom.orientation(center2,center)

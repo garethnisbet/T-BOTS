@@ -38,7 +38,7 @@ else:
     coordinate = []
 
 # cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture(3,cv2.CAP_V4L2)
+cap = cv2.VideoCapture(2,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)

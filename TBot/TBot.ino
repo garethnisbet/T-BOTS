@@ -32,7 +32,7 @@ int incflag;
 char character;
 ///////   Tuning ////////////////////////////////////////////
 
-float gtrim = -4.4 , rtrim = 0.0;
+float gtrim = -1.55 , rtrim = 0.0;
 
 
 float controller_sensitivity = 1.5, spinval, spinfactor = 0.8;

@@ -44,13 +44,14 @@ sendcount = 0
 #               For Linux / Raspberry Pi
 #------------------------------------------------------------------
 #bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
-bd_addr = '98:D3:71:FD:44:F7' # Returned :(
-bd_addr = '98:D3:91:FD:46:C9'
-bd_addr = '98:D3:91:FD:46:9C'
-bd_addr = '98:D3:51:FD:82:95'
-bd_addr = '98:D3:91:FD:46:9C' # T-Bot
-bd_addr = '98:D3:A1:FD:42:5C' # HC-05
+# bd_addr = '98:D3:71:FD:44:F7' # Returned :(
+# bd_addr = '98:D3:91:FD:46:C9'
+# bd_addr = '98:D3:91:FD:46:9C'
+# bd_addr = '98:D3:51:FD:82:95' # George
+# bd_addr = '98:D3:91:FD:46:9C' # T-Bot
+# bd_addr = '98:D3:A1:FD:42:5C' # HC-05
 #bd_addr = '98:D3:51:FD:82:95'
+bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
 
 
 port = 1
