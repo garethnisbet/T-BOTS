@@ -24,6 +24,7 @@ textPrint = pgt.TextPrint((255,255,255))
 textPrint.setlineheight(25)
 
 background = pygame.image.load(dirpath+'/BGTracker.png')
+connecting = pygame.image.load(dirpath+'/offline.png')
 scalefactor = 1
 #origin =  [636/2,357/2]
 origin =  [130,20]
@@ -352,8 +353,12 @@ if __name__ == '__main__':
         #---------------------------------------------------------------
         if ~btcom.connected():
             tries = 0
+
             while btcom.connected() < 1 and tries < 10:
+                screen.blit(connecting,(0,0))
+                pygame.display.flip()
                 print('Connecting ...')
+                
                 try:
                     print('Try '+str(tries+1)+' of 10')
                     btcom.connect(0)
