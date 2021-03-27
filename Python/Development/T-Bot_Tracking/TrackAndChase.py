@@ -100,10 +100,6 @@ plot_cc[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
 plot_bb=np.copy(plot_aa)
 plot_dd=np.copy(plot_cc)
 
-
-
-
-
 #----------------------------------------------------------------------#
 #                        Set HSV Thresholds
 #            Use getHSVThresh.py to find the correct values
