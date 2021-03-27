@@ -7,15 +7,10 @@ dirpath = path_above+'/Joystick/Images/HUD'
 sys.path.append(path_above)
 from collections import deque
 import numpy as np
-import matplotlib.pyplot as plt
 from TBotTools import tbt, pid, geometry, pgt
-from scipy.interpolate import interp1d
 from time import time
-plt.ion()
 import bluetooth as bt
-from datetime import datetime
 import pygame
-from pygame.locals import *
 from sys import exit
 import pygame
 import pygame.gfxdraw
@@ -26,9 +21,8 @@ textPrint.setlineheight(25)
 background = pygame.image.load(dirpath+'/BGTracker.png')
 connecting = pygame.image.load(dirpath+'/offline.png')
 scalefactor = 1
-#origin =  [636/2,357/2]
-origin =  [130,20]
-showline = 0
+origin =  [130,20] # Cam image origin
+
 drawplot = 1
 interpfactor = 5
 flag = 0
@@ -50,10 +44,9 @@ else:
 
 camwidth = 640
 camheight = 360
-vto = np.array([320,180])
 camorigin = origin
 
-cam = cv2.VideoCapture(2,cv2.CAP_V4L2)
+cam = cv2.VideoCapture(0,cv2.CAP_V4L2)
 cam.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cam.set(28, 0)
 cam.set(cv2.CAP_PROP_GAIN,0)
@@ -61,9 +54,9 @@ cam.set(cv2.CAP_PROP_BRIGHTNESS,0)
 cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
 cam.set(cv2.CAP_PROP_BRIGHTNESS, 100)
-
-maskgridL = np.meshgrid(np.r_[0:360],np.r_[0:20])
-maskgridR = np.meshgrid(np.r_[0:360],np.r_[640-20:640])
+sidebarwidth = 1
+maskgridL = np.meshgrid(np.r_[0:360],np.r_[0:sidebarwidth])
+maskgridR = np.meshgrid(np.r_[0:360],np.r_[640-sidebarwidth:640])
 
 success, frame = cam.read()
 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -72,34 +65,21 @@ pygame.init()
 screen0 = pygame.display.set_mode((1000, 359), 0, 0)
 canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
 
+# empty lists for disk positions
 x = []
 y = []
 x2 = []
 y2 = []
 x3 = []
 y3 = []
-starttime = []
-endtime = []
-laptime = 1000
-oldlaptime = 500
 
+tolerance = 90
+angle = 0 # inital target angle
+distance = 0 # initial target distance
 
-textstr = ''
-textstr2 = ''
-
-pathindex = 0
-timeflag = 0
-pathindex = 0
-bendscalefactor = 10
-rdeadban = 2
-tolerance = 10
-angle = 0
-
-
-# sets the length of the trail
-angle = 0
-_distance = 0
+# setup plotting
 xdatarange = [618,834]
+iii = xdatarange[1]-xdatarange[0]
 y_origin = 438
 yscale = 100
 plot_pts = deque(maxlen=xdatarange[1]-xdatarange[0])
@@ -110,7 +90,7 @@ for ii in range(xdatarange[0],xdatarange[1]):
     plot_pts.appendleft((ii,0))
     plot_pts2.appendleft((ii,0))
     plot_pts3.appendleft((ii,0))
-iii = 200
+
 plot_aa = np.zeros((len(plot_pts),2))
 plot_aa[:,1]=np.array(plot_pts)[:,1]
 plot_aa[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
@@ -121,76 +101,34 @@ plot_bb=np.copy(plot_aa)
 plot_dd=np.copy(plot_cc)
 
 
-pts = deque(maxlen=10)
-pts2 = deque(maxlen=10)
+
 
 
 #----------------------------------------------------------------------#
 #                        Set HSV Thresholds
 #            Use getHSVThresh.py to find the correct values
-#
-#                        Artificial Lighting
 #----------------------------------------------------------------------#
 
-greenLower = (27,94,49)  # place green disc on the left.
-greenUpper = (109,255,255) 
-
+greenLower = (41,76,0)  # place green disc on the left.
+greenUpper = (93,255,255) 
  
-pinkLower = (0,138,45)       
-pinkUpper = (2,255,255) # place pink disc on the right
+redLower = (145,81,27)       
+redUpper = (255,255,255) # place red disc on the right
 
+blueLower = (98,234,126)       
+blueUpper = (158,255,255) # Blue fin on helmet
 
-blueLower = (53,150,23)       
-blueUpper = (255,255,255) # Blue fin on helmet
-
-# blueLower = (0,39,106)       
-# blueUpper = (18,255,255) # For gold helmet
-
-#----------------------------------------------------------------------#
-#                                  Sunny
-#----------------------------------------------------------------------#
-
-#greenLower = (49,13,202)	
-#greenUpper = (82,121,225)
-
-#pinkLower = (142,54,146)    
-#pinkUpper = (255,255,255)  
-
-#----------------------------------------------------------------------#
-
-
-#----------------------------------------------------------------------#
-#                                  Dull
-#----------------------------------------------------------------------#
-
-#greenLower = (60,55,216)	
-#greenUpper = (80,255,255)
-
-#pinkLower = (126,33,210)    
-#pinkUpper = (255,255,255)  
-
-#----------------------------------------------------------------------#
-
-
-
-
-
-#--------------------  Define functions  ------------------------------#
-
-
-#--------------------- Setup Bluetooth --------------------------------#
+#------------- Initialise Bluetooth data variables --------------------#
 data = [0,0,0,0]
 sendcount = 0
 
 #------------------------------------------------------------------
 #               For Linux / Raspberry Pi
+#       use: 'hcitool scan' to scan for your T-Bot address
 #------------------------------------------------------------------
-# bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
-# bd_addr = '98:D3:51:FD:82:95' # George
-# bd_addr = '98:D3:91:FD:46:C9' # B
-#bd_addr = '98:D3:32:21:3D:77'
-# bd_addr = '98:D3:71:FD:44:F7'
-bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
+
+bd_addr = '98:D3:51:FD:82:95' # George
+#bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
 
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Raspberry Pi
@@ -205,19 +143,6 @@ btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Rasp
 #bd_addr = 'Empty'
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
-
-#-----------------  Generate target function  -------------------------#
-
-amplitude = 80
-frequency = 1
-phase = 0
-stepsize = 5
-border = 80 # sets the number of pixels from the edge which wont be occupied by the function.
-bg = frame.shape[0]/2 # this is the background of the sin function
-
-
-
-
 ########################################################################
 #-----------------------   Start main loop ----------------------------#
 ########################################################################
@@ -227,21 +152,12 @@ done = 0
 
 screen = pygame.display.set_mode((900, 590))
 
-# sets the length of the trail
-pts = deque(maxlen=100)
-pts2 = deque(maxlen=100)
+rotspeed = 200 # range is 100 to 300 with 200 being zero
 
-pathindex = 0
-
-bendscalefactor = 10
-rdeadban = 2
-tolerance = 30
-
-rotspeed = 200
-speedfactor = 0.3
-
+#-----------------------------------------------------------------------
+#                         Tracking PID setup
+#-----------------------------------------------------------------------
 dt = 0.005
-
 feedforward = 2
 pkp_o = 2.02
 pki_o = 0.4
@@ -258,7 +174,12 @@ pkd_old = pkd_o
 akp_old = akp_o
 aki_old = aki_o
 akd_old = akd_o
+pos_pid = pid.pid(pkp_o,pki_o,pkd_o,[-10,10],[0,20],dt)
+angle_pid = pid.pid(akp_o,aki_o,akd_o,[-15,15],[-60,60],dt)
 
+#-----------------------------------------------------------------------
+#                         Create slider bars
+#-----------------------------------------------------------------------
 barcolour = (150,150,150)
 spotcolour = (255,10,0)
 sbar = pgt.SliderBar(screen, (100,450-30), pkp_o, 460, 5, 4, barcolour,spotcolour)
@@ -270,33 +191,26 @@ sbar5 = pgt.SliderBar(screen, (100,550-30), aki_o, 460, 5, 4, barcolour,spotcolo
 sbar6 = pgt.SliderBar(screen, (100,575-30), akd_o, 460, 0.5, 4, barcolour,spotcolour)
 sbar7 = pgt.SliderBar(screen, (100,600-30), FW, 460, 100, 4, barcolour,spotcolour)
 
-pos_pid = pid.pid(pkp_o,pki_o,pkd_o,[-10,10],[0,20],dt)
-angle_pid = pid.pid(akp_o,aki_o,akd_o,[-15,15],[-60,60],dt)
+
+
 pygame.display.set_caption("Track and Chase")
 
 if __name__ == '__main__':
-
-
-    success, frame = cam.read()
+    success, frame = cam.read() # get images from camera
     if not success:
         print('Failed to capture video')
         sys.exit(1)
-
-    #####################################################
-    #-----------------  Track T-Bot  -------------------#
-    #####################################################
-
+    #-------------------------------------------------------------------
+    #                   Track T-Bot  
+    #-------------------------------------------------------------------
     while cam.isOpened():
         success, frame = cam.read()
         if not success:
             print('Problems Connecting to Camera')
             break
         frame[maskgridL] = 0
-        frame[maskgridR] = 0
-        
-        # screen.fill((40,40,40))
+        frame[maskgridR] = 0       
         screen.blit(background,(0,0))
-        #screen.blit(tbot_ortho,(600,500))
         #---------------------------------------------------------------
         #                 Listen for user events
         #---------------------------------------------------------------
@@ -310,15 +224,12 @@ if __name__ == '__main__':
         pkp = sbar.get_mouse_and_set()
         pki = sbar2.get_mouse_and_set()
         pkd = sbar3.get_mouse_and_set()
-        
         akp = sbar4.get_mouse_and_set()
         aki = sbar5.get_mouse_and_set()
         akd = sbar6.get_mouse_and_set()
-        
         FW = sbar7.get_mouse_and_set()
-
         #---------------------------------------------------------------
-        #                      Update Tuning
+        #               Update tuning from slider bars
         #---------------------------------------------------------------
         if pkp != pkp_old:
             pos_pid.set_PID(pkp,pki,pkd)
@@ -346,27 +257,23 @@ if __name__ == '__main__':
 
         if FW_old != feedforward:
             angle_pid.set_PID(akp,aki,akd)
-
             feedforward = FW
         #---------------------------------------------------------------
         #            Check Status of Bluetooth Connection
         #---------------------------------------------------------------
         if ~btcom.connected():
             tries = 0
-
             while btcom.connected() < 1 and tries < 10:
                 screen.blit(connecting,(0,0))
                 pygame.display.flip()
-                print('Connecting ...')
-                
+                print('Connecting ...')              
                 try:
                     print('Try '+str(tries+1)+' of 10')
                     btcom.connect(0)
                     btcom.connect(1)
                     tries+=1
                 except:
-                    print('Something went wrong')
-                    
+                    print('Something went wrong')                  
             if btcom.connected() < 1:
                 print('Exiting Program')
                 sys.exit()
@@ -375,7 +282,7 @@ if __name__ == '__main__':
                 data = btcom.get_data(data)
                 
         #---------------------------------------------------------------
-        #          Track pink and green discs
+        #        Track red and green discs and oponents blue fin 
         #---------------------------------------------------------------
 
         blurred = cv2.GaussianBlur(frame, (11, 11), 0)
@@ -385,91 +292,67 @@ if __name__ == '__main__':
             if radius > 1:
                 cv2.circle(frame, (int(x), int(y)), int(radius),(0, 255, 0), 2)
                 cv2.circle(frame, center, 2, (0, 255, 0), -1)
-                pts.appendleft(center)
         except:
             pass
         try:
-            x2, y2, center2, radius2, M2, cents2 = geom.tracker(hsv, pinkLower, pinkUpper)
-
+            x2, y2, center2, radius2, M2, cents2 = geom.tracker(hsv, redLower, redUpper)
             if radius2 > 1:
                 cv2.circle(frame, (int(x2), int(y2)), int(radius2),(113,212,198), 2)
                 cv2.circle(frame, center2, 2, (113,212,198), -1)
-                pts2.appendleft(center2)
         except:
             pass
-
         try:
             x3, y3, center3, radius3, M3, cents3 = geom.tracker(hsv, blueLower, blueUpper)
-
             if radius3 > 1:
                 cv2.circle(frame, (int(x3), int(y3)), int(radius3),(113,212,198), 2)
                 cv2.circle(frame, center3, 2, (113,212,198), -1)
-                pts2.appendleft(center3)
         except:
             pass
 
-        
         #---------------------------------------------------------------
         #                     Control Strategy
         #---------------------------------------------------------------
         
         if x != [] and x2 !=[] and x3!=[]:
-            vto = center3 # target coordinate
-            _distance = geom.distance((x,y),(x2,y2),(x3,y3)) # distance to target coordinate
-            if np.abs(_distance) < tolerance:
-                pos_pid.clear()  
-                angle_pid.clear()
-                sendcount = btcom.send_data('200200Z',sendcount)
+            distance = geom.distance((x,y),(x2,y2),(x3,y3)) # distance to target coordinate
+            if np.abs(distance) < tolerance:
+                abc = 'You could add some extra logic here for battle AI'
+                #angle = geom.angle((x,y),(x2,y2),(x3,y3))+90 # Turn the T-Bot so spikes point to opponent
             else:
-                #-----------------------------------------------------------
-                #      Calculate angle and distance to way point
-                #-----------------------------------------------------------
                 angle = geom.angle((x,y),(x2,y2),(x3,y3))
-                rotspeed = 200+angle_pid.output(0,-angle)
-                oldtime = time()
-                straightspeedfactor = 1
-                forwardspeed = 200+(pos_pid.output(0,-_distance)+FW)
 
-                #-----------------------------------------------------------
-                #          build data string to sent to T-Bot
-                #-----------------------------------------------------------
-                rotspeed = '%03d' % rotspeed
-                forwardspeed = '%03d' % forwardspeed
-
-
-                #-----------------------------------------------------------
-                #                  Send Data To T-Bot
-                #-----------------------------------------------------------
-                sendstr = str(rotspeed)+str(forwardspeed)+'Z'
-                sendcount = btcom.send_data(sendstr,sendcount)
-
+            rotspeed = 200+angle_pid.output(0,-angle)
+            oldtime = time()
+            forwardspeed = 200+(pos_pid.output(0,-distance)+FW)
+            #-----------------------------------------------------------
+            #          build data string to send to T-Bot
+            #-----------------------------------------------------------
+            rotspeed = '%03d' % rotspeed
+            forwardspeed = '%03d' % forwardspeed
+            #-----------------------------------------------------------
+            #                  Send Data To T-Bot
+            #-----------------------------------------------------------
+            sendstr = str(rotspeed)+str(forwardspeed)+'Z'
+            sendcount = btcom.send_data(sendstr,sendcount)
+            
         #---------------------------------------------------------------
         #          Basic Trim Controls for The T-Bot
         #---------------------------------------------------------------
         if keys[pygame.K_t]:
-            buttonstring = '200200F' # Auto trim
-            sendcount = btcom.send_data(buttonstring,sendcount)
-        if keys[pygame.K_a]:
-            buttonstring = '200200E' # Auto trim
-            sendcount = btcom.send_data(buttonstring,sendcount)
-        if keys[pygame.K_y]:
             buttonstring = '200200T' # Auto trim
             sendcount = btcom.send_data(buttonstring,sendcount)
-            showline
+        if keys[pygame.K_a]:
+            buttonstring = '200200E' # -ve trim
+            sendcount = btcom.send_data(buttonstring,sendcount)
+        if keys[pygame.K_f]:
+            buttonstring = '200200F' # +ve trim
+            sendcount = btcom.send_data(buttonstring,sendcount)
+
         #---------------------------------------------------------------
-        #                    Show Or Hide Overlay
+        #            Reset tuning to default settings 
         #---------------------------------------------------------------
-        if keys[pygame.K_h]: # hide line
-            showline = 0
-        if keys[pygame.K_s]: # show line
-            showline = 1
-        if keys[pygame.K_t]: # show line
-            sendcount = btcom.send_data('200200T',sendcount)
-        if keys[pygame.K_e]: # show line
-            sendcount = btcom.send_data('200200E',sendcount)
-        if keys[pygame.K_f]: # show line
-            sendcount = btcom.send_data('200200F',sendcount)
-        if keys[pygame.K_r]:        
+
+        if keys[pygame.K_r]:       
             pos_pid.set_PID(pkp_o,pki_o,pkd_o)
             angle_pid.set_PID(akp_o,aki_o,akd_o)
             sbar.set_pos2(pkp_o)
@@ -482,13 +365,17 @@ if __name__ == '__main__':
             pos_pid.clear()
             angle_pid.clear()
 
-        if keys[pygame.K_q]:
+        if keys[pygame.K_q]: # Quit and exit
             cam.release()
             sendcount = btcom.send_data('200200Z',sendcount)
             btcom.connect(0)
             break
+            
+        #---------------------------------------------------------------
+        #            Add data points for plotting 
+        #---------------------------------------------------------------          
         plot_pts.appendleft((iii,angle))
-        plot_pts2.appendleft((iii,_distance))
+        plot_pts2.appendleft((iii,distance))
         iii+=1
         if iii > xdatarange[1]:
             iii = xdatarange[0]
@@ -527,8 +414,7 @@ if __name__ == '__main__':
         textPrint.tprint(screen, "aki: {:.3f}".format(aki))
         textPrint.tprint(screen, "akd: {:.3f}".format(akd))
         textPrint.tprint(screen, "FW: {:.3f}".format(FW))
-        textPrint.abspos(screen, textstr,(450,425))
-        textPrint.tprint(screen,textstr2)
+
         try:
             orient = geom.orientation(center2,center)
         except:

@@ -13,7 +13,7 @@ from datetime import datetime
 framecount = 1
 clock = pygame.time.Clock()
 dirpath = currentpath+'/Simulators/Images'
-framerate = 30 # set to 30 for Rasoberry pi
+framerate = 60 # set to 30 for Rasoberry pi
 dt = 1.0/framerate
 framecount = 1
 record = 0

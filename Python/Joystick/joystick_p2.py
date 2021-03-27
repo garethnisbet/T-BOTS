@@ -50,7 +50,7 @@ sendcount = 0
 bd_addr = '98:D3:51:FD:82:95' # George
 # bd_addr = '98:D3:91:FD:46:9C' # T-Bot
 # bd_addr = '98:D3:A1:FD:42:5C' # HC-05
-#bd_addr = '98:D3:51:FD:82:95'
+# bd_addr = '98:D3:51:FD:82:95'
 # bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
 
 
@@ -333,8 +333,8 @@ while not done:
     textPrint.tprint(screen, "kps: {}".format(str(oldvals[0])))
     textPrint.tprint(screen, "kp: {}".format(str(oldvals[1])))
     textPrint.tprint(screen, "trim: {}".format(str(oldvals[2])))
-    textPrint.tprint(screen, "Speed Factor: {}".format(str(speedfactor)))
-    textPrint.tprint(screen, "Speed Limit: {}%".format(str(speedlimit)))
+    textPrint.tprint(screen, "Speed Factor: {0:.2f}".format(speedfactor))
+    textPrint.tprint(screen, "Speed Limit: {0:.2f}%".format(speedlimit))
     textPrint.tprint(screen, "{} FPS".format(str(int(clock.get_fps()))))   
 
     textPrint.unindent()

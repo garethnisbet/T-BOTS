@@ -41,7 +41,7 @@ def get_trackbar_values(range_filter):
 got_lowpass = 0
 # range_filter = 'RGB'
 range_filter = 'HSV'
-cam = cv2.VideoCapture(2,cv2.CAP_V4L2)
+cam = cv2.VideoCapture(0,cv2.CAP_V4L2)
 cam.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cam.set(28, 0)
 cam.set(cv2.CAP_PROP_GAIN,0)

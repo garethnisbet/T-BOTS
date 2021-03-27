@@ -10,7 +10,6 @@ from TBotTools import tbt
 
 clock = pygame.time.Clock()
 t1 = 0
-starttime = time()
 
 # setup for plotting
 xdatarange = [280,520]
