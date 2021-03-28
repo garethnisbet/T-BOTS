@@ -118,10 +118,12 @@ blueUpper = (158,255,255) # Blue fin on helmet
 data = [0,0,0,0]
 sendcount = 0
 
-#------------------------------------------------------------------
+#----------------------------------------------------------------------#
 #               For Linux / Raspberry Pi
-#       use: 'hcitool scan' to scan for your T-Bot address
-#------------------------------------------------------------------
+#    use: 'hcitool scan' to scan for your T-Bot address
+#    Note: you will have to connect to the T-Bot using your 
+#    system's bluetooth application using the 1234 as the password
+#----------------------------------------------------------------------#
 
 bd_addr = '98:D3:51:FD:82:95' # George
 #bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
@@ -360,7 +362,6 @@ if __name__ == '__main__':
             sbar7.set_pos2(FW_o)
             pos_pid.clear()
             angle_pid.clear()
-
         if keys[pygame.K_q]: # Quit and exit
             cam.release()
             sendcount = btcom.send_data('200200Z',sendcount)
