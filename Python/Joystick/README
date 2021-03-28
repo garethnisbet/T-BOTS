@@ -11,6 +11,7 @@ Slow:   R2
 You can control the T-Bot with both left and right joysticks. The right stick gives slower finer control. Using the left stick for speed and the right stick for steering works very well.
 Using the left stick for speed and the right for steering works very well.
 
+💡 **Recommended Controllers :** joystick_p1.py, joystick_p2.py and KeyboardController.py if you don't have a generic wireless game controller 
 
 💡 **Note:** The USB version for the PS4 is more responsive than the Bluetooth version.
 
