@@ -8,44 +8,27 @@ sys.path.append(path_above)
 from collections import deque
 import numpy as np
 from TBotTools import tbt, pid, geometry, pgt
-from time import time
 import bluetooth as bt
 import pygame
 from sys import exit
-import pygame
 import pygame.gfxdraw
 pygame.init()
 textPrint = pgt.TextPrint((255,255,255))
 textPrint.setlineheight(25)
-
 background = pygame.image.load(dirpath+'/BGTracker.png')
 connecting = pygame.image.load(dirpath+'/offline.png')
 scalefactor = 1
 origin =  [130,20] # Cam image origin
-
-drawplot = 1
-interpfactor = 5
-flag = 0
 geom = geometry.geometry(1) # scale factor to convert pixels to mm
 arrow = np.array([[2,0],[2,50],[7,50],[0,65],[-7,50],[-2,50],[-2,0],[2,0]])
 bb = np.array([[0,0,],[0,1],[1,1],[2,0],[3,0],[4,0],[3,0],[2,0],[1,0]])
-########################################################################
-#-----------------------   Draw            ----------------------------#
-########################################################################
-filename = 'pathpoints.dat'
-if os.path.isfile(filename):
-    aa = np.loadtxt(filename)
-    aa[:,0] = aa[:,0]*scalefactor+origin[0]
-    aa[:,1] = aa[:,1]*scalefactor+origin[1]
-    coordinate = list(tuple(map(tuple,aa.astype(int))))
-else:
-    coordinate = []
 
-
+#----------------------------------------------------------------------#
+#                        Configure Camera
+#----------------------------------------------------------------------#
 camwidth = 640
 camheight = 360
 camorigin = origin
-
 cam = cv2.VideoCapture(0,cv2.CAP_V4L2)
 cam.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cam.set(28, 0)
@@ -58,26 +41,19 @@ sidebarwidth = 1
 maskgridL = np.meshgrid(np.r_[0:360],np.r_[0:sidebarwidth])
 maskgridR = np.meshgrid(np.r_[0:360],np.r_[640-sidebarwidth:640])
 
-success, frame = cam.read()
-frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-#cam.release()
-pygame.init()
-screen0 = pygame.display.set_mode((1000, 359), 0, 0)
-canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
-
-# empty lists for disk positions
+#----------------- empty lists for disk positions  --------------------#
 x = []
 y = []
 x2 = []
 y2 = []
 x3 = []
 y3 = []
-
-tolerance = 90
+tolerance = 20
 angle = 0 # inital target angle
 distance = 0 # initial target distance
-
-# setup plotting
+#----------------------------------------------------------------------#
+#                           Setup plotting
+#----------------------------------------------------------------------#
 xdatarange = [618,834]
 iii = xdatarange[1]-xdatarange[0]
 y_origin = 438
@@ -119,7 +95,8 @@ data = [0,0,0,0]
 sendcount = 0
 
 #----------------------------------------------------------------------#
-#               For Linux / Raspberry Pi
+#                    For Linux / Raspberry Pi
+#----------------------------------------------------------------------#
 #    use: 'hcitool scan' to scan for your T-Bot address
 #    Note: you will have to connect to the T-Bot using your 
 #    system's bluetooth application using the 1234 as the password
@@ -133,7 +110,7 @@ btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Rasp
 #btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
 #----------------------------------------------------------------------#
-#               For Windows and Mac
+#                       For Windows and Mac
 #----------------------------------------------------------------------#
 #port = 'COM5'
 #port = '/dev/tty.George-DevB'
@@ -141,20 +118,18 @@ btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Rasp
 #bd_addr = 'Empty'
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
 
-########################################################################
-#-----------------------   Start main loop ----------------------------#
-########################################################################
+#----------------------------------------------------------------------#
+#                         Start main loop 
+#----------------------------------------------------------------------#
 
-oldtime = time()
+
 done = 0
-
 screen = pygame.display.set_mode((900, 590))
-
-rotspeed = 200 # range is 100 to 300 with 200 being zero
 
 #-----------------------------------------------------------------------
 #                         Tracking PID setup
 #-----------------------------------------------------------------------
+rotspeed = 200 # range is 100 to 300 with 200 being zero
 dt = 0.005
 feedforward = 2
 pkp_o = 2.02
@@ -175,9 +150,9 @@ akd_old = akd_o
 pos_pid = pid.pid(pkp_o,pki_o,pkd_o,[-10,10],[0,20],dt)
 angle_pid = pid.pid(akp_o,aki_o,akd_o,[-15,15],[-60,60],dt)
 
-#-----------------------------------------------------------------------
+#----------------------------------------------------------------------#
 #                         Create slider bars
-#-----------------------------------------------------------------------
+#----------------------------------------------------------------------#
 barcolour = (150,150,150)
 spotcolour = (255,10,0)
 sbar = pgt.SliderBar(screen, (100,450-30), pkp_o, 460, 5, 4, barcolour,spotcolour)
@@ -189,15 +164,15 @@ sbar5 = pgt.SliderBar(screen, (100,550-30), aki_o, 460, 5, 4, barcolour,spotcolo
 sbar6 = pgt.SliderBar(screen, (100,575-30), akd_o, 460, 0.5, 4, barcolour,spotcolour)
 sbar7 = pgt.SliderBar(screen, (100,600-30), FW, 460, 100, 4, barcolour,spotcolour)
 
-
-
+#----------------------------------------------------------------------#
+#                       Set window name 
+#----------------------------------------------------------------------#
 pygame.display.set_caption("Track and Chase")
 
+#----------------------------------------------------------------------#
+#                      Start main loop
+#----------------------------------------------------------------------#
 if __name__ == '__main__':
-    success, frame = cam.read() # get images from camera
-    if not success:
-        print('Failed to capture video')
-        sys.exit(1)
     #-------------------------------------------------------------------
     #                   Track T-Bot  
     #-------------------------------------------------------------------
@@ -308,7 +283,7 @@ if __name__ == '__main__':
             pass
 
         #---------------------------------------------------------------
-        #                     Control Strategy
+        #               Battle and control strategy
         #---------------------------------------------------------------
         
         if x != [] and x2 !=[] and x3!=[]:
@@ -320,7 +295,6 @@ if __name__ == '__main__':
                 angle = geom.angle((x,y),(x2,y2),(x3,y3))
 
             rotspeed = 200+angle_pid.output(0,-angle)
-            oldtime = time()
             forwardspeed = 200+(pos_pid.output(0,-distance)+FW)
             #-----------------------------------------------------------
             #          build data string to send to T-Bot
@@ -339,10 +313,10 @@ if __name__ == '__main__':
         if keys[pygame.K_t]:
             buttonstring = '200200T' # Auto trim
             sendcount = btcom.send_data(buttonstring,sendcount)
-        if keys[pygame.K_a]:
+        if keys[pygame.K_n]:
             buttonstring = '200200E' # -ve trim
             sendcount = btcom.send_data(buttonstring,sendcount)
-        if keys[pygame.K_f]:
+        if keys[pygame.K_p]:
             buttonstring = '200200F' # +ve trim
             sendcount = btcom.send_data(buttonstring,sendcount)
 
@@ -391,7 +365,6 @@ if __name__ == '__main__':
 
         pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[0],y_origin),(xdatarange[0],y_origin+yscale)),1)
         pygame.draw.lines(screen, (0,255,255), False, ((xdatarange[-1],y_origin),(xdatarange[-1],y_origin+yscale)),1)
-
         textPrint.abspos(screen, "{:+.2f}".format(plot_aa[:,1].max()),[xdatarange[0],y_origin-20])
         textPrint.abspos(screen, "{:+.2f}".format(plot_aa[:,1].min()),[xdatarange[0],y_origin+yscale+5])
         textPrint.tprint(screen,'Angle')
@@ -400,7 +373,6 @@ if __name__ == '__main__':
         textPrint.abspos(screen, "{:+.2f}".format(plot_cc[:,1].min()),[xdatarange[-1],y_origin+yscale+5])
         textPrint.tprint(screen,'Distance')
         textPrint.setColour((255,255,255,255))
-
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
         screen.blit(frame,camorigin)
@@ -411,7 +383,6 @@ if __name__ == '__main__':
         textPrint.tprint(screen, "aki: {:.3f}".format(aki))
         textPrint.tprint(screen, "akd: {:.3f}".format(akd))
         textPrint.tprint(screen, "FW: {:.3f}".format(FW))
-
         try:
             orient = geom.orientation(center2,center)
         except:
