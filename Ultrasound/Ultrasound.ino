@@ -9,21 +9,17 @@ RunningAverage USound(10);
 void setup(){
 Serial.begin(38400);
 }
-
 void loop(){
-
    pingval = sonar.ping_cm();  // Read distance from sensor
    if (pingval == pingval){    // Check pingval is not NAN
-      if (pingval > 0){
+      if (pingval > 0.5 and pingval < MAX_DISTANCE){
         
           USound.addValue(pingval);
           avg_ping = USound.getAverage();
         
          }
     }
-   
    Serial.print(pingval); Serial.print('\t');
    Serial.print(avg_ping); Serial.print('\t');  
-   Serial.print('\n');
-   
+   Serial.print('\n'); 
 }

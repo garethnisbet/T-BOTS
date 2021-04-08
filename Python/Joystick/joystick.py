@@ -45,8 +45,8 @@ sendcount = 0
 bd_addr = '98:D3:32:21:3D:77' # Pluto
 # bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
 port = 1
-#btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
-btcom = tbt.bt_connect(bd_addr,port,'Socket')
+btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
+#btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
 #----------------------------------------------------------------------#
 #               For Windows and Mac
