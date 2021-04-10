@@ -21,5 +21,6 @@ void loop(){
     }
    Serial.print(pingval); Serial.print('\t');
    Serial.print(avg_ping); Serial.print('\t');  
-   Serial.print('\n'); 
+   Serial.print('\n');
+   delay(64); // Recommended resampling delay
 }

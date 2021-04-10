@@ -32,7 +32,7 @@ int incflag;
 char character;
 ///////   Tuning ////////////////////////////////////////////
 
-float gtrim = -4.25 , rtrim = 0.0;
+float gtrim = 0 , rtrim = 0.0;
 
 
 float controller_sensitivity = 1.5, spinval, spinfactor = 0.8;
@@ -122,7 +122,7 @@ Task setTuning(200, TASK_FOREVER, &setTuningCallBack);
 Task tGyroPID(4, TASK_FOREVER, &gyroPIDCallBack);
 Task tspeedPID(4, TASK_FOREVER, &speedPIDCallBack);
 Task tCFilterRead(2,TASK_FOREVER, &CFilterReadCallBack);
-Task uSound(60, TASK_FOREVER, &uSoundCallBack);
+Task uSound(64, TASK_FOREVER, &uSoundCallBack);
 Task autoTrim(20, TASK_FOREVER, &autoTrimCallBack);
 Scheduler runner;
 
