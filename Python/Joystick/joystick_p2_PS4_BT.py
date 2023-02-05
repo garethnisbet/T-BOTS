@@ -46,12 +46,10 @@ sendcount = 0
 #bd_addr = '98:D3:91:FD:46:9C'
 #bd_addr = '98:D3:51:FD:82:95' # George
 # bd_addr = '98:D3:91:FD:46:9C' # T-Bot
-#bd_addr = '98:D3:32:21:3D:A2' # T-Bot
-
+bd_addr = '98:D3:32:21:3D:A2' # T-Bot
 #bd_addr = '98:D3:A1:FD:42:5C' # HC-05
 #bd_addr = '98:D3:51:FD:82:95'
-#bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
-bd_addr = '98:D3:51:FD:82:95' # TR4
+# bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 # btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -219,43 +217,73 @@ while not done:
     textPrint.tprint(screen, "Number of hats: {}".format(hats))
     textPrint.indent()
 
-    for i in range(axes):
-        axis = joystick.get_axis(i)
-        textPrint.tprint(screen, "Axis {} value: {:>6.3f}".format(i, axis))
-    axis0 = joystick.get_axis(0)
-    axis1 = joystick.get_axis(1)
-    axis2 = joystick.get_axis(2)
-    axis3 = joystick.get_axis(3)
-    textPrint.unindent()
-    textPrint.tprint(screen, "")
-    buttons = joystick.get_numbuttons()
-    
-    textPrint.abspos(screen, "Number of buttons: {}".format(buttons),(710,280))
-    textPrint.tprint(screen, "")
-    for i in range(buttons):
-        button = joystick.get_button(i)
-        textPrint.tprint(screen,
-                         "Button {:>2} value: {}".format(i, button))
+    # For each joystick:
+    for i in [1]: # If you have multiple joysticks connected, set this index for the one you want to use.
+        joystick = pygame.joystick.Joystick(i)
+        joystick.init()
 
-    for i in range(hats):
-        hat = joystick.get_hat(i)
-        textPrint.tprint(screen, "Hat {} value: {}".format(i, str(hat)))
-        if hat[1] == 1:
-            speedfactor += 0.1
-        elif hat[1] == -1:
-            speedfactor -= 0.1
-        elif hat[0] == -1:
-            speedlimit -= 5
-        elif hat[0] == +1:
-            speedlimit += 5
-        if speedlimit >= 100:
-            speedlimit = 100
-        if speedlimit <= 0:
-            speedlimit = 0
-        if speedfactor >= 5:
-            speedfactor = 5
-        if speedfactor <= 0:
-            speedfactor = 0
+        textPrint.tprint(screen, "Joystick {}".format(i))
+        textPrint.indent()
+
+        # Get the name from the OS for the controller/joystick.
+        name = joystick.get_name()
+        textPrint.tprint(screen, "{}".format(name))
+
+        # Usually axis run in pairs, up/down for one, and left/right for
+        # the other.
+        axes = joystick.get_numaxes()
+        textPrint.tprint(screen, "")
+        textPrint.tprint(screen, "Number of axes: {}".format(axes))
+        textPrint.indent()
+
+        for i in range(axes):
+            axis = joystick.get_axis(i)
+            textPrint.tprint(screen, "Axis {} value: {:>6.3f}".format(i, axis))
+        axis0 = joystick.get_axis(0)
+        axis1 = joystick.get_axis(1)
+        axis2 = joystick.get_axis(2)
+        axis3 = joystick.get_axis(3)
+        axis4 = joystick.get_axis(4)
+        axis5 = joystick.get_axis(5)
+        textPrint.unindent()
+        textPrint.tprint(screen, "")
+        buttons = joystick.get_numbuttons()
+        textPrint.tprint(screen, "Number of buttons: {}".format(buttons))
+        textPrint.indent()
+
+        for i in range(buttons):
+            button = joystick.get_button(i)
+            textPrint.tprint(screen,
+                             "Button {:>2} value: {}".format(i, button))
+        textPrint.unindent()
+
+        hats = joystick.get_numhats()
+        textPrint.tprint(screen, "")
+        textPrint.tprint(screen, "Number of hats: {}".format(hats))
+        textPrint.indent()
+
+        # Hat position. All or nothing for direction, not a float like
+        # get_axis(). Position is a tuple of int values (x, y).
+        for i in range(hats):
+            hat = joystick.get_hat(i)
+            textPrint.tprint(screen, "Hat {} value: {}".format(i, str(hat)))
+            if hat[1] == 1:
+                speedfactor += 0.1
+            elif hat[1] == -1:
+                speedfactor -= 0.1
+            elif hat[0] == -1:
+                speedlimit -= 5
+            elif hat[0] == +1:
+                speedlimit += 5
+            if speedlimit >= 100:
+                speedlimit = 100
+            if speedlimit <= 0:
+                speedlimit = 0
+            if speedfactor >= 5:
+                speedfactor = 5
+            if speedfactor <= 0:
+                speedfactor = 0
+
             
     textPrint.unindent()
     

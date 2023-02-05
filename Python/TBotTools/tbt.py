@@ -9,7 +9,7 @@ class bt_connect(object):
         self.port = port
         self.lib = lib
         self.baudrate = baudrate
-        self.numtries = 2
+        self.numtries = 20
     def connect(self,con):
         '''Makes BLuetooth connection.'''
         if con == 1:

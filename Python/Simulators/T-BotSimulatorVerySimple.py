@@ -67,6 +67,18 @@ clock = pygame.time.Clock()
 bg = pygame.image.load(dirpath+'/Gray.jpg').convert() 
 track_image = pygame.image.load(dirpath+'line.png')
 #-----------------------------------------------------------------------
+
+sf = 1
+s_kp, s_ki, s_kd = 0.090, 0.256, 0.00
+a_kp, a_ki, a_kd = 12.651, 0.00, 0.26
+#-----------------------------------------------------------------------
+sf_original = sf
+speed_pid = pid.pid(s_kp, s_ki, s_kd,[-10,10],[-5,5],dt)
+angle_pid = pid.pid(a_kp, a_ki, a_kd,[6, 6],[-1,1],dt)
+targetvelocity = -0.2
+
+
+
 record = 0
 framecount = 1
 done = False
@@ -96,6 +108,9 @@ while not done:
         t += dt
         velocity += acc*dt
         distance += (velocity*dt)
+        noise = np.random.rand(1)*np.pi/180
+        settheta = -speed_pid.output(geom.v2ang(h,g,targetvelocity),-geom.v2ang(h,g,velocity),dt)
+        acc = -angle_pid.output(settheta,(theta+noise[0]),dt)
         '''
         theta_c = np.arctan2(l*np.sin(theta),l*np.cos(theta)+R)
         h_c = np.sqrt((l*np.sin(theta))**2+(l*np.cos(theta)+R)**2)

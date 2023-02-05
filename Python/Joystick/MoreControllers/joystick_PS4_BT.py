@@ -35,6 +35,8 @@ turnspeedlimit = 60
 oldvals = [0,0,0,0]
 sendcount = 0
 bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address 
+
+bd_addr = '98:D3:32:21:3D:A2' # T-Bot
 port = 1
 
 

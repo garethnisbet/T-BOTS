@@ -11,7 +11,7 @@ from collections import deque
 from datetime import datetime
 clock = pygame.time.Clock()
 dirpath = currentpath+'/Simulators/Images'
-framerate = 30 # set to 30 for Rasoberry pi
+framerate = 60 # set to 30 for Rasoberry pi
 dt = 1.0/framerate
 #-----------------------------------------------------------------------
 #                           PID Tuning

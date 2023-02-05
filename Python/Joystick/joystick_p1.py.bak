@@ -50,11 +50,15 @@ sendcount = 0
 
 #bd_addr = '98:D3:A1:FD:42:5C' # HC-05
 #bd_addr = '98:D3:51:FD:82:95'
-#bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
-bd_addr = '98:D3:51:FD:82:95' # TR4
+bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
+#bd_addr = '98:D3:51:FD:82:95' # TR4
+#bd_addr = '98:D3:32:21:3D:77' # Pluto
+#bd_addr = '98:D3:91:FD:46:9C' # T-Bot
+#bd_addr = '98:D3:32:21:3D:A2' #Foxy
 port = 1
-btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
-# btcom = tbt.bt_connect(bd_addr,port,'Socket')
+#btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
+btcom = tbt.bt_connect(bd_addr,port,'Socket') 
+#btcom = tbt.bt_connect(bd_addr,port,'PySerial')
 
 #----------------------------------------------------------------------#
 #               For Windows and Mac
@@ -123,7 +127,7 @@ spotV = np.array([0,-62])
 
 #----------------------  Set window title   ---------------------------#
 
-pygame.display.set_caption("Player 2")
+pygame.display.set_caption("Player 1")
 
 #-------- Loop until the user clicks q or the close button ------------#
 done = False
@@ -143,7 +147,7 @@ readdataevent = pygame.USEREVENT+1
 pygame.time.set_timer(readdataevent, 33) # event period in milliseconds
 
 #------------------- Initialize the joysticks  ------------------------#
-joystick = pygame.joystick.Joystick(1)
+joystick = pygame.joystick.Joystick(0)
 joystick.init()
 joystick_count = pygame.joystick.get_count()
 name = joystick.get_name()

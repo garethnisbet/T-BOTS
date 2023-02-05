@@ -5,10 +5,10 @@ import numpy as np
 import cv2
 filename = 'pathpoints.dat'
 
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
+cap = cv2.VideoCapture(2)
+# cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+# cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+# cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
 
 
 success, frame = cap.read()
