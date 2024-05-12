@@ -32,8 +32,9 @@ int incflag;
 char character;
 ///////   Tuning ////////////////////////////////////////////
 
-float gtrim = 4.53 , rtrim = 0.0;
-
+//float gtrim = 3.13 , rtrim = 0.0; // good for T-BOT
+//float gtrim = -3.47 , rtrim = 0.0; // good for HAL
+float gtrim = -0.17 , rtrim = 0.0; // good for TR4
 
 float controller_sensitivity = 1.5, spinval, spinfactor = 0.8;
 float speedpidsampletime = 2;
@@ -75,7 +76,7 @@ float forward, remoteclock, ac2, accXF;
 float fping, pingval;
 #define TRIGGER_PIN  12  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN     11  // Arduino pin tied to echo pin on the ultrasonic sensor.
-#define MAX_DISTANCE 400 // Maximum distance we want to ping for (in centimetres). Maximum sensor distance is rated at 400-500cm.
+#define MAX_DISTANCE 150 // Maximum distance we want to ping for (in centimetres). Maximum sensor distance is rated at 400-500cm.
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 RunningAverage USound(2);
 
@@ -89,9 +90,11 @@ SoftwareSerial BTSerial(17,16);  // RX, TX
 
 // m1 is the T-Bot's right motor, m2 is the left
 
-const int m1ndb = 28 , m1pdb = 28, m2ndb = 28 , m2pdb = 28; // note the values are always positive good for george
-//const int m1ndb = 33 , m1pdb = 33, m2ndb = 33 , m2pdb = 33; // note the values are always positive good for B
-//const int m1ndb = 40 , m1pdb = 42, m2ndb = 22 , m2pdb = 21; // good for T-Bot
+//const int m1ndb = 28 , m1pdb = 28, m2ndb = 28 , m2pdb = 28; // note the values are always positive good for george
+//const int m1ndb = 20 , m1pdb = 20, m2ndb = 33 , m2pdb = 33; // note the values are always positive good for trailblazer
+//const int m1ndb = 35 , m1pdb = 35, m2ndb = 35 , m2pdb = 35; // good for T-Bot
+//const int m1ndb = 30 , m1pdb = 10, m2ndb = 50 , m2pdb = 30; // good for HAL
+const int m1ndb = 30 , m1pdb = 30, m2ndb = 30 , m2pdb = 30; // good for TR4
 //const int m1ndb = 22 , m1pdb = 25, m2ndb = 22 , m2pdb = 23; // good fot Foxy
 const int m2stby = 6, m2ain1 = 4, m2ain2 = 5, m2pwmpin = 9,  mpsfactor = 255, mpsfactor2 = 245;
 
