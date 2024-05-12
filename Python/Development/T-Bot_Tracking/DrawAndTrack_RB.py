@@ -40,7 +40,7 @@ arrow = np.array([[2,0],[2,50],[7,50],[0,65],[-7,50],[-2,50],[-2,0],[2,0]])
 #                          Draw  Path     
 #----------------------------------------------------------------------#
 
-filename = 'pathpoints.dat'
+filename = 'pathpoints_RG.dat'
 if os.path.isfile(filename):
     aa = np.loadtxt(filename)
     aa[:,0] = aa[:,0]*scalefactor+origin[0]
@@ -52,7 +52,7 @@ else:
 camwidth = 640
 camheight = 360
 camorigin = origin
-cap = cv2.VideoCapture(2,cv2.CAP_V4L2)
+cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, camwidth)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, camheight)
@@ -104,11 +104,11 @@ plot_dd=np.copy(plot_cc)
 #----------------------------------------------------------------------#
 
 
-greenLower = (47,22,221)    # place green disc on the left
-greenUpper = (79,255,255) 
+greenLower = (40,39,205)    # place green disc on the left
+greenUpper = (87,255,255) 
 
-redLower = (0,36,200)       
-redUpper = (10,255,255)      # place red disc on the right
+redLower = (0,100,202)       
+redUpper = (9,255,255)      # place red disc on the right
 
 #----------------------------------------------------------------------#
 #                                  Sunny

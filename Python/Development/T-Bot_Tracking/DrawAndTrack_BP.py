@@ -104,31 +104,31 @@ plot_dd=np.copy(plot_cc)
 #----------------------------------------------------------------------#
 
 
-greenLower = (47,22,221)    # place green disc on the left
-greenUpper = (79,255,255) 
+blueLower = (50,152,127)    # place green disc on the left
+blueUpper = (255,255,255) 
 
-redLower = (0,36,200)       
-redUpper = (10,255,255)      # place red disc on the right
+purpleLower = (139,76,85)       
+purpleUpper = (255,255,255)      # place red disc on the right
 
 #----------------------------------------------------------------------#
 #                                  Sunny
 #----------------------------------------------------------------------#
 
-#greenLower = (49,13,202)	
-#greenUpper = (82,121,225)
+#blueLower = (49,13,202)	
+#blueUpper = (82,121,225)
 
-#redLower = (142,54,146)    
-#redUpper = (255,255,255)  
+#purpleLower = (142,54,146)    
+#purpleUpper = (255,255,255)  
 
 #----------------------------------------------------------------------#
 #                                  Dull
 #----------------------------------------------------------------------#
 
-#greenLower = (60,55,216)	
-#greenUpper = (80,255,255)
+#blueLower = (60,55,216)	
+#blueUpper = (80,255,255)
 
-#redLower = (126,33,210)    
-#redUpper = (255,255,255)  
+#purpleLower = (126,33,210)    
+#purpleUpper = (255,255,255)  
 
 #--------------------- Setup Bluetooth --------------------------------#
 data = [0,0,0,0]
@@ -137,10 +137,10 @@ sendcount = 0
 #------------------------------------------------------------------
 #               For Linux / Raspberry Pi
 #------------------------------------------------------------------
-# bd_addr = '98:D3:91:FD:46:9C' # T-Bot  # use: 'hcitool scan' to scan for your T-Bot address
+bd_addr = '98:D3:91:FD:46:9C' # T-Bot  # use: 'hcitool scan' to scan for your T-Bot address
 # bd_addr = '98:D3:A1:FD:43:D6' # T-1000
 # bd_addr = '98:D3:91:FD:46:C5' # HAL
-bd_addr = '98:D3:A1:FD:44:43' # TR4
+# bd_addr = '98:D3:A1:FD:44:43' # TR4
 
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Raspberry Pi
@@ -426,7 +426,7 @@ if __name__ == '__main__':
         blurred = cv2.GaussianBlur(frame, (11, 11), 0)
         hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV) # do this outside function so it is not done twice
         try:         
-            x, y, center, radius, M, cents = geom.tracker(hsv, greenLower, greenUpper)
+            x, y, center, radius, M, cents = geom.tracker(hsv, blueLower, blueUpper)
             if radius > 1:
                 cv2.circle(frame, (int(x), int(y)), int(radius),(0, 255, 0), 2)
                 cv2.circle(frame, center, 2, (0, 255, 0), -1)
@@ -434,7 +434,7 @@ if __name__ == '__main__':
         except:
             pass
         try:
-            x2, y2, center2, radius2, M2, cents2 = geom.tracker(hsv, redLower, redUpper)
+            x2, y2, center2, radius2, M2, cents2 = geom.tracker(hsv, purpleLower, purpleUpper)
             if radius2 > 1:
                 cv2.circle(frame, (int(x2), int(y2)), int(radius2),(113,212,198), 2)
                 cv2.circle(frame, center2, 2, (113,212,198), -1)

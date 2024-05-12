@@ -19,8 +19,8 @@ from sys import exit
 scalefactor = 1
 #origin =  [636/2,357/2]
 origin =  [0,0]
-showline = 1
-interpfactor = 5
+showline = 0
+interpfactor = 0.2
 flag = 0
 geom = geometry.geometry(1) # scale factor to convert pixels to mm
 
@@ -38,7 +38,7 @@ else:
     coordinate = []
 
 # cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture(2,cv2.CAP_V4L2)
+cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -52,6 +52,7 @@ canvas = pygame.image.frombuffer(frame.tostring(),frame.shape[1::-1],'RGB')
  
 
 drawplot = 1
+draw_points = 1
 
 
 while drawplot:
@@ -170,8 +171,8 @@ angle_pid = pid.pid(0.4,2.40,0.01,[-15,15],[-60,60],turntime)
 greenLower = (37,34,178)   
 greenUpper = (99,125,255) 
  
-pinkLower = (154,104,98)       
-pinkUpper = (255,255,255) 
+pinkLower = (0,67,146)       
+pinkUpper = (7,255,255) 
 
 #----------------------------------------------------------------------#
 #                                  Sunny
@@ -228,7 +229,8 @@ sendcount = 0
 # bd_addr = '98:D3:51:FD:82:95' # George
 # bd_addr = '98:D3:91:FD:46:C9' # B
 #bd_addr = '98:D3:32:21:3D:77'
-bd_addr = '98:D3:71:FD:44:F7'
+# bd_addr = '98:D3:71:FD:44:F7'
+bd_addr = '98:D3:51:FD:82:95' #TR4
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Raspberry Pi
 #btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -257,22 +259,26 @@ xdata =  np.arange(border, frame.shape[1]-border, stepsize)
 
 aa = np.loadtxt('pathpoints.dat') # Use Click2Path.py to create an arbitrary path
 
-if interpfactor != 1:
+if interpfactor >= 1:
     print('Interpolating data')
-    xdata = range(aa.shape[0])
+    xdata = list(range(aa.shape[0]))
     x_hires = np.linspace(xdata[0],(xdata[-1]-1),len(xdata)*interpfactor)
     f1 = interp1d(xdata,aa[:,0], kind = 'cubic')
     f2 = interp1d(xdata,aa[:,1], kind = 'cubic')
     y1 = f1(x_hires)
     y2 = f2(x_hires)
     aa = np.concatenate(([y1],[y2])).T
+else:
+    step = np.int(np.round(1/interpfactor))
+    datarange = list(range(0,aa.shape[0],step))
+    aa = aa[datarange,:]
 
 
 ########################################################################
 #-----------------------   Start main loop ----------------------------#
 ########################################################################
 
-cap = cv2.VideoCapture(3,cv2.CAP_V4L2)
+cap = cv2.VideoCapture(0,cv2.CAP_V4L2)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 405)
@@ -360,6 +366,9 @@ if __name__ == '__main__':
 
         if showline:
             cv2.polylines(frame, np.int32([aa]),True, (255,0,255),2)
+        if draw_points:
+            for ii in list(range(aa.shape[0])):
+                cv2.circle(frame, tuple(aa[ii,:].astype(int)), 4, (250,150,150), -1)
         cv2.circle(frame, tuple(aa[pathindex,:].astype(int)), 8, (250,150,10), -1)
         if laptime < oldlaptime:
             if laptime < 1000:

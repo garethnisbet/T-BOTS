@@ -39,31 +39,36 @@ def get_trackbar_values(range_filter):
 
 
 got_lowpass = 0
-# range_filter = 'RGB'
+#range_filter = 'RGB'
 range_filter = 'HSV'
-cam = cv2.VideoCapture(0,cv2.CAP_V4L2)
+cam = cv2.VideoCapture(2,cv2.CAP_V4L2)
 cam.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 cam.set(28, 0)
 cam.set(cv2.CAP_PROP_GAIN,0)
 cam.set(cv2.CAP_PROP_BRIGHTNESS,0)
-cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
+# cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+# cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
 cam.set(cv2.CAP_PROP_BRIGHTNESS, 100)
 
 setup_trackbars(range_filter)
-
-
+success, image1 = cam.read()
+ii=0
 while True:
     success, image = cam.read()
+    imagediff = image+image1
+    if ii >= 200:
+        image1 = image+image1
+        ii = 0
+    ii+=1
     # image[maskgridL] = 0
     # image[maskgridR] = 0
     if range_filter == 'RGB':
-        frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        frame_to_thresh = cv2.cvtColor(imagediff, cv2.COLOR_BGR2RGB)
     else:
-        frame_to_thresh = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        frame_to_thresh = cv2.cvtColor(imagediff, cv2.COLOR_BGR2HSV)
     v1_min, v2_min, v3_min, v1_max, v2_max, v3_max = get_trackbar_values(range_filter)
     thresh = cv2.inRange(frame_to_thresh, (v1_min, v2_min, v3_min), (v1_max, v2_max, v3_max))
-    preview = cv2.bitwise_and(image, image, mask=thresh)
+    preview = cv2.bitwise_and(imagediff, imagediff, mask=thresh)
     cv2.imshow("Thresholds", preview)
 
     if cv2.waitKey(1) & 0xFF is ord('q'):

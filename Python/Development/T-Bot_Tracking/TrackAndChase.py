@@ -81,14 +81,23 @@ plot_dd=np.copy(plot_cc)
 #            Use getHSVThresh.py to find the correct values
 #----------------------------------------------------------------------#
 
-greenLower = (41,76,0)  # place green disc on the left.
-greenUpper = (93,255,255) 
- 
-redLower = (145,81,27)       
-redUpper = (255,255,255) # place red disc on the right
+#----------------------------------------------------------------------#
+#                             AI
+#----------------------------------------------------------------------#
 
-blueLower = (98,234,126)       
-blueUpper = (158,255,255) # Blue fin on helmet
+greenLower = (50,44,126)    # place green disc on the left
+greenUpper = (96,255,255) 
+
+redLower = (0,67,146)       
+redUpper = (7,255,255)      # place red disc on the right
+
+#----------------------------------------------------------------------#
+#                           Human
+#----------------------------------------------------------------------#
+
+blueLower = (44,76,143)    
+blueUpper = (255,255,255) 
+
 
 #------------- Initialise Bluetooth data variables --------------------#
 data = [0,0,0,0]
@@ -104,6 +113,7 @@ sendcount = 0
 
 bd_addr = '98:D3:51:FD:82:95' # George
 #bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
+bd_addr = '98:D3:51:FD:82:95' #TR4
 
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez') # PyBluez works well for the Raspberry Pi
