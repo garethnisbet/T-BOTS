@@ -48,7 +48,9 @@ sendcount = 0
 #------------------------------------------------------------------
 #bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 
-bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
+#bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
+bd_addr = '98:D3:51:FD:82:95' # TR4
+
 port = 1
 #btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -103,8 +105,8 @@ pygame.init()
 # Set the width and height of the screen (width, height).
 screen = pygame.display.set_mode((900, 590))
 
-bg = pygame.image.load(dirpath+'/HUD/Controller7.png').convert()
 
+bg = pygame.image.load(dirpath+'/HUD/ControllerBattle.png').convert()
 
 bgG = pygame.image.load(dirpath+'/HUD/offline.png').convert()
 dpad = pygame.image.load(dirpath+'/HUD/dpad.png')
@@ -191,14 +193,17 @@ while not done:
     if event.type == pgl.KEYDOWN and event.key == pgl.K_t:
         WHITE = pygame.Color('white')
         
-        themelist = ["bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()",
+        themelist = ["bg = pygame.image.load(dirpath+'/HUD/ControllerBattle.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller5.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller6.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/ControllerLCARS.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller7.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()"]
+
         exec(themelist[t1])
         if t1 == 7:
             WHITE = BLACK

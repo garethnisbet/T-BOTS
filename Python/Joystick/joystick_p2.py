@@ -1,3 +1,7 @@
+#----------------------------------------------------------------------#
+#               A generic controller must be connected
+#             to your computer for this software to work
+#----------------------------------------------------------------------#
 #!/usr/bin/python
 import pygame, sys, os
 from pygame.locals import *
@@ -50,8 +54,8 @@ sendcount = 0
 
 #bd_addr = '98:D3:A1:FD:42:5C' # HC-05
 #bd_addr = '98:D3:51:FD:82:95'
-#bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
-bd_addr = '98:D3:51:FD:82:95' # TR4
+bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
+#bd_addr = '98:D3:51:FD:82:95' # TR4
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 # btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -80,7 +84,7 @@ screen = pygame.display.set_mode((900, 590))
 
 #-------------------  Load images for GUI  ----------------------------#
 
-bg = pygame.image.load(dirpath+'/HUD/Controller7.png').convert()
+bg = pygame.image.load(dirpath+'/HUD/ControllerBattle.png').convert()
 bgG = pygame.image.load(dirpath+'/HUD/offline.png').convert()
 dpad = pygame.image.load(dirpath+'/HUD/dpad.png')
 dpadU = pygame.image.load(dirpath+'/HUD/dpadU.png')
@@ -166,20 +170,22 @@ while not done:
 
     if event.type == KEYDOWN and event.key == K_t:
         WHITE = pygame.Color('white')
-        themelist = ["bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()",
+        themelist = ["bg = pygame.image.load(dirpath+'/HUD/ControllerBattle.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller5.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller6.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/ControllerLCARS.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller7.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()"]
         exec(themelist[t1])
-        if t1 == 7:
+        if t1 == 9:
             WHITE = BLACK
         
         #pygame.image.save(screen, "CapturedImages/{:02d}.png".format(t1))
-        if t1 == 7:
+        if t1 == 9:
             t1 = 0
         else:
             t1 += 1
@@ -295,7 +301,7 @@ while not done:
     textPrint.unindent()
 
     textPrint.abspos(screen, "Press T to change Theme",(20,520))
-    textPrint.abspos(screen, "www.klikrobotics.com",(20,20))
+    textPrint.abspos(screen, "www.klikrobotics.com",(30,20))
 #
 # #############   Send data to T-Bot  ##############################
 #

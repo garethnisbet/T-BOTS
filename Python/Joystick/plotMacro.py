@@ -4,7 +4,7 @@ import numpy as np
 def rotxy(theta,v1):
     return (np.matrix([[np.cos(theta),-np.sin(theta)],[np.sin(theta),np.cos(theta)]])*v1.T).T
 gif = 'gif'
-filename = '/home/pi/GitHub/T-BOTS/Python/Joystick/cmd.csv'
+filename = 'cmd.csv'
 ff = open(filename)
 cmd_data = ff.readlines()
 def vbuilder(s1,s2,_cmd_data):

@@ -1,3 +1,7 @@
+#----------------------------------------------------------------------#
+#               A generic controller must be connected
+#             to your computer for this software to work
+#----------------------------------------------------------------------#
 #!/usr/bin/python
 import pygame, sys, os
 from pygame.locals import *
@@ -6,11 +10,10 @@ from collections import deque
 import numpy as np
 toolspath = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
 sys.path.append(toolspath)
-from TBotTools import tbt
+from TBotTools import tbt, pgt
 
 clock = pygame.time.Clock()
 t1 = 0
-starttime = time()
 
 # setup for plotting
 xdatarange = [280,520]
@@ -24,7 +27,7 @@ aa = np.zeros((len(pts),2))
 aa[:,1]=np.array(pts)[:,1]
 aa[:,0]=np.array(range(xdatarange[0],xdatarange[1]))
 bb=np.copy(aa)
-    
+
 
 dirpath = os.path.dirname(os.path.realpath(__file__))+'/Images'
 timestart = time()
@@ -38,89 +41,50 @@ turnspeedlimit = 60
 oldvals = [0,0,0,0]
 sendcount = 0
 
-
-
-#------------------------------------------------------------------
+#----------------------------------------------------------------------#
 #               For Linux / Raspberry Pi
-#------------------------------------------------------------------
+#----------------------------------------------------------------------#
 # bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
 # bd_addr = '98:D3:71:FD:44:F7' # Returned :(
 # bd_addr = '98:D3:91:FD:46:C9'
-# bd_addr = '98:D3:91:FD:46:9C'
-# bd_addr = '98:D3:51:FD:82:95' # George
+#bd_addr = '98:D3:91:FD:46:9C'
+#bd_addr = '98:D3:51:FD:82:95' # George
 # bd_addr = '98:D3:91:FD:46:9C' # T-Bot
-# bd_addr = '98:D3:A1:FD:42:5C' # HC-05
+#bd_addr = '98:D3:32:21:3D:A2' # T-Bot
+
+#bd_addr = '98:D3:A1:FD:42:5C' # HC-05
 #bd_addr = '98:D3:51:FD:82:95'
-bd_addr = '98:D3:32:21:3D:77' #Pluto
-# bd_addr = '98:D3:A1:FD:42:5C' # Trailblazer
-
-
+bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
+#bd_addr = '98:D3:51:FD:82:95' # TR4
 port = 1
-#btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
-btcom = tbt.bt_connect(bd_addr,port,'Socket')
+btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
+# btcom = tbt.bt_connect(bd_addr,port,'Socket')
 
-#------------------------------------------------------------------
+#----------------------------------------------------------------------#
 #               For Windows and Mac
-#------------------------------------------------------------------
+#----------------------------------------------------------------------#
 #port = 'COM5'
 #port = '/dev/tty.George-DevB'
 #baudrate = 38400
 #bd_addr = 'Empty'
 #btcom = tbt.bt_connect(bd_addr,port,'PySerial',baudrate)
+#----------------------------------------------------------------------#
 
 
-#######################  Screen Text Class #############################
-
-class TextPrint(object):
-    def __init__(self):
-        self.reset()
-        self.font = pygame.font.Font(None, 15)
-
-    def tprint(self, screen, textString):
-        textBitmap = self.font.render(textString, True, WHITE)
-        screen.blit(textBitmap, (self.x, self.y))
-        self.y += self.line_height
-
-    def reset(self):
-        self.x = 10
-        self.y = 10
-        self.line_height = 15
-
-    def indent(self):
-        self.x += 10
-
-    def unindent(self):
-        self.x -= 10
-        
-    def abspos(self,screen, textString, pos):
-        self.x = pos[0]
-        self.y = pos[1]
-        textBitmap = self.font.render(textString, True, WHITE)
-        screen.blit(textBitmap, (self.x, self.y))
-        self.y += self.line_height
- 
-
-###################  Instantiate BT Class #############################    
-
-
-      
-        
-# Define some colors.
+#---------------------- Define some colors ----------------------------#
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 GRAY = pygame.Color('gray')
 
-
-
-
+#---------------------- Initialise Pygame -----------------------------#
 pygame.init()
 
-# Set the width and height of the screen (width, height).
+#----- Set the width and height of the screen (width, height) ---------#
 screen = pygame.display.set_mode((900, 590))
 
-bg = pygame.image.load(dirpath+'/HUD/Controller7.png').convert()
+#-------------------  Load images for GUI  ----------------------------#
 
-
+bg = pygame.image.load(dirpath+'/HUD/ControllerBattle.png').convert()
 bgG = pygame.image.load(dirpath+'/HUD/offline.png').convert()
 dpad = pygame.image.load(dirpath+'/HUD/dpad.png')
 dpadU = pygame.image.load(dirpath+'/HUD/dpadU.png')
@@ -131,7 +95,6 @@ dpadUR = pygame.image.load(dirpath+'/HUD/dpadUR.png')
 dpadDR = pygame.image.load(dirpath+'/HUD/dpadDR.png')
 dpadUL = pygame.image.load(dirpath+'/HUD/dpadUL.png')
 dpadDL = pygame.image.load(dirpath+'/HUD/dpadDL.png')
-
 bpad = pygame.image.load(dirpath+'/HUD/bpad.png')
 bpadU = pygame.image.load(dirpath+'/HUD/bpadU.png')
 bpadD = pygame.image.load(dirpath+'/HUD/bpadD.png')
@@ -141,12 +104,9 @@ bpadUR = pygame.image.load(dirpath+'/HUD/bpadUR.png')
 bpadDR = pygame.image.load(dirpath+'/HUD/bpadDR.png')
 bpadUL = pygame.image.load(dirpath+'/HUD/bpadUL.png')
 bpadDL = pygame.image.load(dirpath+'/HUD/bpadDL.png')
-
 spotB = pygame.image.load(dirpath+'/HUD/spotT.png')
 spotT = pygame.image.load(dirpath+'/HUD/spotB.png')
-
 stick = pygame.image.load(dirpath+'/HUD/stick.png')
-
 L1 = pygame.image.load(dirpath+'/HUD/L1.png')
 L2 = pygame.image.load(dirpath+'/HUD/L2.png')
 L1L2 = pygame.image.load(dirpath+'/HUD/L1L2.png')
@@ -154,44 +114,49 @@ R1 = pygame.image.load(dirpath+'/HUD/R1.png')
 R2 = pygame.image.load(dirpath+'/HUD/R2.png')
 R1R2 = pygame.image.load(dirpath+'/HUD/R1R2.png')
 
-
+#---------------------- Set button positions --------------------------#
 posdpad = (295,340)
 posbpad = (520,340)
 posstickL = (358, 395)
 posstickR = (480,395)
 posL = (302,282)
 posR = (531,282)
-
 spotTorigin = (123,145)
 spotBorigin = (765,145)
 spotV = np.array([0,-62])
 
-
+#----------------------  Set window title   ---------------------------#
 
 pygame.display.set_caption("Player 2")
 
-# Loop until the user clicks the close button.
+#-------- Loop until the user clicks q or the close button ------------#
 done = False
 
-# Used to manage how fast the screen updates.
+#---------- Used to manage how fast the screen updates ----------------#
 clock = pygame.time.Clock()
 
-# Initialize the joysticks.
-pygame.joystick.init()
+#------------------- Instanciate display text -------------------------#
+textPrint = pgt.TextPrint((255,255,255))
 
-# Get ready to print.
-textPrint = TextPrint()
+#----------------------------------------------------------------------#
+# Setup pygame user event to read data back from the T-Bot. This 
+# prevents the data retrieval being a bottle neck to the frame rate
+#----------------------------------------------------------------------#
 
 readdataevent = pygame.USEREVENT+1
-pygame.time.set_timer(readdataevent, 33)
-# -------- Main Program Loop -----------
+pygame.time.set_timer(readdataevent, 33) # event period in milliseconds
 
+#------------------- Initialize the joysticks  ------------------------#
 joystick = pygame.joystick.Joystick(1)
 joystick.init()
 joystick_count = pygame.joystick.get_count()
 name = joystick.get_name()
 axes = joystick.get_numaxes()
 hats = joystick.get_numhats()
+
+#----------------------------------------------------------------------#
+#                            Main Loop
+#----------------------------------------------------------------------#
 while not done:
     if pygame.event.get(readdataevent):
         oldvals = btcom.get_data(oldvals)
@@ -205,24 +170,25 @@ while not done:
 
     if event.type == KEYDOWN and event.key == K_t:
         WHITE = pygame.Color('white')
-        themelist = ["bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()",
+        themelist = ["bg = pygame.image.load(dirpath+'/HUD/ControllerBattle.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/Controller.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller2.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller3.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller4.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller5.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller6.png').convert()",
+                    "bg = pygame.image.load(dirpath+'/HUD/ControllerLCARS.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/Controller7.png').convert()",
                     "bg = pygame.image.load(dirpath+'/HUD/ControllerI.png').convert()"]
         exec(themelist[t1])
-        if t1 == 7:
+        if t1 == 9:
             WHITE = BLACK
         
         #pygame.image.save(screen, "CapturedImages/{:02d}.png".format(t1))
-        if t1 == 7:
+        if t1 == 9:
             t1 = 0
         else:
             t1 += 1
-    
 
     if btcom.connected():
         screen.blit(bg, [0, 0])
@@ -249,13 +215,7 @@ while not done:
 
     textPrint.reset()
 
-    # Get count of joysticks.
-    
-
-    textPrint.abspos(screen, "Number of joysticks: {}".format(joystick_count),(20,280))
-    textPrint.indent()
-
-    textPrint.tprint(screen, "Joystick name: {}".format('Generic Controller'))
+    textPrint.abspos(screen, "Joystick name: {}".format('Generic Controller'),(20,280))
     
     textPrint.tprint(screen, "")
     textPrint.tprint(screen, "Number of axes: {}".format(axes))
@@ -341,7 +301,7 @@ while not done:
     textPrint.unindent()
 
     textPrint.abspos(screen, "Press T to change Theme",(20,520))
-    textPrint.abspos(screen, "www.klikrobotics.com",(20,20))
+    textPrint.abspos(screen, "www.klikrobotics.com",(30,20))
 #
 # #############   Send data to T-Bot  ##############################
 #

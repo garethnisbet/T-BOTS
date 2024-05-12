@@ -1,3 +1,7 @@
+#----------------------------------------------------------------------#
+#               A generic controller must be connected
+#             to your computer for this software to work
+#----------------------------------------------------------------------#
 #!/usr/bin/python
 import pygame, sys, os
 from pygame.locals import *
@@ -40,18 +44,12 @@ sendcount = 0
 #----------------------------------------------------------------------#
 #               For Linux / Raspberry Pi
 #----------------------------------------------------------------------#
-# bd_addr = '98:D3:51:FD:81:AC' # use: 'hcitool scan' to scan for your T-Bot address
-# bd_addr = '98:D3:71:FD:44:F7' # Returned :(
-# bd_addr = '98:D3:91:FD:46:C9'
-#bd_addr = '98:D3:91:FD:46:9C'
-#bd_addr = '98:D3:51:FD:82:95' # George
-# bd_addr = '98:D3:91:FD:46:9C' # T-Bot
-#bd_addr = '98:D3:32:21:3D:A2' # T-Bot
 
-#bd_addr = '98:D3:A1:FD:42:5C' # HC-05
-#bd_addr = '98:D3:51:FD:82:95'
-#bd_addr = '98:D3:71:FD:46:9C' # Trailblazer
-bd_addr = '98:D3:51:FD:82:95' # TR4
+bd_addr = '98:D3:91:FD:46:9C' # T-Bot  # use: 'hcitool scan' to scan for your T-Bot address
+# bd_addr = '98:D3:A1:FD:43:D6' # T-1000
+# bd_addr = '98:D3:91:FD:46:C5' # HAL
+# bd_addr = '98:D3:A1:FD:44:43' # TR4
+
 port = 1
 btcom = tbt.bt_connect(bd_addr,port,'PyBluez')
 # btcom = tbt.bt_connect(bd_addr,port,'Socket')
@@ -211,7 +209,7 @@ while not done:
 
     textPrint.reset()
 
-    textPrint.abspos(screen, "Joystick name: {}".format('Generic Controller'),(20,280))
+    textPrint.abspos(screen, "Joystick name: {}".format('Generic Controller'),(40,280))
     
     textPrint.tprint(screen, "")
     textPrint.tprint(screen, "Number of axes: {}".format(axes))
@@ -219,7 +217,8 @@ while not done:
     textPrint.unindent()
     
     textPrint.tprint(screen, "Number of hats: {}".format(hats))
-    textPrint.indent()
+    textPrint.tprint(screen, "")
+    #textPrint.indent()
 
     for i in range(axes):
         axis = joystick.get_axis(i)
@@ -232,7 +231,7 @@ while not done:
     textPrint.tprint(screen, "")
     buttons = joystick.get_numbuttons()
     
-    textPrint.abspos(screen, "Number of buttons: {}".format(buttons),(710,280))
+    textPrint.abspos(screen, "Number of buttons: {}".format(buttons),(720,280))
     textPrint.tprint(screen, "")
     for i in range(buttons):
         button = joystick.get_button(i)
@@ -296,8 +295,8 @@ while not done:
 
     textPrint.unindent()
 
-    textPrint.abspos(screen, "Press T to change Theme",(20,520))
-    textPrint.abspos(screen, "www.klikrobotics.com",(30,20))
+    textPrint.abspos(screen, "Press T to change Theme",(40,520))
+    textPrint.abspos(screen, "www.klikrobotics.com",(40,20))
 #
 # #############   Send data to T-Bot  ##############################
 #
